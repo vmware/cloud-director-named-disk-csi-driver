@@ -1,0 +1,10 @@
+vcd:
+  host: "https://vmware-cloud-director.com"
+  org: "org"
+  vdc: "org_ovdc"
+  user: "vmware-cloud-director-user"
+  secret: "password-of-vmware-cloud-director-user"
+vsphere:
+  host: "https://vsphere-url.com"
+  user: "vsphere-user@vsphere.local"
+  secret: "password-of-vsphere-user"
