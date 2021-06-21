@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-The **cloud-director-named-disk-csi-driver** project accepts contribution via GitHub [pull request](https://help.github.com/articles/about-pull-requests/). This document outlines the process to help get your contribution accepted.
+The **cloud-director-named-disk-csi-driver** project team welcomes contributions from the community. If you wish to contribute code and you have not signed our contributor license agreement ([CLA](https://cla.vmware.com/cla/1/preview)), our bot will update the issue when you open a Pull Request. For any questions about the CLA process, please refer to our [FAQ](https://cla.vmware.com/faq)
 
 ## Sign the Contributor License Agreement
 
