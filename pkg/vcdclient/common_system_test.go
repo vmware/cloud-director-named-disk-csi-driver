@@ -42,22 +42,6 @@ func getBoolValStrict(val interface{}, defaultVal bool) bool {
 	return defaultVal
 }
 
-func getOneArmValStrict(val interface{}, defaultVal *OneArm) *OneArm {
-	if oneArmVal, ok := val.(*OneArm); ok {
-		return oneArmVal
-	}
-
-	return defaultVal
-}
-
-func getInt32ValStrict(val interface{}, defaultVal int32) int32 {
-	if int32Val, ok := val.(int32); ok {
-		return int32Val
-	}
-
-	return defaultVal
-}
-
 func getTestVCDClient(inputMap map[string]interface{}) (*Client, error) {
 
 	testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")

@@ -6,13 +6,7 @@
 package vcdclient
 
 import (
-	"crypto/tls"
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
-	"github.com/vmware/go-vcloud-director/v2/types/v56"
-	"net/http"
-	"net/url"
 	"sync"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -66,99 +60,6 @@ func (client *Client) RefreshToken() error {
 	return nil
 }
 
-func (client *Client) GetOrgVDCByName(orgName string, vdcName string) (*govcd.Vdc, error) {
-
-	org, err := client.vcdClient.GetOrgByName(orgName)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get vcd organization [%s]: [%v]", orgName, err)
-	}
-
-	err = org.Refresh()
-	if err != nil {
-		return nil, err
-	}
-
-	recordType := "application/vnd.vmware.vcloud.query.records+xml"
-	queryLinks := make([]types.Link, 0)
-	for _, link := range org.Org.Link {
-		if link.Name == "" || link.Name == vdcName {
-			if link.Rel == "down" && link.Type == recordType {
-				queryLinks = append(queryLinks, *link)
-			}
-		}
-	}
-
-	outLinks := make([]types.Link, 0)
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	httpClient := &http.Client{Transport: tr}
-	for _, queryLink := range queryLinks {
-		href := queryLink.HREF
-		urlStr, err := url.Parse(href)
-		if err != nil {
-			return nil, fmt.Errorf("unable to parse url [%s]: [%v]", href, err)
-		}
-		if urlStr.Query().Get("type") != "orgVdc" {
-			continue
-		}
-
-		nextPageURI := href
-		for nextPageURI != "" {
-			req, err := http.NewRequest("GET", nextPageURI, nil)
-			if err != nil {
-				return nil, fmt.Errorf("unable to create request for url [%v]: [%v]",
-					nextPageURI, err)
-			}
-			req.Header.Add("Accept",
-				fmt.Sprintf("application/*+xml;version=%s", client.vcdClient.Client.APIVersion))
-			req.Header.Add("X-Vmware-Vcloud-Token-Type", "Bearer")
-			req.Header.Add("Authorization", fmt.Sprintf("bearer %s", client.vcdClient.Client.VCDToken))
-			resp, err := httpClient.Do(req)
-			if err != nil {
-				return nil, fmt.Errorf("unable to query link [%v]: resp: [%v]: [%v]",
-					nextPageURI, resp, err)
-			}
-			if resp.StatusCode != http.StatusOK {
-				return nil, fmt.Errorf("received status [%v] for req [%v]: resp: [%v]",
-					resp.StatusCode, req, resp)
-			}
-
-			queryOvdcResults := vcdtypes.QueryResultRecordsType{}
-			if err = util.DecodeXMLBody(types.BodyTypeXML, resp, &queryOvdcResults); err != nil {
-				return nil, fmt.Errorf("error decoding OVDC response: %s", err)
-			}
-
-			if queryOvdcResults.OrgVdcRecord != nil {
-				for _, queryOvdcResult := range queryOvdcResults.OrgVdcRecord {
-					outLinks = append(outLinks, types.Link{
-						HREF: queryOvdcResult.HREF,
-						Name: queryOvdcResult.Name,
-					})
-				}
-			}
-
-			nextPageURI = ""
-			for _, link := range queryOvdcResults.Link {
-				if link.Rel == "nextPage" {
-					// assuming that there is only one of these
-					nextPageURI = link.HREF
-					continue
-				}
-				outLinks = append(outLinks, *link)
-			}
-		}
-	}
-
-	for _, link := range outLinks {
-		if vdcName == link.Name {
-			return org.GetVDCByHref(link.HREF)
-		}
-	}
-
-	return nil, fmt.Errorf("unable to find vdc [%s:%s]", org.Org.Name, vdcName)
-}
-
 // NewVCDClientFromSecrets :
 func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 	user string, password string, insecure bool, clusterID string, getVdcClient bool) (*Client, error) {
@@ -201,9 +102,14 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 			return nil, fmt.Errorf("unable to get plain client from secrets: [%v]", err)
 		}
 
-		client.vdc, err = client.GetOrgVDCByName(orgName, vdcName)
+		org, err := vcdClient.GetOrgByName(orgName)
 		if err != nil {
-			return nil, fmt.Errorf("unable to get orgVdc ID for [%s:%s]: [%v]", orgName, vdcName, err)
+			return nil, fmt.Errorf("unable to get org from name [%s]: [%v]", orgName, err)
+		}
+
+		client.vdc, err = org.GetVDCByName(vdcName, true)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get vdc [%s] from org [%s]: [%v]", vdcName, orgName, err)
 		}
 	}
 	client.vcdClient = vcdClient

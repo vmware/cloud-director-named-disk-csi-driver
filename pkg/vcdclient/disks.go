@@ -17,6 +17,13 @@ import (
 	"k8s.io/klog"
 )
 
+
+const (
+	VCDBusTypeSCSI           = "6"
+	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
+)
+
+
 // Returns a Disk structure as JSON
 func prettyDisk(disk vcdtypes.Disk) string {
 	if byteBuf, err := json.MarshalIndent(disk, " ", " "); err == nil {
@@ -395,7 +402,7 @@ func (client *Client) govcdRefresh(disk *vcdtypes.Disk) error {
 }
 
 // AttachVolume will attach diskName to vm
-func (client *Client) AttachVolume(vm *govcd.VM, diskName string) error {
+func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
 	client.rwLock.Lock()
 	defer client.rwLock.Unlock()
 
@@ -403,17 +410,15 @@ func (client *Client) AttachVolume(vm *govcd.VM, diskName string) error {
 		return fmt.Errorf("unable to refresh vcd client: [%v]", err)
 	}
 
-	klog.Infof("Entered AttachVolume for vm [%v], disk [%s]\n", vm, diskName)
-
-	disk, err := client.GetDiskByName(diskName)
-	if err != nil {
-		return fmt.Errorf("unable to find disk [%s]: [%v]", diskName, err)
+	if disk == nil {
+		return fmt.Errorf("disk passed shoulf not be nil")
 	}
-	klog.Infof("Obtained disk: [%#v]\n", disk)
+
+	klog.Infof("Entered AttachVolume for vm [%v], disk [%s]\n", vm, disk.Name)
 
 	attachedVMs, err := client.govcdAttachedVM(disk)
 	if err != nil {
-		return fmt.Errorf("unable to find volume attached to disk [%s]: [%v]", diskName, err)
+		return fmt.Errorf("unable to find volume attached to disk [%s]: [%v]", disk.Name, err)
 	}
 
 	if attachedVMs != nil && len(attachedVMs) > 0 {
@@ -421,7 +426,7 @@ func (client *Client) AttachVolume(vm *govcd.VM, diskName string) error {
 		for _, attachedVM := range attachedVMs {
 			if attachedVM.HREF == vm.VM.HREF {
 				klog.Infof("Disk [%s] already attached to VM [%s], so nothing to do.",
-					diskName, vm.VM.Name)
+					disk.Name, vm.VM.Name)
 				return nil
 			}
 		}
@@ -447,7 +452,7 @@ func (client *Client) AttachVolume(vm *govcd.VM, diskName string) error {
 	err = task.WaitTaskCompletion()
 	if err != nil {
 		return fmt.Errorf("failed waiting for disk [%s] to attach to vm [%s]",
-			diskName, vm.VM.Name)
+			disk.Name, vm.VM.Name)
 	}
 
 	if err = client.govcdRefresh(disk); err != nil {

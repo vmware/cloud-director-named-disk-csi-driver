@@ -8,7 +8,6 @@ package csi
 import (
 	"context"
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vsphereclient"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,15 +31,13 @@ const (
 
 type nodeService struct {
 	Driver        *VCDDriver
-	VSphereClient *vsphereclient.Client
 	NodeID        string
 }
 
 // NewNodeService creates and returns a NodeService struct.
-func NewNodeService(driver *VCDDriver, vsphereClient *vsphereclient.Client, nodeID string) csi.NodeServer {
+func NewNodeService(driver *VCDDriver, nodeID string) csi.NodeServer {
 	return &nodeService{
 		Driver: driver,
-		VSphereClient: vsphereClient,
 		NodeID: nodeID,
 	}
 }
@@ -104,6 +101,12 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 			"PublishContext did not contain full vm name in publish context")
 	}
 
+	diskUUID, ok := publishContext[DiskUUIDAttribute]
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"PublishContext did not contain disk UUID in publish context")
+	}
+
 	volumeID := req.GetVolumeId()
 	if volumeID == "" {
 		return nil, status.Error(codes.InvalidArgument, "Volume Id not provided")
@@ -114,7 +117,7 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, "Staging target not provided")
 	}
 
-	devicePath, err := ns.getDiskPath(ctx, vmFullName, volumeID)
+	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to obtain disk for vm [%s], disk [%s]: [%v]",
 			vmFullName, volumeID, err)
@@ -369,17 +372,16 @@ func (ns *nodeService) NodeGetInfo(ctx context.Context, req *csi.NodeGetInfoRequ
 // getDiskPath looks for a device corresponding to vmName:diskName as stored in vSphere. It
 // enumerates devices in /dev/disk/by-path and returns a device with UUID matching the scsi UUID.
 // It needs disk.enableUUID to be set for the VM.
-func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskName string) (string, error) {
+func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskUUID string) (string, error) {
 
-	diskUUID, err := ns.VSphereClient.GetDiskUuid(ctx, vmFullName, diskName)
-	if err != nil {
-		return "", fmt.Errorf("unable to get disk UUID for vm name [%s], disk name [%s]: [%v]",
-			vmFullName, diskName, err)
+	if diskUUID == "" {
+		return "", fmt.Errorf("diskUUID should not be an empty string")
 	}
+
 	hexDiskUUID := strings.ReplaceAll(diskUUID, "-", "")
 
 	guestDiskPath := ""
-	err = filepath.Walk(DevDiskPath, func (path string, fi os.FileInfo, err error) error {
+	err := filepath.Walk(DevDiskPath, func (path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return nil
 		}
@@ -428,6 +430,9 @@ func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskN
 
 		return nil
 	})
+	if err != nil {
+		return "", fmt.Errorf("could not create filepath.Walk for [%s]: [%v]", DevDiskPath, err)
+	}
 
 	klog.Infof("Obtained matching disk [%s]", guestDiskPath)
 	return guestDiskPath, nil

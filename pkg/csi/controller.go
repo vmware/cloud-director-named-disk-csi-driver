@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vsphereclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -33,6 +32,7 @@ const (
 
 	DiskIDAttribute     = "diskID"
 	VMFullNameAttribute = "vmID"
+	DiskUUIDAttribute   = "diskUUID"
 )
 
 var (
@@ -42,25 +42,19 @@ var (
 		"6":  "SCSI",
 		"20": "SATA",
 	}
-
-	VCDBusTypeSCSI           = "6"
-	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
 )
 
 
 type controllerServer struct {
 	Driver *VCDDriver
 	VCDClient  *vcdclient.Client
-	VSphereClient *vsphereclient.Client
 }
 
 // NewControllerService creates a controllerService
-func NewControllerService(driver *VCDDriver,
-	vcdClient *vcdclient.Client, vsphereClient *vsphereclient.Client) csi.ControllerServer {
+func NewControllerService(driver *VCDDriver, vcdClient *vcdclient.Client) csi.ControllerServer {
 	return &controllerServer{
 		Driver: driver,
 		VCDClient:  vcdClient,
-		VSphereClient: vsphereClient,
 	}
 }
 
@@ -112,8 +106,8 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 	klog.Infof("CreateVolume: requesting volume [%s] with size [%d] MiB, shareable [%v]",
 		diskName, sizeMB, shareable)
 
-	busType := VCDBusTypeSCSI
-	busSubType := VCDBusSubTypeVirtualSCSI
+	busType := vcdclient.VCDBusTypeSCSI
+	busSubType := vcdclient.VCDBusSubTypeVirtualSCSI
 
 	storageProfile, _ := req.Parameters[StorageProfileParameter]
 
@@ -190,14 +184,21 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, "ControllerPublishVolume: VolumeId must be provided")
 	}
 
-	klog.Infof("Get information of node [%s]", nodeID)
+	klog.Infof("Getting node details for [%s]", nodeID)
 	vm, err := cs.VCDClient.FindVMByName(nodeID)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find VM for node [%s]: [%v]", nodeID, err)
 	}
 
+	klog.Infof("Getting disk details for [%s]", diskName)
+	disk, err := cs.VCDClient.GetDiskByName(diskName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to find disk [%s]: [%v]", diskName, err)
+	}
+	klog.Infof("Obtained disk: [%#v]\n", disk)
+
 	klog.Infof("Attaching volume [%s] to node [%s]", diskName, nodeID)
-	err = cs.VCDClient.AttachVolume(vm, diskName)
+	err = cs.VCDClient.AttachVolume(vm, disk)
 	if err != nil {
 		if err == govcd.ErrorEntityNotFound {
 			return nil, status.Errorf(codes.NotFound, "could not provision disk [%s] in vcd", diskName)
@@ -210,6 +211,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		PublishContext: map[string]string{
 			VMFullNameAttribute: vm.VM.Name,
 			DiskIDAttribute:     diskName,
+			DiskUUIDAttribute:   disk.UUID,
 		},
 	}, nil
 }

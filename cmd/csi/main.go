@@ -11,7 +11,6 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/config"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vsphereclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"os"
 
@@ -123,16 +122,7 @@ func handle() {
 		panic (fmt.Errorf("unable to initiate vcd client: [%v]", err))
 	}
 
-	vsphereClient, err := vsphereclient.NewVSphereClientFromSecrets(
-		cloudConfig.VSphere.Host,
-		cloudConfig.VSphere.User,
-		cloudConfig.VSphere.Secret,
-		true)
-	if err != nil {
-		panic (fmt.Errorf("unable to initiate vsphere client: [%v]", err))
-	}
-
-	d.Setup(vcdClient, vsphereClient, nodeID)
+	d.Setup(vcdClient, nodeID)
 
 	// blocking call
 	if err = d.Run(); err != nil {

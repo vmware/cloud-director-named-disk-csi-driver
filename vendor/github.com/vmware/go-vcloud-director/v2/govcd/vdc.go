@@ -389,41 +389,42 @@ func (vdc *Vdc) GetEdgeGatewayByHref(href string) (*EdgeGateway, error) {
 	return edge, nil
 }
 
+// QueryEdgeGatewayList returns a list of all the edge gateways in a VDC
+func (vdc *Vdc) QueryEdgeGatewayList() ([]*types.QueryResultEdgeGatewayRecordType, error) {
+	results, err := vdc.client.cumulativeQuery(types.QtEdgeGateway, nil, map[string]string{
+		"type":          types.QtEdgeGateway,
+		"filter":        fmt.Sprintf("orgVdcName==%s", url.QueryEscape(vdc.Vdc.Name)),
+		"filterEncoded": "true",
+	})
+	if err != nil {
+		return nil, err
+	}
+	return results.Results.EdgeGatewayRecord, nil
+}
+
 // GetEdgeGatewayRecordsType retrieves a list of edge gateways from VDC
+// Deprecated: use QueryEdgeGatewayList instead
 func (vdc *Vdc) GetEdgeGatewayRecordsType(refresh bool) (*types.QueryResultEdgeGatewayRecordsType, error) {
-
-	if refresh {
-		err := vdc.Refresh()
-		if err != nil {
-			return nil, fmt.Errorf("error refreshing vdc: %s", err)
-		}
+	items, err := vdc.QueryEdgeGatewayList()
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving edge gateway list: %s", err)
 	}
-	for _, av := range vdc.Vdc.Link {
-		if av.Rel == "edgeGateways" && av.Type == types.MimeQueryRecords {
-
-			edgeGatewayRecordsType := new(types.QueryResultEdgeGatewayRecordsType)
-
-			_, err := vdc.client.ExecuteRequest(av.HREF, http.MethodGet,
-				"", "error querying edge gateways: %s", nil, edgeGatewayRecordsType)
-			if err != nil {
-				return nil, err
-			}
-			return edgeGatewayRecordsType, nil
-		}
-	}
-	return nil, fmt.Errorf("no edge gateway query link found in VDC %s", vdc.Vdc.Name)
+	return &types.QueryResultEdgeGatewayRecordsType{
+		Total:             float64(len(items)),
+		EdgeGatewayRecord: items,
+	}, nil
 }
 
 // GetEdgeGatewayByName search the VDC list of edge gateways for a given name.
 // If the name matches, it returns a pointer to an edge gateway object.
 // On failure, it returns a nil object and an error
 func (vdc *Vdc) GetEdgeGatewayByName(name string, refresh bool) (*EdgeGateway, error) {
-	edgeGatewayRecord, err := vdc.GetEdgeGatewayRecordsType(refresh)
+	edgeGatewayList, err := vdc.QueryEdgeGatewayList()
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving edge gateways list: %s", err)
 	}
 
-	for _, edge := range edgeGatewayRecord.EdgeGatewayRecord {
+	for _, edge := range edgeGatewayList {
 		if edge.Name == name {
 			return vdc.GetEdgeGatewayByHref(edge.HREF)
 		}
@@ -436,12 +437,12 @@ func (vdc *Vdc) GetEdgeGatewayByName(name string, refresh bool) (*EdgeGateway, e
 // If the id matches, it returns a pointer to an edge gateway object.
 // On failure, it returns a nil object and an error
 func (vdc *Vdc) GetEdgeGatewayById(id string, refresh bool) (*EdgeGateway, error) {
-	edgeGatewayRecord, err := vdc.GetEdgeGatewayRecordsType(refresh)
+	edgeGatewayList, err := vdc.QueryEdgeGatewayList()
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving edge gateways list: %s", err)
 	}
 
-	for _, edge := range edgeGatewayRecord.EdgeGatewayRecord {
+	for _, edge := range edgeGatewayList {
 		if equalIds(id, "", edge.HREF) {
 			return vdc.GetEdgeGatewayByHref(edge.HREF)
 		}
@@ -463,14 +464,15 @@ func (vdc *Vdc) GetEdgeGatewayByNameOrId(identifier string, refresh bool) (*Edge
 	return entity.(*EdgeGateway), err
 }
 
-func (vdc *Vdc) ComposeRawVApp(name string) error {
+func (vdc *Vdc) ComposeRawVApp(name string, description string) error {
 	vcomp := &types.ComposeVAppParams{
-		Ovf:     types.XMLNamespaceOVF,
-		Xsi:     types.XMLNamespaceXSI,
-		Xmlns:   types.XMLNamespaceVCloud,
-		Deploy:  false,
-		Name:    name,
-		PowerOn: false,
+		Ovf:         types.XMLNamespaceOVF,
+		Xsi:         types.XMLNamespaceXSI,
+		Xmlns:       types.XMLNamespaceVCloud,
+		Deploy:      false,
+		Name:        name,
+		PowerOn:     false,
+		Description: description,
 	}
 
 	vdcHref, err := url.ParseRequestURI(vdc.Vdc.HREF)
@@ -991,10 +993,25 @@ func (vdc *Vdc) QueryVmByName(name string) (*VM, error) {
 	return vdc.client.GetVMByHref(foundVM[0].HREF)
 }
 
-// QueryVmById retrieves a standalone VM by ID
+// QueryVmById retrieves a standalone VM by ID in an Org
+// It can also retrieve a standard VM (created from vApp)
+func (org *Org) QueryVmById(id string) (*VM, error) {
+	return queryVmById(id, org.client, org.QueryVmList)
+}
+
+// QueryVmById retrieves a standalone VM by ID in a Vdc
 // It can also retrieve a standard VM (created from vApp)
 func (vdc *Vdc) QueryVmById(id string) (*VM, error) {
-	vmList, err := vdc.QueryVmList(types.VmQueryFilterOnlyDeployed)
+	return queryVmById(id, vdc.client, vdc.QueryVmList)
+}
+
+// queryVmListFunc
+type queryVmListFunc func(filter types.VmQueryFilter) ([]*types.QueryResultVMRecordType, error)
+
+// queryVmById is shared between org.QueryVmById and vdc.QueryVmById which allow to search for VM
+// in different scope (Org or VDC)
+func queryVmById(id string, client *Client, queryFunc queryVmListFunc) (*VM, error) {
+	vmList, err := queryFunc(types.VmQueryFilterOnlyDeployed)
 	if err != nil {
 		return nil, err
 	}
@@ -1010,7 +1027,7 @@ func (vdc *Vdc) QueryVmById(id string) (*VM, error) {
 	if len(foundVM) > 1 {
 		return nil, fmt.Errorf("more than one VM found with ID %s", id)
 	}
-	return vdc.client.GetVMByHref(foundVM[0].HREF)
+	return client.GetVMByHref(foundVM[0].HREF)
 }
 
 // CreateStandaloneVMFromTemplateAsync starts a standalone VM creation using a template

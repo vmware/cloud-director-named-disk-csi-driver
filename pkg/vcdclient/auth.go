@@ -14,6 +14,10 @@ import (
 	"k8s.io/klog"
 )
 
+const (
+	VCloudApiVersion = "36.0"
+)
+
 // VCDAuthConfig : contains config related to vcd auth
 type VCDAuthConfig struct {
 	User         string `json:"user"`
@@ -34,7 +38,7 @@ func (config *VCDAuthConfig) GetBearerTokenFromSecrets() (*govcd.VCDClient, *htt
 	}
 
 	vcdClient := govcd.NewVCDClient(*u, config.Insecure)
-	vcdClient.Client.APIVersion = "35.0"
+	vcdClient.Client.APIVersion = VCloudApiVersion
 	klog.Infof("Using VCD OpenAPI version [%s]", vcdClient.Client.APIVersion)
 
 	resp, err := vcdClient.GetAuthResponse(config.User, config.Password, config.Org)
@@ -65,7 +69,7 @@ func (config *VCDAuthConfig) GetPlainClientFromSecrets() (*govcd.VCDClient, erro
 	}
 
 	vcdClient := govcd.NewVCDClient(*u, config.Insecure)
-	vcdClient.Client.APIVersion = "35.0"
+	vcdClient.Client.APIVersion = VCloudApiVersion
 	klog.Infof("Using VCD XML API version [%s]", vcdClient.Client.APIVersion)
 	if err = vcdClient.Authenticate(config.User, config.Password, config.Org); err != nil {
 		return nil, fmt.Errorf("cannot authenticate with vcd: [%v]", err)

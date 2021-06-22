@@ -9,7 +9,6 @@ package vcdclient
 
 import (
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/csi"
 	"testing"
 
 	"github.com/google/uuid"
@@ -34,26 +33,27 @@ func TestDiskCreateAttach(t *testing.T) {
 
 	// create disk with bad storage profile: should not succeed
 	diskName := fmt.Sprintf("test-pvc-%s", uuid.New().String())
-	disk, err := vcdClient.CreateDisk(diskName, 100, csi.VCDBusTypeSCSI, csi.VCDBusSubTypeVirtualSCSI,
+	disk, err := vcdClient.CreateDisk(diskName, 100, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
 		"", "dev", true)
 	assert.Errorf(t, err, "should not be able to create disk with storage profile [dev]")
 	assert.Nil(t, disk, "disk created should be nil")
 
 	// create disk
 	diskName = fmt.Sprintf("test-pvc-%s", uuid.New().String())
-	disk, err = vcdClient.CreateDisk(diskName, 100, csi.VCDBusTypeSCSI, csi.VCDBusSubTypeVirtualSCSI,
+	disk, err = vcdClient.CreateDisk(diskName, 100, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
 		"", "*", true)
 	assert.NoErrorf(t, err, "unable to create disk with name [%s]", diskName)
-	assert.NotNil(t, disk, "disk created should not be nil")
+	require.NotNil(t, disk, "disk created should not be nil")
+	assert.NotNil(t, disk.UUID, "disk UUID should not be nil")
 
 	// try to create same disk with same parameters: should succeed
-	disk, err = vcdClient.CreateDisk(diskName, 100, csi.VCDBusTypeSCSI, csi.VCDBusSubTypeVirtualSCSI,
+	disk, err = vcdClient.CreateDisk(diskName, 100, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
 		"", "*", true)
 	assert.NoError(t, err, "unable to create disk again with name [%s]", diskName)
-	assert.NotNil(t, disk, "disk created should not be nil")
+	require.NotNil(t, disk, "disk created should not be nil")
 
 	// try to create same disk with different parameters; should not succeed
-	disk1, err := vcdClient.CreateDisk(diskName, 1000, csi.VCDBusTypeSCSI, csi.VCDBusSubTypeVirtualSCSI,
+	disk1, err := vcdClient.CreateDisk(diskName, 1000, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
 		"", "", true)
 	assert.Error(t, err, "should not be able to create same disk with different parameters")
 	assert.Nil(t, disk1, "disk should not be created")
@@ -62,11 +62,11 @@ func TestDiskCreateAttach(t *testing.T) {
 	// get VM
 	nodeID := "vm1"
 	vm, err := vcdClient.FindVMByName(nodeID)
-	assert.NoError(t, err, "unable to find VM [%s] by name", nodeID)
-	assert.NotNil(t, vm, "vm should not be nil")
+	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)
+	require.NotNil(t, vm, "vm should not be nil")
 
 	// attach to VM
-	err = vcdClient.AttachVolume(vm, disk.Name)
+	err = vcdClient.AttachVolume(vm, disk)
 	assert.NoError(t, err, "unable to attach disk [%s] to vm [%#v]", disk.Name, vm)
 
 	attachedVMs, err := vcdClient.govcdAttachedVM(disk)

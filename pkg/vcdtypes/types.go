@@ -60,6 +60,8 @@ type Disk struct {
 	BusType      string `xml:"busType,attr,omitempty"`
 	BusSubType   string `xml:"busSubType,attr,omitempty"`
 	Shareable    bool   `xml:"shareable,attr,omitempty"`
+	SharingType  string `xml:"sharingType,attr,omitempty"`
+	UUID         string `xml:"uuid,attr,omitempty"`
 
 	Description     string                 `xml:"Description,omitempty"`
 	Files           *types.FilesList       `xml:"Files,omitempty"`
@@ -79,61 +81,6 @@ type DiskCreateParams struct {
 	Disk            *Disk                  `xml:"Disk"`
 	Locality        *types.Reference       `xml:"Locality,omitempty"`
 	VCloudExtension *types.VCloudExtension `xml:"VCloudExtension,omitempty"`
-}
-
-type QueryResultOrgVdcRecordType struct {
-	Xmlns string `xml:"xmlns,attr,omitempty"`
-	HREF string `xml:"href,attr,omitempty"`
-	ID string `xml:"id,attr,omitempty"`
-	Type string `xml:"type,attr,omitempty"`
-	Name string `xml:"name,attr,omitempty"`
-	Description string `xml:"description,attr,omitempty"`
-	ComputeProviderScope string `xml:"computeProviderScope,attr,omitempty"`
-	NetworkProviderScope string `xml:"networkProviderScope,attr,omitempty"`
-	IsEnabled bool `xml:"isEnabled,attr,omitempty"`
-	CpuAllocationMhz int64 `xml:"cpuAllocationMhz,attr,omitempty"`
-	CpuLimitMhz int64 `xml:"cpuLimitMhz,attr,omitempty"`
-	CpuUsedMhz int64 `xml:"cpuUsedMhz,attr,omitempty"`
-	CpuReservedMhz int64 `xml:"cpuReservedMhz,attr,omitempty"`
-	MemoryAllocationMB int64 `xml:"memoryAllocationMB,attr,omitempty"`
-	MemoryLimitMB int64 `xml:"memoryLimitMB,attr,omitempty"`
-	MemoryUsedMB int64 `xml:"memoryUsedMB,attr,omitempty"`
-	MemoryReservedMB int64 `xml:"memoryReservedMB,attr,omitempty"`
-	StorageLimitMB int64 `xml:"storageLimitMB,attr,omitempty"`
-	StorageUsedMB int64 `xml:"storageUsedMB,attr,omitempty"`
-	ProviderVdcName string `xml:"providerVdcName,attr,omitempty"`
-	ProviderVdc string `xml:"providerVdc,attr,omitempty"`
-	OrgName string `xml:"orgName,attr,omitempty"`
-	NumberOfVApps int32 `xml:"numberOfVApps,attr,omitempty"`
-	NumberOfUnmanagedVApps int32 `xml:"numberOfUnmanagedVApps,attr,omitempty"`
-	NumberOfMedia int32 `xml:"numberOfMedia,attr,omitempty"`
-	NumberOfDisks int32 `xml:"numberOfDisks,attr,omitempty"`
-	NumberOfVAppTemplates int32 `xml:"numberOfVAppTemplates,attr,omitempty"`
-	IsBusy bool `xml:"isBusy,attr,omitempty"`
-	Status string `xml:"status,attr,omitempty"`
-	NumberOfDatastores int32 `xml:"numberOfDatastores,attr,omitempty"`
-	NumberOfStorageProfiles int32 `xml:"numberOfStorageProfiles,attr,omitempty"`
-	NumberOfVMs int32 `xml:"numberOfVMs,attr,omitempty"`
-	NumberOfRunningVMs int32 `xml:"numberOfRunningVMs,attr,omitempty"`
-	NetworkPoolUniversalId string `xml:"networkPoolUniversalId,attr,omitempty"`
-	NumberOfDeployedVApps int32 `xml:"numberOfDeployedVApps,attr,omitempty"`
-	NumberOfDeployedUnmanagedVApps int32 `xml:"numberOfDeployedUnmanagedVApps,attr,omitempty"`
-	IsThinProvisioned bool `xml:"isThinProvisioned,attr,omitempty"`
-	IsFastProvisioned bool `xml:"isFastProvisioned,attr,omitempty"`
-}
-
-type QueryResultRecordsType struct {
-	Xmlns string `xml:"xmlns,attr,omitempty"`
-	// Attributes
-	HREF     string  `xml:"href,attr,omitempty"`     // The URI of the entity.
-	Type     string  `xml:"type,attr,omitempty"`     // The MIME type of the entity.
-	Name     string  `xml:"name,attr,omitempty"`     // The name of the entity.
-	Page     int32   `xml:"page,attr,omitempty"`     // Page of the result set that this container holds. The first page is page number 1.
-	PageSize int32   `xml:"pageSize,attr,omitempty"` // Page size, as a number of records or references.
-	Total    float64 `xml:"total,attr,omitempty"`    // Total number of records or references in the container.
-	// Elements
-	Link         []*types.Link                  `xml:"Link,omitempty"` // A reference to an entity or operation associated with this object.
-	OrgVdcRecord []*QueryResultOrgVdcRecordType `xml:"OrgVdcRecord"`   // A record representing storage profiles
 }
 
 // Represents a list of virtual machines
