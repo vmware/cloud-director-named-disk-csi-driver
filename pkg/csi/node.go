@@ -59,20 +59,26 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Volume capability not provided")
 	}
 
-	volumeContext := req.GetVolumeContext()
-	if volumeContext == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Volume context not provided")
-	}
-
-	fsType, ok := volumeContext[FileSystemParameter]
-	if !ok {
-		return nil, status.Errorf(codes.InvalidArgument,
-			"volume context does not have [%s] set", FileSystemParameter)
-	}
-
 	// No staging needed for block device. Must be handled by pod
 	if blk := volumeCapability.GetBlock(); blk != nil {
 		return &csi.NodeStageVolumeResponse{}, nil
+	}
+
+	publishContext := req.GetPublishContext()
+	if publishContext == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Publish context not provided")
+	}
+
+	fsType, ok := publishContext[FileSystemParameter]
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"publish context does not have [%s] set", FileSystemParameter)
+	}
+
+	vmFullName, ok := publishContext[VMFullNameAttribute]
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"PublishContext did not contain full vm name in publish context")
 	}
 
 	mountMode := "rw"
@@ -85,21 +91,16 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		return nil, status.Errorf(codes.InvalidArgument, "volume capability must have mount details")
 	}
 	if mnt.FsType != fsType {
-		return nil, fmt.Errorf("fs type in mountpoint [%s] does not match specified fs type [%s]",
-			mnt.FsType, fsType)
+		if mnt.FsType != "" {
+			return nil, fmt.Errorf("fs type in mountpoint [%s] does not match specified fs type [%s]",
+				mnt.FsType, fsType)
+		}
+
+		// allow fsType passed from the PV or other sources to go through
+		klog.Infof("Volume capability has empty FsType. Using FS [%s] from PV config.", fsType)
+		mnt.FsType = fsType
 	}
 	mountFlags := append(mnt.GetMountFlags(), mountMode)
-
-	publishContext := req.GetPublishContext()
-	if publishContext == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Publish context not provided")
-	}
-
-	vmFullName, ok := publishContext[VMFullNameAttribute]
-	if !ok {
-		return nil, status.Errorf(codes.InvalidArgument,
-			"PublishContext did not contain full vm name in publish context")
-	}
 
 	diskUUID, ok := publishContext[DiskUUIDAttribute]
 	if !ok {
@@ -204,15 +205,12 @@ func (ns *nodeService) NodePublishVolume(ctx context.Context,
 
 	klog.Infof("NodePublishVolume: called with args %#v", *req)
 
-	volumeContext := req.GetVolumeContext()
-	if volumeContext == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: VolumeContext not provided")
-	}
-
-	if ephemeralVolume, ok := volumeContext[EphemeralVolumeContext]; ok {
-		if ephemeralVolume == "true" {
-			return &csi.NodePublishVolumeResponse{}, status.Errorf(codes.Unimplemented,
-				"[%s] not supported", EphemeralVolumeContext)
+	if volumeContext := req.GetVolumeContext(); volumeContext != nil {
+		if ephemeralVolume, ok := volumeContext[EphemeralVolumeContext]; ok {
+			if ephemeralVolume == "true" {
+				return &csi.NodePublishVolumeResponse{}, status.Errorf(codes.Unimplemented,
+					"[%s] not supported", EphemeralVolumeContext)
+			}
 		}
 	}
 

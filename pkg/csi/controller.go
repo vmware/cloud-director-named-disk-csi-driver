@@ -33,6 +33,7 @@ const (
 	DiskIDAttribute     = "diskID"
 	VMFullNameAttribute = "vmID"
 	DiskUUIDAttribute   = "diskUUID"
+	FileSystemAttribute = "filesystem"
 )
 
 var (
@@ -184,6 +185,19 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, "ControllerPublishVolume: VolumeId must be provided")
 	}
 
+	// Get basic params from volumeContext and add it to publishContext, so that it can be used for static PV
+	// provisioned volumes
+	volumeCapability := req.GetVolumeCapability()
+	if volumeCapability == nil {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"ControllerPublishVolume: Volume capability not provided")
+	}
+	mountDetails := volumeCapability.GetMount()
+	if mountDetails == nil {
+		return nil, status.Error(codes.InvalidArgument,
+			"ControllerPublishVolume: Volume capability does not have mount capabilities set")
+	}
+
 	klog.Infof("Getting node details for [%s]", nodeID)
 	vm, err := cs.VCDClient.FindVMByName(nodeID)
 	if err != nil {
@@ -212,6 +226,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 			VMFullNameAttribute: vm.VM.Name,
 			DiskIDAttribute:     diskName,
 			DiskUUIDAttribute:   disk.UUID,
+			FileSystemAttribute: mountDetails.FsType,
 		},
 	}, nil
 }
