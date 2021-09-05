@@ -77,7 +77,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: harbor-repo.vmware.com/vcloud/cloud-director-named-disk-csi-driver:0.1.0.latest
+          image: projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:0.1.0.latest
           imagePullPolicy: IfNotPresent
           command :
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
@@ -92,6 +92,16 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix://csi/csi.sock
+            - name: VCD_BASIC_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: vcloud-basic-auth
+                  key: username
+            - name: VCD_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vcloud-basic-auth
+                  key: password
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
@@ -107,6 +117,10 @@ spec:
             - name: pv-dir
               mountPath: /var/lib/kubelet/plugins/kubernetes.io/csi/pv
               mountPropagation: "Bidirectional"
+            - name: vcloud-csi-config-volume
+              mountPath: /etc/kubernetes/vcloud
+            - name: vcloud-basic-auth-volume
+              mountPath: /etc/kubernetes/vcloud/basic-auth
       volumes:
         - name: socket-dir
           hostPath:
@@ -132,4 +146,10 @@ spec:
           hostPath:
             path: /var/lib/kubelet/plugins/kubernetes.io/csi/pv
             type: DirectoryOrCreate
+        - name: vcloud-csi-config-volume
+          configMap:
+            name: vcloud-csi-configmap
+        - name: vcloud-basic-auth-volume
+          secret:
+            secretName: vcloud-basic-auth
 ---

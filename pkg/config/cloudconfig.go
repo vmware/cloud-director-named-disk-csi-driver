@@ -8,6 +8,7 @@ package config
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -23,38 +24,10 @@ type VCDConfig struct {
 	RefreshToken string `yaml:"refreshToken" default:""`
 }
 
-// Ports :
-type Ports struct {
-	HTTP  int32 `yaml:"http" default:"80"`
-	HTTPS int32 `yaml:"https" default:"443"`
-}
-
-// OneArm :
-type OneArm struct {
-	StartIP string `yaml:"startIP"`
-	EndIP   string `yaml:"endIP"`
-}
-
-// LBConfig :
-type LBConfig struct {
-	OneArm           *OneArm `yaml:"oneArm,omitempty"`
-	Ports            Ports   `yaml:"ports"`
-	CertificateAlias string  `yaml:"certAlias"`
-}
-
-// VSphereConfig :
-type VSphereConfig struct {
-	Host   string `yaml:"host"`
-	User   string `yaml:"user" default:""`
-	Secret string `yaml:"secret" default:""`
-}
-
 // CloudConfig contains the config that will be read from the secret
 type CloudConfig struct {
 	VCD       VCDConfig     `yaml:"vcd"`
-	LB        LBConfig      `yaml:"loadbalancer"`
 	ClusterID string        `yaml:"clusterid"`
-	VSphere   VSphereConfig `yaml:"vsphere"`
 }
 
 func ParseCloudConfig(configReader io.Reader) (*CloudConfig, error) {
@@ -71,6 +44,20 @@ func ParseCloudConfig(configReader io.Reader) (*CloudConfig, error) {
 	return config, validateCloudConfig(config)
 }
 
+func SetAuthorization(config *CloudConfig) error {
+	username, err := ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/username")
+	if err != nil {
+		return fmt.Errorf("unable to get username: [%v]", err)
+	}
+	secret, err := ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/password")
+	if err != nil {
+		return fmt.Errorf("unable to get password: [%v]", err)
+	}
+	config.VCD.User = string(username)
+	config.VCD.Secret = string(secret)
+	return nil
+}
+
 func validateCloudConfig(config *CloudConfig) error {
 	// TODO: needs more validation
 	if config == nil {
@@ -79,6 +66,14 @@ func validateCloudConfig(config *CloudConfig) error {
 
 	if config.VCD.Host == "" {
 		return fmt.Errorf("need a valid vCloud Host")
+	}
+
+	if config.VCD.Org == "" {
+		return fmt.Errorf("need a valid vCloud Organization")
+	}
+
+	if config.VCD.VDC == "" {
+		return fmt.Errorf("need a valid vCloud Organization VDC")
 	}
 
 	return nil
