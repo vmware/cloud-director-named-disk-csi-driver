@@ -4,8 +4,8 @@ go 1.15
 
 require (
 	github.com/akutz/gofsutil v0.1.2
+	github.com/antihax/optional v1.0.0
 	github.com/container-storage-interface/spec v1.4.0
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/google/uuid v1.2.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -16,10 +16,9 @@ require (
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
 	github.com/vmware/go-vcloud-director/v2 v2.12.0-alpha.4
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
+	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
 	golang.org/x/sys v0.0.0-20210314195730-07df6a141424 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	google.golang.org/genproto v0.0.0-20170731182057-09f6ed296fc6 // indirect
-	google.golang.org/grpc v1.13.0
+	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.4.0

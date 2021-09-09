@@ -7,6 +7,7 @@ package vcdclient
 
 import (
 	"fmt"
+	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
 	"sync"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -25,6 +26,7 @@ type Client struct {
 	vdc                *govcd.Vdc
 	ClusterID          string
 	rwLock             sync.RWMutex
+	apiClient          *swaggerClient.APIClient
 }
 
 // RefreshToken will check if can authenticate and rebuild clients if needed
@@ -84,7 +86,8 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 
 	vcdAuthConfig := NewVCDAuthConfigFromSecrets(host, user, password, orgName, insecure)
 
-	vcdClient, err := vcdAuthConfig.GetVCDClientFromSecrets()
+	// Get API client
+	vcdClient, apiClient, err := vcdAuthConfig.GetSwaggerClientFromSecrets()
 	if err != nil {
 		return nil, fmt.Errorf("unable to get swagger client from secrets: [%v]", err)
 	}
@@ -93,6 +96,7 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 		vcdAuthConfig:    vcdAuthConfig,
 		vcdClient:        vcdClient,
 		ClusterID:        clusterID,
+		apiClient:		  apiClient,
 	}
 
 	if getVdcClient {

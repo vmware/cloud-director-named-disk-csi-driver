@@ -3,7 +3,6 @@
     SPDX-License-Identifier: Apache-2.0
 */
 
-// +build integration
 
 package vcdclient
 
@@ -15,6 +14,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func foundStringInSlice(find string, slice []string) bool {
+	for _, currElement := range slice {
+		if currElement == find {
+			return true
+		}
+	}
+	return  false
+}
 
 func TestDiskCreateAttach(t *testing.T) {
 
@@ -52,6 +60,12 @@ func TestDiskCreateAttach(t *testing.T) {
 	assert.NoError(t, err, "unable to create disk again with name [%s]", diskName)
 	require.NotNil(t, disk, "disk created should not be nil")
 
+	// Check RDE was updated with PV
+	currRDEPvs, _, _, err := vcdClient.GetRDEPersistentVolumes()
+	assert.NoError(t, err, "unable to get RDE PVs after creating disk")
+	assert.Equal(t, true, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should be found in RDE")
+
+
 	// try to create same disk with different parameters; should not succeed
 	disk1, err := vcdClient.CreateDisk(diskName, 1000, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
 		"", "", true)
@@ -84,6 +98,11 @@ func TestDiskCreateAttach(t *testing.T) {
 
 	err = vcdClient.DeleteDisk(diskName)
 	assert.NoError(t, err, "unable to delete disk [%s]", disk.Name)
+
+	// Check PV was removed from RDE
+	currRDEPvs, _, _, err = vcdClient.GetRDEPersistentVolumes()
+	assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
+	assert.Equal(t, false, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should not be found in RDE")
 
 	return
 }

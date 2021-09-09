@@ -3,7 +3,6 @@
     SPDX-License-Identifier: Apache-2.0
 */
 
-// +build integration
 
 package vcdclient
 
@@ -11,7 +10,6 @@ import (
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/config"
 	"os"
-	"path/filepath"
 )
 
 var (
@@ -20,10 +18,10 @@ var (
 
 func init() {
 	gitRoot = os.Getenv("GITROOT")
-	if gitRoot == "" {
-		// It is okay to panic here as this will be caught during dev
-		panic("GITROOT should be set")
-	}
+	//if gitRoot == "" {
+	//	// It is okay to panic here as this will be caught during dev
+	//	panic("GITROOT should be set")
+	//}
 }
 
 func getStrValStrict(val interface{}, defaultVal string) string {
@@ -44,7 +42,8 @@ func getBoolValStrict(val interface{}, defaultVal bool) bool {
 
 func getTestVCDClient(inputMap map[string]interface{}) (*Client, error) {
 
-	testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")
+	//testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")
+	testConfigFilePath := "/Users/ltimothy/go/src/github.com/vmware/cloud-director-named-disk-csi-driver/testdata/config_test.yaml"
 	configReader, err := os.Open(testConfigFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("Unable to open file [%s]: [%v]", testConfigFilePath, err)
