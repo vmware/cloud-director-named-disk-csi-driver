@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vcloud-csi-configmap
+  namespace: kube-system
+data:
+  vcloud-csi-config.yaml: |+
+    vcd:
+      host: VCD_HOST
+      org: ORG
+      vdc: OVDC
+    clusterid: CLUSTER_ID
+immutable: true
+---

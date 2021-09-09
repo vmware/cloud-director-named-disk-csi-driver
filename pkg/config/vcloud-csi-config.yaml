@@ -1,6 +1,0 @@
-vcd:
-  host: "https://vmware-cloud-director.com"
-  org: "org"
-  vdc: "org_ovdc"
-  user: "vmware-cloud-director-user"
-  secret: "password-of-vmware-cloud-director-user"
