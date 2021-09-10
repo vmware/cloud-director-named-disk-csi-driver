@@ -21,7 +21,6 @@ RUN apt-get update -y && \
 
 WORKDIR /opt/vcloud/bin
 
-ADD pkg/config/vcloud-csi-config.yaml /etc/kubernetes/vcloud/vcloud-csi-config.yaml
 COPY --from=builder /build/vcloud/cloud-director-named-disk-csi-driver .
 
 RUN chmod +x /opt/vcloud/bin/cloud-director-named-disk-csi-driver

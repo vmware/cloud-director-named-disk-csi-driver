@@ -13,6 +13,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -61,7 +62,7 @@ func main() {
 			})
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			handle()
+			runCommand()
 		},
 	}
 
@@ -85,7 +86,7 @@ func main() {
 	return
 }
 
-func handle() {
+func runCommand() {
 
 	d, err := csi.NewDriver(nodeIDFlag, endpointFlag)
 	if err != nil {
@@ -106,6 +107,18 @@ func handle() {
 	cloudConfig, err := config.ParseCloudConfig(f)
 	if err != nil {
 		panic(fmt.Errorf("unable to parse configuration: [%v]", err))
+	}
+
+	for {
+		err = config.SetAuthorization(cloudConfig)
+		if err == nil {
+			break
+		}
+
+		waitTime := 10 * time.Second
+		klog.Infof("unable to set authorization in config: [%v]", err)
+		klog.Infof("Waiting for [%v] before trying again...", waitTime)
+		time.Sleep(waitTime)
 	}
 
 	vcdClient, err := vcdclient.NewVCDClientFromSecrets(
