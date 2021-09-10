@@ -560,12 +560,12 @@ func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClien
 		return nil, "", nil, fmt.Errorf("unable to convert [%T] to slice of interface", pvInterfaces)
 	}
 	pvIdStrs := make([]string, len(pvInterfacesSlice))
-	for ind, pvInterface := range pvInterfacesSlice {
+	for idx, pvInterface := range pvInterfacesSlice {
 		currPv, ok := pvInterface.(string)
 		if !ok {
 			return nil, "", nil, fmt.Errorf("unable to convert [%T] to string", pvInterface)
 		}
-		pvIdStrs[ind] = currPv
+		pvIdStrs[idx] = currPv
 	}
 	return pvIdStrs, etag, &defEnt, nil
 }
@@ -615,7 +615,7 @@ func (client *Client) addPvToRDE(addPv string) error {
 			if httpResponse.StatusCode == http.StatusPreconditionFailed {
 				continue
 			}
-			return fmt.Errorf("error when adding pv to RDE: [%v]", err)
+			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]", addPv, client.ClusterID, err)
 		}
 		break
 	}
@@ -628,35 +628,27 @@ func (client *Client) removePvFromRDE(removePv string) error {
 		if err != nil {
 			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
 		}
-		// currPvs is guaranteed not to be nil by GetRDEPersistentVolumes
-		if len(currPvs) == 0 {
-			return fmt.Errorf("no RDE PVs to remove")
-		}
 
 		// form updated virtual pv list
-		updatedPvs := make([]string, len(currPvs)-1)
-		updatedInd := 0
-		foundRemovePv := false
-		for _, pv := range currPvs {
+		foundIdx := -1
+		for idx, pv := range currPvs {
 			if pv == removePv {
-				foundRemovePv = true
-				continue // for inner loop
+				foundIdx = idx
+				break
 			}
-			updatedPvs[updatedInd] = pv
-			updatedInd += 1
 		}
-		if !foundRemovePv {
-			return nil // no need to update RDE
+		if foundIdx == -1 {
+			return nil  // no need to update RDE
 		}
+		updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx + 1:]...)
 
 		httpResponse, err := client.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
-		if err != nil {
-			if httpResponse.StatusCode == http.StatusPreconditionFailed {
-				continue
-			}
-			return fmt.Errorf("error when removing pv from RDE: [%v]", err)
+		if err == nil {
+			return nil
 		}
-		break
+		if httpResponse.StatusCode != http.StatusPreconditionFailed {
+			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]", removePv, client.ClusterID, err)
+		}
 	}
 	return nil
 }
