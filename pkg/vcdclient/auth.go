@@ -6,10 +6,12 @@
 package vcdclient
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"net/url"
 
+	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"k8s.io/klog"
 )
@@ -58,6 +60,26 @@ func (config *VCDAuthConfig) GetVCDClientFromSecrets() (*govcd.VCDClient, error)
 	}
 
 	return vcdClient, nil
+}
+
+func (config *VCDAuthConfig) GetSwaggerClientFromSecrets() (*govcd.VCDClient, *swaggerClient.APIClient, error) {
+
+	vcdClient, _, err := config.GetBearerTokenFromSecrets()
+	if err != nil {
+		return nil, nil, fmt.Errorf("unable to get bearer token from serets: [%v]", err)
+	}
+	authHeader := fmt.Sprintf("Bearer %s", vcdClient.Client.VCDToken)
+
+	swaggerConfig := swaggerClient.NewConfiguration()
+	swaggerConfig.BasePath = fmt.Sprintf("%s/cloudapi", config.Host)
+	swaggerConfig.AddDefaultHeader("Authorization", authHeader)
+	swaggerConfig.HTTPClient = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	return vcdClient, swaggerClient.NewAPIClient(swaggerConfig), nil
 }
 
 func (config *VCDAuthConfig) GetPlainClientFromSecrets() (*govcd.VCDClient, error) {

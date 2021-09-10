@@ -6,8 +6,10 @@
 package vcdclient
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
 	"net/http"
 	"strings"
 
@@ -170,6 +172,13 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 		return nil, fmt.Errorf("unable to find disk with href [%s]: [%v]", diskHref, err)
 	}
 	klog.Infof("Disk created: [%#v]", disk)
+
+	// update RDE
+	if client.ClusterID != "" {
+		if err = client.addPvToRDE(disk.Id); err != nil {
+			return nil, fmt.Errorf("unable to add PV Id [%s] to RDE: [%v]", disk.Id, err)
+		}
+	}
 
 	return disk, nil
 }
@@ -374,6 +383,13 @@ func (client *Client) DeleteDisk(name string) error {
 		return fmt.Errorf("failed to wait for deletion task of disk [%s]: [%v]", name, err)
 	}
 
+	// update RDE
+	if client.ClusterID != "" {
+		if err = client.removePvFromRDE(disk.Id); err != nil {
+			return fmt.Errorf("unable to remove PV Id [%s] from RDE: [%v]", disk.Id, err)
+		}
+	}
+
 	return nil
 }
 
@@ -517,5 +533,122 @@ func (client *Client) DetachVolume(vm *govcd.VM, diskName string) error {
 	}
 	klog.Infof("Successfully detached disk [%s] from VM [%s]", disk.Name, vm.VM.Name)
 
+	return nil
+}
+
+func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClient.DefinedEntity, error) {
+	defEnt, _, etag, err := client.apiClient.DefinedEntityApi.GetDefinedEntity(context.TODO(), client.ClusterID)
+	if err != nil {
+		return nil, "", nil, fmt.Errorf("error when getting defined entity: [%v]", err)
+	}
+
+	statusEntry, ok := defEnt.Entity["status"]
+	if !ok {
+		return nil, "", nil, fmt.Errorf("could not find 'status' entry in defined entity")
+	}
+	statusMap, ok := statusEntry.(map[string]interface{})
+	if !ok {
+		return nil, "", nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
+	}
+	pvInterfaces := statusMap["persistentVolumes"]
+	if pvInterfaces == nil {
+		return make([]string, 0), etag, &defEnt, nil
+	}
+
+	pvInterfacesSlice, ok := pvInterfaces.([]interface{})
+	if !ok {
+		return nil, "", nil, fmt.Errorf("unable to convert [%T] to slice of interface", pvInterfaces)
+	}
+	pvIdStrs := make([]string, len(pvInterfacesSlice))
+	for idx, pvInterface := range pvInterfacesSlice {
+		currPv, ok := pvInterface.(string)
+		if !ok {
+			return nil, "", nil, fmt.Errorf("unable to convert [%T] to string", pvInterface)
+		}
+		pvIdStrs[idx] = currPv
+	}
+	return pvIdStrs, etag, &defEnt, nil
+}
+
+// This function will modify the passed in defEnt
+func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag string,
+	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
+	statusEntry, ok := defEnt.Entity["status"]
+	if !ok {
+		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
+	}
+	statusMap, ok := statusEntry.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
+	}
+
+	statusMap["persistentVolumes"] = updatedPvs
+	_, httpResponse, err := client.apiClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *defEnt, etag, client.ClusterID)
+	if err != nil {
+		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
+	}
+	return nil, nil
+}
+
+func (client *Client) addPvToRDE(addPv string) error {
+	for {
+		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
+		if err != nil {
+			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+		}
+
+		// check if need to update RDE
+		foundAddPv := false
+		for _, pv := range currPvs {
+			if pv == addPv {
+				foundAddPv = true
+				break
+			}
+		}
+		if foundAddPv {
+			return nil // no need to update RDE
+		}
+
+		updatedPvs := append(currPvs, addPv)
+		httpResponse, err := client.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
+		if err != nil {
+			if httpResponse.StatusCode == http.StatusPreconditionFailed {
+				continue
+			}
+			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]", addPv, client.ClusterID, err)
+		}
+		break
+	}
+	return nil
+}
+
+func (client *Client) removePvFromRDE(removePv string) error {
+	for {
+		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
+		if err != nil {
+			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+		}
+
+		// form updated virtual pv list
+		foundIdx := -1
+		for idx, pv := range currPvs {
+			if pv == removePv {
+				foundIdx = idx
+				break
+			}
+		}
+		if foundIdx == -1 {
+			return nil  // no need to update RDE
+		}
+		updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx + 1:]...)
+
+		httpResponse, err := client.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
+		if err == nil {
+			return nil
+		}
+		if httpResponse.StatusCode != http.StatusPreconditionFailed {
+			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]", removePv, client.ClusterID, err)
+		}
+	}
 	return nil
 }
