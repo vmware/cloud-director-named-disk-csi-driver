@@ -1,20 +1,18 @@
 # Container Storage Interface (CSI) driver for VMware Cloud Director Named Independent Disks
 
-**cloud-director-named-disk-csi-driver** contains the source code and build methods to build a Kubernetes CSI driver that helps provision [VMware Cloud Director Named Independent Disks](https://docs.vmware.com/en/VMware-Cloud-Director/10.0/com.vmware.vcloud.tenantportal.doc/GUID-8F8BFCD3-071A-4E45-BAC0-A9B78F2C19CE.html) as a storage solution for Kubernetes Applications. This uses VMware Cloud Director API for functionality and hence needs an appropriate VMware Cloud Director Installation. This CSI driver will help enable common scenarios with persistent volumes and stateful-sets using VMware Cloud Director Shareable Named Disks.
+**cloud-director-named-disk-csi-driver** contains the source code and build methods to build a Kubernetes CSI driver that helps provision [VMware Cloud Director Named Independent Disks](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Tenant-Portal-Guide/GUID-8F8BFCD3-071A-4E45-BAC0-A9B78F2C19CE.html) as a storage solution for Kubernetes Applications. This uses VMware Cloud Director API for functionality and hence needs an appropriate VMware Cloud Director Installation. This CSI driver will help enable common scenarios with persistent volumes and stateful-sets using VMware Cloud Director Shareable Named Disks.
 
 The version of the VMware Cloud Director API and Installation that are compatible for a given CSI container image are provided in the following compatibility matrix:
 
 | CSI Version | VMware Cloud Director API | VMware Cloud Director Installation |
 | :---------: | :-----------------------: | :--------------------------------: |
 | 0.1.0-beta | 36.0+ | 10.3.0+|
-| 0.1.0 | 36.1+ | 10.3.1+|
 
 This extension is intended to be installed into a Kubernetes cluster installed with [VMware Cloud Director](https://www.vmware.com/products/cloud-director.html) as a Cloud Provider, by a user that has the rights as described in the sections below.
 
-
 **cloud-director-named-disk-csi-driver** is distributed as a container image hosted at [Distribution Harbor](https://projects.registry.vmware.com) as `projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:<CSI version>`.
 
-This driver is in a preliminary `alpha` state and is not yet ready to be used in production.
+This driver is in a preliminary `beta` state and is not yet ready to be used in production.
 
 ## VMware Cloud Director Configuration
 
@@ -28,7 +26,7 @@ The `CSI user` can have access to the Kubernetes cluster in one of two ways:
 In either case, the `CSI user` will be able to manage the cluster.
 
 ### Rights
-This `CSI user` needs to be created from a `ClusterAdminRole` with additional rights. The `ClusterAdminRole` is a clone of the [vApp Author Role](https://docs.vmware.com/en/VMware-Cloud-Director/9.7/com.vmware.vcloud.admin.doc/GUID-BC504F6B-3D38-4F25-AACF-ED584063754F.html) with the following additional rights:
+This `CSI user` needs to be created from a `ClusterAdminRole` with additional rights. The `ClusterAdminRole` is a clone of the [vApp Author Role](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Tenant-Portal-Guide/GUID-BC504F6B-3D38-4F25-AACF-ED584063754F.html) with the following additional rights:
 1. Other =>
     1. Full Control: CSE:NATIVECLUSTER
     2. Edit: CSE:NATIVECLUSTER
@@ -38,7 +36,7 @@ This `CSI user` needs to be created from a `ClusterAdminRole` with additional ri
 ### Additional Setup Steps for 0.1.0-beta
 **Note:** If you also use CPI for VCD, you will not need to redo these steps. A Kubernetes cluster will need these steps to be executed exactly once in its lifetime.
 
-Since there are dependencies on a new feature coming in a future VCD version (10.3.1), there will be a small workaround to register the `CPI user` credentials into the Kubernetes cluster. Hence, these steps are needed for CSI v0.1.0-beta and VCD v10.3 only.
+There is a set of additional steps needed in order to feed the `CPI user` credentials into the Kubernetes cluster. These steps lead to a less secure cluster and are only applicable for the Beta release. The GA release of this product will not need these additional steps and will therefore result in a more secure cluster.
 
 These additional steps are as follows:
 1. Get the `KUBECONFIG` file from the cluster created. If the cluster was created using the Container Service Extension, the following command can be used:
