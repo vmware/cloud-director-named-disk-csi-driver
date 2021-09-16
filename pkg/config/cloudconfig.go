@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"k8s.io/klog"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -45,16 +46,24 @@ func ParseCloudConfig(configReader io.Reader) (*CloudConfig, error) {
 }
 
 func SetAuthorization(config *CloudConfig) error {
-	username, err := ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/username")
+	var refreshToken, username, secret []byte
+	refreshToken, err := ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/refreshToken")
 	if err != nil {
-		return fmt.Errorf("unable to get username: [%v]", err)
+		klog.Infof("unable to get refresh token. Looking for username and password")
+		// Couldn't find refresh token. See if username and password can be obtained.
+		username, err = ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/username")
+		if err != nil {
+			return fmt.Errorf("unable to get username: [%v]", err)
+		}
+		secret, err = ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/password")
+		if err != nil {
+			return fmt.Errorf("unable to get password: [%v]", err)
+		}
+		config.VCD.User = string(username)
+		config.VCD.Secret = string(secret)
+	} else {
+		config.VCD.RefreshToken = string(refreshToken)
 	}
-	secret, err := ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/password")
-	if err != nil {
-		return fmt.Errorf("unable to get password: [%v]", err)
-	}
-	config.VCD.User = string(username)
-	config.VCD.Secret = string(secret)
 	return nil
 }
 

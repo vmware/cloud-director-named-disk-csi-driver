@@ -31,7 +31,7 @@ type Client struct {
 
 // RefreshToken will check if can authenticate and rebuild clients if needed
 func (client *Client) RefreshToken() error {
-	_, r, err := client.vcdAuthConfig.GetBearerTokenFromSecrets()
+	_, r, err := client.vcdAuthConfig.GetBearerToken()
 	if r == nil && err != nil {
 		return fmt.Errorf("error while getting bearer token from secrets: [%v]", err)
 	} else if r != nil && r.StatusCode == 401 {
@@ -64,7 +64,7 @@ func (client *Client) RefreshToken() error {
 
 // NewVCDClientFromSecrets :
 func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
-	user string, password string, insecure bool, clusterID string, getVdcClient bool) (*Client, error) {
+	user string, password string, refreshToken string, insecure bool, clusterID string, getVdcClient bool) (*Client, error) {
 
 	// TODO: validation of parameters
 
@@ -84,7 +84,7 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 		}
 	}
 
-	vcdAuthConfig := NewVCDAuthConfigFromSecrets(host, user, password, orgName, insecure)
+	vcdAuthConfig := NewVCDAuthConfigFromSecrets(host, user, password, refreshToken, orgName, insecure)
 
 	// Get API client
 	vcdClient, apiClient, err := vcdAuthConfig.GetSwaggerClientFromSecrets()
