@@ -100,12 +100,6 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 	}
 
 	if getVdcClient {
-		// this new client is only needed to get the vdc pointer
-		vcdClient, err = vcdAuthConfig.GetPlainClientFromSecrets()
-		if err != nil {
-			return nil, fmt.Errorf("unable to get plain client from secrets: [%v]", err)
-		}
-
 		org, err := vcdClient.GetOrgByName(orgName)
 		if err != nil {
 			return nil, fmt.Errorf("unable to get org from name [%s]: [%v]", orgName, err)
