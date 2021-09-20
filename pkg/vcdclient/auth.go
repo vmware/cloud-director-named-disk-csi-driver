@@ -49,10 +49,14 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 
 	var resp *http.Response
 	if config.RefreshToken != "" {
-		// Since it is not known if the user is sysadmin, try to get the access token using tenanted endpoint
-		accessTokenResponse, resp, err := config.getAccessTokenFromRefreshToken(false)
+		// Since it is not known if the user is sysadmin, try to get the access token using provider endpoint first
+		accessTokenResponse, resp, err := config.getAccessTokenFromRefreshToken(true)
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to get access token from refresh token: [%v]", err)
+			// Failed to get token as provider. Try to get token as tenant user
+			accessTokenResponse, resp, err = config.getAccessTokenFromRefreshToken(false)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to get access token from refresh token: [%v]", err)
+			}
 		}
 		err = vcdClient.SetToken(config.Org, "Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
 		if err != nil {
@@ -61,7 +65,7 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 
 		isSysAdmin, err := isAdminUser(vcdClient)
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to determine if the user is an admin: [%v]", err)
+			return nil, nil, fmt.Errorf("failed to determine if the user is a system administrator: [%v]", err)
 		}
 		vcdClient.Client.IsSysAdmin = isSysAdmin
 		klog.Infof("Running CPI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
