@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package vcdclient
@@ -21,12 +21,12 @@ var (
 
 // Client :
 type Client struct {
-	vcdAuthConfig      *VCDAuthConfig
-	vcdClient          *govcd.VCDClient
-	vdc                *govcd.Vdc
-	ClusterID          string
-	rwLock             sync.RWMutex
-	apiClient          *swaggerClient.APIClient
+	vcdAuthConfig *VCDAuthConfig
+	vcdClient     *govcd.VCDClient
+	vdc           *govcd.Vdc
+	ClusterID     string
+	rwLock        sync.RWMutex
+	apiClient     *swaggerClient.APIClient
 }
 
 // RefreshToken will check if can authenticate and rebuild clients if needed
@@ -93,10 +93,10 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 	}
 
 	client := &Client{
-		vcdAuthConfig:    vcdAuthConfig,
-		vcdClient:        vcdClient,
-		ClusterID:        clusterID,
-		apiClient:		  apiClient,
+		vcdAuthConfig: vcdAuthConfig,
+		vcdClient:     vcdClient,
+		ClusterID:     clusterID,
+		apiClient:     apiClient,
 	}
 
 	if getVdcClient {

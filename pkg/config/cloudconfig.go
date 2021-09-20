@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package config
@@ -27,8 +27,8 @@ type VCDConfig struct {
 
 // CloudConfig contains the config that will be read from the secret
 type CloudConfig struct {
-	VCD       VCDConfig     `yaml:"vcd"`
-	ClusterID string        `yaml:"clusterid"`
+	VCD       VCDConfig `yaml:"vcd"`
+	ClusterID string    `yaml:"clusterid"`
 }
 
 func ParseCloudConfig(configReader io.Reader) (*CloudConfig, error) {

@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package vcdclient
@@ -135,9 +135,9 @@ func (config *VCDAuthConfig) GetPlainClientFromSecrets() (*govcd.VCDClient, erro
 }
 
 type tokenResponse struct {
-	AccessToken string `json:"access_token"`
-	TokenType string `json:"token_type"`
-	ExpiresIn int32 `json:"expires_in"`
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int32  `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
 }
 
@@ -181,17 +181,17 @@ func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(isSysadminUser bool)
 
 func NewVCDAuthConfigFromSecrets(host string, user string, secret string, refreshToken string, org string, insecure bool) *VCDAuthConfig {
 	return &VCDAuthConfig{
-		Host:     host,
-		User:     user,
-		Password: secret,
+		Host:         host,
+		User:         user,
+		Password:     secret,
 		RefreshToken: refreshToken,
-		Org:      org,
-		Insecure: insecure,
+		Org:          org,
+		Insecure:     insecure,
 	}
 }
 
 type currentSessionsResponse struct {
-	Id string `json:"id"`
+	Id    string   `json:"id"`
 	Roles []string `json:"roles"`
 }
 
