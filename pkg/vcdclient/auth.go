@@ -133,15 +133,9 @@ func (config *VCDAuthConfig) GetPlainClientFromSecrets() (*govcd.VCDClient, erro
 }
 
 type tokenResponse struct {
-<<<<<<< HEAD
 	AccessToken  string `json:"access_token"`
 	TokenType    string `json:"token_type"`
 	ExpiresIn    int32  `json:"expires_in"`
-=======
-	AccessToken string `json:"access_token"`
-	TokenType string `json:"token_type"`
-	ExpiresIn int32 `json:"expires_in"`
->>>>>>> 1b6b884 (First cut for consuming machine user token provided by CSE)
 	RefreshToken string `json:"refresh_token"`
 }
 
@@ -167,18 +161,13 @@ func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(isSysadminUser bool)
 	oauthRequest.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	oauthResponse, err := client.Do(oauthRequest)
 	if err != nil {
-<<<<<<< HEAD
 		return nil, oauthResponse, fmt.Errorf("request to get access token failed: [%v]", err)
-=======
-		return nil, oauthResponse, err
->>>>>>> 1b6b884 (First cut for consuming machine user token provided by CSE)
 	}
 	if oauthResponse.StatusCode != http.StatusOK {
 		return nil, oauthResponse, fmt.Errorf("error while getting access token from refresh token: [%v]", err)
 	}
 	body, err := ioutil.ReadAll(oauthResponse.Body)
 	if err != nil {
-<<<<<<< HEAD
 		return nil, oauthResponse, fmt.Errorf("unable to read response body while getting access token from refresh token: [%v]", err)
 	}
 	defer func() {
@@ -190,20 +179,12 @@ func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(isSysadminUser bool)
 	var accessTokenResponse tokenResponse
 	if err = json.Unmarshal(body, &accessTokenResponse); err != nil {
 		return nil, oauthResponse, fmt.Errorf("error unmarshaling the token response: [%v]", err)
-=======
-		return nil, oauthResponse, err
-	}
-	var accessTokenResponse tokenResponse
-	if err = json.Unmarshal(body, &accessTokenResponse); err != nil {
-		return nil, oauthResponse, err
->>>>>>> 1b6b884 (First cut for consuming machine user token provided by CSE)
 	}
 	return &accessTokenResponse, oauthResponse, nil
 }
 
 func NewVCDAuthConfigFromSecrets(host string, user string, secret string, refreshToken string, org string, insecure bool) *VCDAuthConfig {
 	return &VCDAuthConfig{
-<<<<<<< HEAD
 		Host:         host,
 		User:         user,
 		Password:     secret,
@@ -231,34 +212,6 @@ func isAdminUser(vcdClient *govcd.VCDClient) (bool, error) {
 	}
 	if len(output.Roles) == 0 {
 		return false, fmt.Errorf("no roles associated with the user: [%v]", err)
-=======
-		Host:     host,
-		User:     user,
-		Password: secret,
-		RefreshToken: refreshToken,
-		Org:      org,
-		Insecure: insecure,
->>>>>>> 1b6b884 (First cut for consuming machine user token provided by CSE)
-	}
-	isSysAdmin := output.Roles[0] == "System Administrator"
-	return isSysAdmin, nil
-}
-
-type currentSessionsResponse struct {
-	Id string `json:"id"`
-	Roles []string `json:"roles"`
-}
-
-func isAdminUser(vcdClient *govcd.VCDClient) (bool, error) {
-	currentSessionUrl, err :=
-		vcdClient.Client.OpenApiBuildEndpoint("1.0.0/sessions/current")
-	if err != nil {
-		return false, fmt.Errorf("failed to construct current session url [%v]", err)
-	}
-	var output currentSessionsResponse
-	err = vcdClient.Client.OpenApiGetItem(vcdClient.Client.APIVersion, currentSessionUrl, url.Values{}, &output)
-	if err != nil {
-		return false, fmt.Errorf("error while getting current session [%v]", err)
 	}
 	isSysAdmin := output.Roles[0] == "System Administrator"
 	return isSysAdmin, nil
