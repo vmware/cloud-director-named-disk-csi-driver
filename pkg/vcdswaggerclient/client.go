@@ -33,6 +33,10 @@ var (
 	xmlCheck  = regexp.MustCompile("(?i:(?:application|text)/xml)")
 )
 
+const (
+	VCloudApiVersion = "36.0"
+)
+
 // APIClient manages communication with the VMware Cloud Director OpenAPI API v35.0
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {

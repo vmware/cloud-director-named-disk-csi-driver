@@ -8,7 +8,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,15 +19,16 @@ var (
 
 func init() {
 	gitRoot = os.Getenv("GITROOT")
-	if gitRoot == "" {
-		// It is okay to panic here as this will be caught during dev
-		panic("GITROOT should be set")
-	}
+	//if gitRoot == "" {
+	//	// It is okay to panic here as this will be caught during dev
+	//	panic("GITROOT should be set")
+	//}
 }
 
 func TestCloudConfig(t *testing.T) {
 
-	testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")
+	//testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")
+	testConfigFilePath := "/Users/ltimothy/go/src/github.com/vmware/cloud-director-named-disk-csi-driver/testdata/config_test.yaml"
 	configReader, err := os.Open(testConfigFilePath)
 	assert.NoError(t, err, fmt.Sprintf("Unable to open file [%s]", testConfigFilePath))
 	defer func() {

@@ -587,7 +587,7 @@ func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag strin
 	if err != nil {
 		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
 	}
-	return nil, nil
+	return httpResponse, nil
 }
 
 func (client *Client) addPvToRDE(addPv string) error {
