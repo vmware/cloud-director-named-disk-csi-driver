@@ -583,7 +583,8 @@ func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag strin
 	}
 
 	statusMap["persistentVolumes"] = updatedPvs
-	_, httpResponse, err := client.apiClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *defEnt, etag, client.ClusterID)
+	// can set invokeHooks as optional parameter
+	_, httpResponse, err := client.apiClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *defEnt, etag, client.ClusterID, nil)
 	if err != nil {
 		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
 	}
