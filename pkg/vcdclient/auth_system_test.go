@@ -24,6 +24,12 @@ func TestNewVCDAuthConfigFromSecrets(t *testing.T) {
 	assert.NoError(t, err, "Unable to get Client with VDC details.")
 
 	vcdClient, err = getTestVCDClient(map[string]interface{}{
+		"refreshToken": "",
+	})
+	assert.NoError(t, err, "Unable to get VCD Client")
+	assert.NotNil(t, vcdClient, "VCD Client should not be nil")
+
+	vcdClient, err = getTestVCDClient(map[string]interface{}{
 		"host": "https://some-random-address",
 	})
 	assert.Error(t, err, "Error should be obtained for url [https://some-random-address]")

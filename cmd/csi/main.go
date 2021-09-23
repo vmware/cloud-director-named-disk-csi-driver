@@ -127,6 +127,7 @@ func runCommand() {
 		cloudConfig.VCD.VDC,
 		cloudConfig.VCD.User,
 		cloudConfig.VCD.Secret,
+		cloudConfig.VCD.RefreshToken,
 		true,
 		cloudConfig.ClusterID,
 		true,

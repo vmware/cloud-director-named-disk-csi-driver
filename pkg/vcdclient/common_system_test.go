@@ -84,6 +84,7 @@ func getTestVCDClient(inputMap map[string]interface{}) (*Client, error) {
 		cloudConfig.VCD.VDC,
 		cloudConfig.VCD.User,
 		cloudConfig.VCD.Secret,
+		cloudConfig.VCD.RefreshToken,
 		insecure,
 		cloudConfig.ClusterID,
 		getVdcClient,

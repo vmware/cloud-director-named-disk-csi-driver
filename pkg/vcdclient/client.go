@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package vcdclient
@@ -21,17 +21,17 @@ var (
 
 // Client :
 type Client struct {
-	vcdAuthConfig      *VCDAuthConfig
-	vcdClient          *govcd.VCDClient
-	vdc                *govcd.Vdc
-	ClusterID          string
-	rwLock             sync.RWMutex
-	apiClient          *swaggerClient.APIClient
+	vcdAuthConfig *VCDAuthConfig
+	vcdClient     *govcd.VCDClient
+	vdc           *govcd.Vdc
+	ClusterID     string
+	rwLock        sync.RWMutex
+	apiClient     *swaggerClient.APIClient
 }
 
 // RefreshToken will check if can authenticate and rebuild clients if needed
 func (client *Client) RefreshToken() error {
-	_, r, err := client.vcdAuthConfig.GetBearerTokenFromSecrets()
+	_, r, err := client.vcdAuthConfig.GetBearerToken()
 	if r == nil && err != nil {
 		return fmt.Errorf("error while getting bearer token from secrets: [%v]", err)
 	} else if r != nil && r.StatusCode == 401 {
@@ -64,7 +64,7 @@ func (client *Client) RefreshToken() error {
 
 // NewVCDClientFromSecrets :
 func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
-	user string, password string, insecure bool, clusterID string, getVdcClient bool) (*Client, error) {
+	user string, password string, refreshToken string, insecure bool, clusterID string, getVdcClient bool) (*Client, error) {
 
 	// TODO: validation of parameters
 
@@ -84,7 +84,7 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 		}
 	}
 
-	vcdAuthConfig := NewVCDAuthConfigFromSecrets(host, user, password, orgName, insecure)
+	vcdAuthConfig := NewVCDAuthConfigFromSecrets(host, user, password, refreshToken, orgName, insecure)
 
 	// Get API client
 	vcdClient, apiClient, err := vcdAuthConfig.GetSwaggerClientFromSecrets()
@@ -93,19 +93,13 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string,
 	}
 
 	client := &Client{
-		vcdAuthConfig:    vcdAuthConfig,
-		vcdClient:        vcdClient,
-		ClusterID:        clusterID,
-		apiClient:		  apiClient,
+		vcdAuthConfig: vcdAuthConfig,
+		vcdClient:     vcdClient,
+		ClusterID:     clusterID,
+		apiClient:     apiClient,
 	}
 
 	if getVdcClient {
-		// this new client is only needed to get the vdc pointer
-		vcdClient, err = vcdAuthConfig.GetPlainClientFromSecrets()
-		if err != nil {
-			return nil, fmt.Errorf("unable to get plain client from secrets: [%v]", err)
-		}
-
 		org, err := vcdClient.GetOrgByName(orgName)
 		if err != nil {
 			return nil, fmt.Errorf("unable to get org from name [%s]: [%v]", orgName, err)
