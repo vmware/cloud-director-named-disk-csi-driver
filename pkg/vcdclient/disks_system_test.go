@@ -103,7 +103,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	// Check PV was removed from RDE
 	currRDEPvs, _, _, err = vcdClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
-	assert.Equal(t, false, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should not be found in RDE")
+	assert.False(t, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should not be found in RDE")
 
 	return
 }
@@ -143,7 +143,7 @@ func TestRdeEtag(t *testing.T) {
 	assert.Equal(t, http.StatusPreconditionFailed, httpResponse2.StatusCode, "updating RDE does not have precondition failed (412) status code")
 	rdePvs3, etag3, defEnt3, err := vcdClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs")
-	assert.Equal(t, false, foundStringInSlice(addPv2, rdePvs3), "pv [%s] should not be in rde pvs", addPv2)
+	assert.False(t, foundStringInSlice(addPv2, rdePvs3), "pv [%s] should not be in rde pvs", addPv2)
 
 	// try updating RDE PVs with current etag
 	updatedRdePvs3 := append(rdePvs3, addPv2)
@@ -160,6 +160,6 @@ func TestRdeEtag(t *testing.T) {
 	assert.Equal(t, http.StatusOK, httpResponse5.StatusCode, "updating PV had status code 200 (OK)")
 	rdePvs5, _, _, err := vcdClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs")
-	assert.Equal(t, false, foundStringInSlice(addPv1, rdePvs5), "pv [%s] should not be found in rde pvs", addPv1)
-	assert.Equal(t, false, foundStringInSlice(addPv2, rdePvs5), "pv [%s] should not be found in rde pvs", addPv2)
+	assert.False(t, foundStringInSlice(addPv1, rdePvs5), "pv [%s] should not be found in rde pvs", addPv1)
+	assert.False(t, foundStringInSlice(addPv2, rdePvs5), "pv [%s] should not be found in rde pvs", addPv2)
 }
