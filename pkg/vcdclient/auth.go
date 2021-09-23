@@ -44,12 +44,12 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 	}
 
 	vcdClient := govcd.NewVCDClient(*u, config.Insecure)
-	vcdClient.Client.APIVersion = VCloudApiVersion
+	vcdClient.Client.APIVersion = "35.0"
 	klog.Infof("Using VCD OpenAPI version [%s]", vcdClient.Client.APIVersion)
 
 	var resp *http.Response
 	if config.RefreshToken != "" {
-		// Since it is not known if the user is sysadmin, try to get the access token using provider endpoint first
+		// Since it is not known if the user is sysadmin, try to get the access token using provider endpoint
 		accessTokenResponse, resp, err := config.getAccessTokenFromRefreshToken(true)
 		if err != nil {
 			// Failed to get token as provider. Try to get token as tenant user
@@ -62,20 +62,18 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to set authorization header: [%v]", err)
 		}
-
-		isSysAdmin, err := isAdminUser(vcdClient)
+		vcdClient.Client.IsSysAdmin, err = isAdminUser(vcdClient)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to determine if the user is a system administrator: [%v]", err)
 		}
-		vcdClient.Client.IsSysAdmin = isSysAdmin
-		klog.Infof("Running CPI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
+
+		klog.Infof("Running CSI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
 		return vcdClient, resp, nil
-	} else {
-		resp, err := vcdClient.GetAuthResponse(config.User, config.Password, config.Org)
-		if err != nil {
-			return nil, resp, fmt.Errorf("unable to authenticate [%s/%s] for url [%s]: [%+v] : [%v]",
-				config.Org, config.User, href, resp, err)
-		}
+	}
+	resp, err = vcdClient.GetAuthResponse(config.User, config.Password, config.Org)
+	if err != nil {
+		return nil, resp, fmt.Errorf("unable to authenticate [%s/%s] for url [%s]: [%+v] : [%v]",
+			config.Org, config.User, href, resp, err)
 	}
 
 	return vcdClient, resp, nil
@@ -163,18 +161,24 @@ func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(isSysadminUser bool)
 	oauthRequest.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	oauthResponse, err := client.Do(oauthRequest)
 	if err != nil {
-		return nil, oauthResponse, err
+		return nil, oauthResponse, fmt.Errorf("request to get access token failed: [%v]", err)
 	}
 	if oauthResponse.StatusCode != http.StatusOK {
 		return nil, oauthResponse, fmt.Errorf("error while getting access token from refresh token: [%v]", err)
 	}
 	body, err := ioutil.ReadAll(oauthResponse.Body)
 	if err != nil {
-		return nil, oauthResponse, err
+		return nil, oauthResponse, fmt.Errorf("unable to read response body while getting access token from refresh token: [%v]", err)
 	}
+	defer func() {
+		if err := oauthResponse.Body.Close(); err != nil {
+			klog.Errorf("failed to close response body: [%v]", err)
+		}
+	}()
+
 	var accessTokenResponse tokenResponse
 	if err = json.Unmarshal(body, &accessTokenResponse); err != nil {
-		return nil, oauthResponse, err
+		return nil, oauthResponse, fmt.Errorf("error unmarshaling the token response: [%v]", err)
 	}
 	return &accessTokenResponse, oauthResponse, nil
 }
