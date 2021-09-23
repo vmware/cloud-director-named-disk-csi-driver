@@ -14,10 +14,10 @@ RUN ["make", "build-within-docker"]
 
 ########################################################
 
-FROM ubuntu:16.04
+FROM photon:4.0-20210910
 
-RUN apt-get update -y && \
-    apt-get install -y udev
+RUN tdnf install yum && \
+	yum install -y udev
 
 WORKDIR /opt/vcloud/bin
 
