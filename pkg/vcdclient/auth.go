@@ -210,6 +210,9 @@ func isAdminUser(vcdClient *govcd.VCDClient) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("error while getting current session [%v]", err)
 	}
+	if len(output.Roles) == 0 {
+		return false, fmt.Errorf("no roles associated with the user: [%v]", err)
+	}
 	isSysAdmin := output.Roles[0] == "System Administrator"
 	return isSysAdmin, nil
 }
