@@ -81,6 +81,10 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 
 	klog.Infof("CreateVolume: called with req [%#v]", *req)
 
+	if err := cs.VCDClient.RefreshBearerToken(); err != nil {
+		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
+	}
+
 	diskName := req.GetName()
 	if len(diskName) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Volume name not provided")
@@ -152,6 +156,10 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	klog.Infof("DeleteVolume: called with req [%#v]", *req)
 	volumeID := req.GetVolumeId()
 
+	if err := cs.VCDClient.RefreshBearerToken(); err != nil {
+		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
+	}
+
 	err := cs.VCDClient.DeleteDisk(volumeID)
 	if err != nil {
 		if err == govcd.ErrorEntityNotFound {
@@ -174,6 +182,10 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 			"ControllerPublishVolume: req should not be nil")
 	}
 	klog.Infof("ControllerPublishVolume: called with req [%#v]", *req)
+
+	if err := cs.VCDClient.RefreshBearerToken(); err != nil {
+		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
+	}
 
 	nodeID := req.GetNodeId()
 	if len(nodeID) == 0 {
@@ -238,6 +250,10 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 		return nil, status.Errorf(codes.InvalidArgument, "ControllerUnpublishVolume: req should not be nil")
 	}
 	klog.Infof("ControllerUnpublishVolume: called with req [%#v]", *req)
+
+	if err := cs.VCDClient.RefreshBearerToken(); err != nil {
+		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
+	}
 
 	nodeID := req.GetNodeId()
 	if len(nodeID) == 0 {
