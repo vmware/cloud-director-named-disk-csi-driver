@@ -29,6 +29,22 @@ type Client struct {
 	apiClient     *swaggerClient.APIClient
 }
 
+func (client *Client) RefreshBearerToken() error {
+	// No need to refresh token if logged in using username and password
+	if client.vcdAuthConfig.User != "" && client.vcdAuthConfig.Password != "" && client.vcdAuthConfig.RefreshToken == "" {
+		return nil
+	}
+	accessTokenResponse, _, err := client.vcdAuthConfig.getAccessTokenFromRefreshToken(client.vcdClient.Client.IsSysAdmin)
+	if err != nil {
+		return fmt.Errorf("failed to refresh access token: [%v]", err)
+	}
+	err = client.vcdClient.SetToken(client.vcdAuthConfig.Org, "Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
+	if err != nil {
+		return fmt.Errorf("failed to set authorization header: [%v]", err)
+	}
+	return nil
+}
+
 // RefreshToken will check if can authenticate and rebuild clients if needed
 func (client *Client) RefreshToken() error {
 	_, r, err := client.vcdAuthConfig.GetBearerToken()
