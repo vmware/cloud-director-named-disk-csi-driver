@@ -592,7 +592,7 @@ func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag strin
 }
 
 func (client *Client) addPvToRDE(addPv string) error {
-	for {
+	for i := 0; i < 10; i++ {
 		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
 		if err != nil {
 			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
@@ -618,13 +618,13 @@ func (client *Client) addPvToRDE(addPv string) error {
 			}
 			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]", addPv, client.ClusterID, err)
 		}
-		break
+		return nil
 	}
-	return nil
+	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")
 }
 
 func (client *Client) removePvFromRDE(removePv string) error {
-	for {
+	for i := 0; i < 10; i++ {
 		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
 		if err != nil {
 			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
@@ -651,5 +651,5 @@ func (client *Client) removePvFromRDE(removePv string) error {
 			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]", removePv, client.ClusterID, err)
 		}
 	}
-	return nil
+	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")
 }
