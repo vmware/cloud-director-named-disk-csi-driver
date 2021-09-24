@@ -44,7 +44,7 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 	}
 
 	vcdClient := govcd.NewVCDClient(*u, config.Insecure)
-	vcdClient.Client.APIVersion = "35.0"
+	vcdClient.Client.APIVersion = "36.0"
 	klog.Infof("Using VCD OpenAPI version [%s]", vcdClient.Client.APIVersion)
 
 	var resp *http.Response
