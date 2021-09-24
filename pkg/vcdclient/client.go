@@ -30,21 +30,25 @@ type Client struct {
 
 func (client *Client) RefreshBearerToken() error {
 	href := fmt.Sprintf("%s/api", client.vcdAuthConfig.Host)
-	if client.vcdAuthConfig.User != "" && client.vcdAuthConfig.Password != "" && client.vcdAuthConfig.RefreshToken == "" {
+	if client.vcdAuthConfig.RefreshToken != "" {
+		// Refresh vcd client using refresh token
+		accessTokenResponse, _, err := client.vcdAuthConfig.getAccessTokenFromRefreshToken(client.vcdClient.Client.IsSysAdmin)
+		if err != nil {
+			return fmt.Errorf("failed to get access token from refresh token for user [%s/%s] for url [%s]: [%v]", client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href, err)
+		}
+		err = client.vcdClient.SetToken(client.vcdAuthConfig.Org, "Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
+		if err != nil {
+			return fmt.Errorf("failed to set authorization header: [%v]", err)
+		}
+	} else if client.vcdAuthConfig.User != "" && client.vcdAuthConfig.Password != "" {
+		// Refresh vcd client using username and password
 		resp, err := client.vcdClient.GetAuthResponse(client.vcdAuthConfig.User, client.vcdAuthConfig.Password, client.vcdAuthConfig.Org)
 		if err != nil {
 			return fmt.Errorf("unable to authenticate [%s/%s] for url [%s]: [%+v] : [%v]",
 				client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href, resp, err)
 		}
-		return nil
-	}
-	accessTokenResponse, _, err := client.vcdAuthConfig.getAccessTokenFromRefreshToken(client.vcdClient.Client.IsSysAdmin)
-	if err != nil {
-		return fmt.Errorf("failed to get access token from refresh token for user [%s/%s] for url [%s]: [%v]", client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href, err)
-	}
-	err = client.vcdClient.SetToken(client.vcdAuthConfig.Org, "Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
-	if err != nil {
-		return fmt.Errorf("failed to set authorization header: [%v]", err)
+	} else {
+		return fmt.Errorf("unable to find refresh token or secret to refresh vcd client for user [%s/%s] and url [%s]", client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href)
 	}
 	return nil
 }
