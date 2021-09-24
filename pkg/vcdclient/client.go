@@ -36,7 +36,7 @@ func (client *Client) RefreshToken() error {
 		return fmt.Errorf("error while getting bearer token from secrets: [%v]", err)
 	} else if r != nil && r.StatusCode == 401 {
 		klog.Info("Refreshing tokens as previous one has expired")
-		client.vcdClient.Client.APIVersion = "35.0"
+		client.vcdClient.Client.APIVersion = VCloudApiVersion
 		err := client.vcdClient.Authenticate(client.vcdAuthConfig.User,
 			client.vcdAuthConfig.Password, client.vcdAuthConfig.Org)
 		if err != nil {
