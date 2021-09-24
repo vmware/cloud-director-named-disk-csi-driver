@@ -101,10 +101,6 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 	client.rwLock.Lock()
 	defer client.rwLock.Unlock()
 
-	if err := client.RefreshToken(); err != nil {
-		return nil, fmt.Errorf("unable to refresh vcd client: [%v]", err)
-	}
-
 	klog.Infof("Entered CreateDisk with name [%s] size [%d]MB, storageProfile [%s] shareable[%v]\n",
 		diskName, sizeMB, storageProfile, shareable)
 
@@ -239,10 +235,6 @@ func (client *Client) GetDiskByName(name string) (*vcdtypes.Disk, error) {
 		return nil, fmt.Errorf("disk name should not be empty")
 	}
 
-	if err := client.RefreshToken(); err != nil {
-		return nil, fmt.Errorf("unable to refresh vcd client: [%v]", err)
-	}
-
 	disks, err := client.govcdGetDisksByName(name, true)
 	if err != nil  && err != govcd.ErrorEntityNotFound {
 		return nil, fmt.Errorf("unable to GetDiskByName for [%s] from vdc: [%v]", name, err)
@@ -350,9 +342,6 @@ func (client *Client) DeleteDisk(name string) error {
 	defer client.rwLock.Unlock()
 
 	klog.Infof("Entered DeleteDisk for disk [%s]\n", name)
-	if err := client.RefreshToken(); err != nil {
-		return fmt.Errorf("unable to refresh vcd client: [%v]", err)
-	}
 
 	disk, err := client.GetDiskByName(name)
 	if err != nil {
@@ -422,10 +411,6 @@ func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
 	client.rwLock.Lock()
 	defer client.rwLock.Unlock()
 
-	if err := client.RefreshToken(); err != nil {
-		return fmt.Errorf("unable to refresh vcd client: [%v]", err)
-	}
-
 	if disk == nil {
 		return fmt.Errorf("disk passed shoulf not be nil")
 	}
@@ -482,10 +467,6 @@ func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
 func (client *Client) DetachVolume(vm *govcd.VM, diskName string) error {
 	client.rwLock.Lock()
 	defer client.rwLock.Unlock()
-
-	if err := client.RefreshToken(); err != nil {
-		return fmt.Errorf("unable to refresh vcd client: [%v]", err)
-	}
 
 	klog.Infof("Entered DetachVolume for vm [%v], disk [%s]\n", vm, diskName)
 
