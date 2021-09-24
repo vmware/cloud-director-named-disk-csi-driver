@@ -8,10 +8,10 @@ package vcdclient
 import (
 	"fmt"
 	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
+	"k8s.io/klog"
 	"sync"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
-	"k8s.io/klog"
 )
 
 var (
@@ -29,36 +29,30 @@ type Client struct {
 	apiClient     *swaggerClient.APIClient
 }
 
-// RefreshToken will check if can authenticate and rebuild clients if needed
-func (client *Client) RefreshToken() error {
-	_, r, err := client.vcdAuthConfig.GetBearerToken()
-	if r == nil && err != nil {
-		return fmt.Errorf("error while getting bearer token from secrets: [%v]", err)
-	} else if r != nil && r.StatusCode == 401 {
-		klog.Info("Refreshing tokens as previous one has expired")
-		client.vcdClient.Client.APIVersion = VCloudApiVersion
-		err := client.vcdClient.Authenticate(client.vcdAuthConfig.User,
-			client.vcdAuthConfig.Password, client.vcdAuthConfig.Org)
+func (client *Client) RefreshBearerToken() error {
+	klog.Infof("Refreshing vcd client")
+	href := fmt.Sprintf("%s/api", client.vcdAuthConfig.Host)
+	client.vcdClient.Client.APIVersion = VCloudApiVersion
+	if client.vcdAuthConfig.RefreshToken != "" {
+		// Refresh vcd client using refresh token
+		accessTokenResponse, _, err := client.vcdAuthConfig.getAccessTokenFromRefreshToken(client.vcdClient.Client.IsSysAdmin)
 		if err != nil {
-			return fmt.Errorf("unable to Authenticate user [%s]: [%v]",
-				client.vcdAuthConfig.User, err)
+			return fmt.Errorf("failed to get access token from refresh token for user [%s/%s] for url [%s]: [%v]", client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href, err)
 		}
-
-		org, err := client.vcdClient.GetOrgByNameOrId(client.vcdAuthConfig.Org)
+		err = client.vcdClient.SetToken(client.vcdAuthConfig.Org, "Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
 		if err != nil {
-			return fmt.Errorf("unable to get vcd organization [%s]: [%v]",
-				client.vcdAuthConfig.Org, err)
+			return fmt.Errorf("failed to set authorization header: [%v]", err)
 		}
-
-		vdc, err := org.GetVDCByName(client.vcdAuthConfig.VDC, true)
+	} else if client.vcdAuthConfig.User != "" && client.vcdAuthConfig.Password != "" {
+		// Refresh vcd client using username and password
+		resp, err := client.vcdClient.GetAuthResponse(client.vcdAuthConfig.User, client.vcdAuthConfig.Password, client.vcdAuthConfig.Org)
 		if err != nil {
-			return fmt.Errorf("unable to get vdc from org [%s], vdc [%s]: [%v]",
-				client.vcdAuthConfig.Org, client.vcdAuthConfig.VDC, err)
+			return fmt.Errorf("unable to authenticate [%s/%s] for url [%s]: [%+v] : [%v]",
+				client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href, resp, err)
 		}
-
-		client.vdc = vdc
+	} else {
+		return fmt.Errorf("unable to find refresh token or secret to refresh vcd client for user [%s/%s] and url [%s]", client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href)
 	}
-
 	return nil
 }
 
