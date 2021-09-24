@@ -8,6 +8,7 @@ package vcdclient
 import (
 	"fmt"
 	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
+	"k8s.io/klog"
 	"sync"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -29,7 +30,9 @@ type Client struct {
 }
 
 func (client *Client) RefreshBearerToken() error {
+	klog.Infof("Refreshing vcd client")
 	href := fmt.Sprintf("%s/api", client.vcdAuthConfig.Host)
+	client.vcdClient.Client.APIVersion = VCloudApiVersion
 	if client.vcdAuthConfig.RefreshToken != "" {
 		// Refresh vcd client using refresh token
 		accessTokenResponse, _, err := client.vcdAuthConfig.getAccessTokenFromRefreshToken(client.vcdClient.Client.IsSysAdmin)
