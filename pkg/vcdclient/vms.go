@@ -23,10 +23,6 @@ func (client *Client) FindVMByName(vmName string) (*govcd.VM, error) {
 		return nil, fmt.Errorf("vmName mandatory for FindVMByName")
 	}
 
-	if err := client.RefreshToken(); err != nil {
-		return nil, fmt.Errorf("unable to refresh vcd token: [%v]", err)
-	}
-
 	// Query is be delimited to org where user exists. The expectation is that
 	// there will be exactly one VM with that name.
 	results, err := client.vdc.QueryWithNotEncodedParams(
@@ -63,10 +59,6 @@ func (client *Client) FindVMByName(vmName string) (*govcd.VM, error) {
 func (client *Client) FindVMByUUID(vcdVmUUID string) (*govcd.VM, error) {
 	if vcdVmUUID == "" {
 		return nil, fmt.Errorf("vmUUID mandatory for FindVMByUUID")
-	}
-
-	if err := client.RefreshToken(); err != nil {
-		return nil, fmt.Errorf("unable to refresh vcd token: [%v]", err)
 	}
 
 	vmUUID := strings.TrimPrefix(vcdVmUUID, VCDVMIDPrefix)

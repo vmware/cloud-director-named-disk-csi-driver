@@ -11,7 +11,6 @@ import (
 	"sync"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
-	"k8s.io/klog"
 )
 
 var (
@@ -42,39 +41,6 @@ func (client *Client) RefreshBearerToken() error {
 	if err != nil {
 		return fmt.Errorf("failed to set authorization header: [%v]", err)
 	}
-	return nil
-}
-
-// RefreshToken will check if can authenticate and rebuild clients if needed
-func (client *Client) RefreshToken() error {
-	_, r, err := client.vcdAuthConfig.GetBearerToken()
-	if r == nil && err != nil {
-		return fmt.Errorf("error while getting bearer token from secrets: [%v]", err)
-	} else if r != nil && r.StatusCode == 401 {
-		klog.Info("Refreshing tokens as previous one has expired")
-		client.vcdClient.Client.APIVersion = VCloudApiVersion
-		err := client.vcdClient.Authenticate(client.vcdAuthConfig.User,
-			client.vcdAuthConfig.Password, client.vcdAuthConfig.Org)
-		if err != nil {
-			return fmt.Errorf("unable to Authenticate user [%s]: [%v]",
-				client.vcdAuthConfig.User, err)
-		}
-
-		org, err := client.vcdClient.GetOrgByNameOrId(client.vcdAuthConfig.Org)
-		if err != nil {
-			return fmt.Errorf("unable to get vcd organization [%s]: [%v]",
-				client.vcdAuthConfig.Org, err)
-		}
-
-		vdc, err := org.GetVDCByName(client.vcdAuthConfig.VDC, true)
-		if err != nil {
-			return fmt.Errorf("unable to get vdc from org [%s], vdc [%s]: [%v]",
-				client.vcdAuthConfig.Org, client.vcdAuthConfig.VDC, err)
-		}
-
-		client.vdc = vdc
-	}
-
 	return nil
 }
 
