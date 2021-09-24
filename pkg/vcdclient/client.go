@@ -29,13 +29,18 @@ type Client struct {
 }
 
 func (client *Client) RefreshBearerToken() error {
-	// No need to refresh token if logged in using username and password
+	href := fmt.Sprintf("%s/api", client.vcdAuthConfig.Host)
 	if client.vcdAuthConfig.User != "" && client.vcdAuthConfig.Password != "" && client.vcdAuthConfig.RefreshToken == "" {
+		resp, err := client.vcdClient.GetAuthResponse(client.vcdAuthConfig.User, client.vcdAuthConfig.Password, client.vcdAuthConfig.Org)
+		if err != nil {
+			return fmt.Errorf("unable to authenticate [%s/%s] for url [%s]: [%+v] : [%v]",
+				client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href, resp, err)
+		}
 		return nil
 	}
 	accessTokenResponse, _, err := client.vcdAuthConfig.getAccessTokenFromRefreshToken(client.vcdClient.Client.IsSysAdmin)
 	if err != nil {
-		return fmt.Errorf("failed to refresh access token: [%v]", err)
+		return fmt.Errorf("failed to get access token from refresh token for user [%s/%s] for url [%s]: [%v]", client.vcdAuthConfig.Org, client.vcdAuthConfig.User, href, err)
 	}
 	err = client.vcdClient.SetToken(client.vcdAuthConfig.Org, "Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
 	if err != nil {
