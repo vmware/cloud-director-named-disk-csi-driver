@@ -28,7 +28,7 @@ type VCDAuthConfig struct {
 	User         string `json:"user"`
 	Password     string `json:"password"`
 	RefreshToken string `json:"refreshToken"`
-	Org          string `json:"org"`
+	UserOrg      string `json:"org"`
 	Host         string `json:"host"`
 	CloudAPIHref string `json:"cloudapihref"`
 	VDC          string `json:"vdc"`
@@ -58,7 +58,8 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 				return nil, nil, fmt.Errorf("failed to get access token from refresh token: [%v]", err)
 			}
 		}
-		err = vcdClient.SetToken(config.Org, "Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
+		err = vcdClient.SetToken(config.UserOrg,
+			"Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to set authorization header: [%v]", err)
 		}
@@ -70,10 +71,10 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 		klog.Infof("Running CSI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
 		return vcdClient, resp, nil
 	}
-	resp, err = vcdClient.GetAuthResponse(config.User, config.Password, config.Org)
+	resp, err = vcdClient.GetAuthResponse(config.User, config.Password, config.UserOrg)
 	if err != nil {
 		return nil, resp, fmt.Errorf("unable to authenticate [%s/%s] for url [%s]: [%+v] : [%v]",
-			config.Org, config.User, href, resp, err)
+			config.UserOrg, config.User, href, resp, err)
 	}
 
 	return vcdClient, resp, nil
@@ -125,7 +126,7 @@ func (config *VCDAuthConfig) GetPlainClientFromSecrets() (*govcd.VCDClient, erro
 	vcdClient := govcd.NewVCDClient(*u, config.Insecure)
 	vcdClient.Client.APIVersion = VCloudApiVersion
 	klog.Infof("Using VCD XML API version [%s]", vcdClient.Client.APIVersion)
-	if err = vcdClient.Authenticate(config.User, config.Password, config.Org); err != nil {
+	if err = vcdClient.Authenticate(config.User, config.Password, config.UserOrg); err != nil {
 		return nil, fmt.Errorf("cannot authenticate with vcd: [%v]", err)
 	}
 
@@ -139,10 +140,12 @@ type tokenResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(isSysadminUser bool) (*tokenResponse, *http.Response, error) {
+func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(
+	isSysadminUser bool) (*tokenResponse, *http.Response, error) {
+
 	accessTokenUrl := fmt.Sprintf("%s/oauth/provider/token", config.Host)
 	if !isSysadminUser {
-		accessTokenUrl = fmt.Sprintf("%s/oauth/tenant/%s/token", config.Host, config.Org)
+		accessTokenUrl = fmt.Sprintf("%s/oauth/tenant/%s/token", config.Host, config.UserOrg)
 	}
 	payload := url.Values{}
 	payload.Set("grant_type", "refresh_token")
@@ -183,13 +186,14 @@ func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(isSysadminUser bool)
 	return &accessTokenResponse, oauthResponse, nil
 }
 
-func NewVCDAuthConfigFromSecrets(host string, user string, secret string, refreshToken string, org string, insecure bool) *VCDAuthConfig {
+func NewVCDAuthConfigFromSecrets(host string, user string, secret string,
+	refreshToken string, userOrg string, insecure bool) *VCDAuthConfig {
 	return &VCDAuthConfig{
 		Host:         host,
 		User:         user,
 		Password:     secret,
 		RefreshToken: refreshToken,
-		Org:          org,
+		UserOrg:      userOrg,
 		Insecure:     insecure,
 	}
 }
