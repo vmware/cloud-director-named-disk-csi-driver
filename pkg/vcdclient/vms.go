@@ -19,17 +19,14 @@ const (
 	VCDVMIDPrefix = "urn:vcloud:vm:"
 )
 
+// FindVMByName finds a VM in a vApp using the name. The client is expected to have a valid
+// bearer token when this function is called.
 func (client *Client) FindVMByName(vmName string) (*govcd.VM, error) {
 	if vmName == "" {
 		return nil, fmt.Errorf("vmName mandatory for FindVMByName")
 	}
 
-	if err := client.RefreshBearerToken(); err != nil {
-		return nil, fmt.Errorf("unable to refresh vcd token: [%v]", err)
-	}
-
 	klog.Infof("Trying to find vm [%s] in vApp [%s] by name", vmName, client.ClusterVAppName)
-
 	vApp, err := client.vdc.GetVAppByName(client.ClusterVAppName, true)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find vApp [%s] by name: [%v]", client.ClusterVAppName, err)
@@ -43,13 +40,11 @@ func (client *Client) FindVMByName(vmName string) (*govcd.VM, error) {
 	return vm, nil
 }
 
+// FindVMByUUID finds a VM in a vApp using the UUID. The client is expected to have a valid
+// bearer token when this function is called.
 func (client *Client) FindVMByUUID(vcdVmUUID string) (*govcd.VM, error) {
 	if vcdVmUUID == "" {
 		return nil, fmt.Errorf("vmUUID mandatory for FindVMByUUID")
-	}
-
-	if err := client.RefreshBearerToken(); err != nil {
-		return nil, fmt.Errorf("unable to refresh vcd token: [%v]", err)
 	}
 
 	klog.Infof("Trying to find vm [%s] in vApp [%s] by UUID", vcdVmUUID, client.ClusterVAppName)
