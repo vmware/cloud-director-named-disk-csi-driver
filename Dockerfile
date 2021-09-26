@@ -16,8 +16,9 @@ RUN ["make", "build-within-docker"]
 
 FROM photon:4.0-20210910
 
-RUN tdnf install yum && \
-	yum install -y udev
+# udev is to get scsi_id, e2fsprogs is for mkfs.ext4
+RUN tdnf install -y udev && \
+	tdnf install -y e2fsprogs
 
 WORKDIR /opt/vcloud/bin
 
