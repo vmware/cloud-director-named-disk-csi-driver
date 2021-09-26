@@ -34,7 +34,7 @@ type VCDAuthConfig struct {
 	VDC          string `json:"vdc"`
 	Insecure     bool   `json:"insecure"`
 	Token        string `json:"token"`
-	IsSysAdmin   bool   `json:"isSysAdmin,omitempty"` // will be set by GetBearerToken()
+	IsSysAdmin   bool   // will be set by GetBearerToken()
 }
 
 func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response, error) {
