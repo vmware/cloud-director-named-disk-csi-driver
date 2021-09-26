@@ -1,12 +1,13 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package vcdclient
 
 import (
 	"fmt"
+	"k8s.io/klog"
 	"strings"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -18,60 +19,51 @@ const (
 	VCDVMIDPrefix = "urn:vcloud:vm:"
 )
 
+// FindVMByName finds a VM in a vApp using the name. The client is expected to have a valid
+// bearer token when this function is called.
 func (client *Client) FindVMByName(vmName string) (*govcd.VM, error) {
 	if vmName == "" {
 		return nil, fmt.Errorf("vmName mandatory for FindVMByName")
 	}
 
-	// Query is be delimited to org where user exists. The expectation is that
-	// there will be exactly one VM with that name.
-	results, err := client.vdc.QueryWithNotEncodedParams(
-		map[string]string{
-			"type":   "vm",
-			"format": "records",
-		},
-		map[string]string{
-			"filter": fmt.Sprintf("(name==%s)", vmName),
-		},
-	)
+	klog.Infof("Trying to find vm [%s] in vApp [%s] by name", vmName, client.ClusterVAppName)
+	vApp, err := client.vdc.GetVAppByName(client.ClusterVAppName, true)
 	if err != nil {
-		return nil, fmt.Errorf("unable to query for VM [%s]: [%v]", vmName, err)
+		return nil, fmt.Errorf("unable to find vApp [%s] by name: [%v]", client.ClusterVAppName, err)
 	}
 
-	if results.Results.Total > 1 {
-		return nil, fmt.Errorf("obtained [%d] VMs for name [%s], expected only one",
-			int(results.Results.Total), vmName)
-	}
-
-	if results.Results.Total == 0 {
-		return nil, govcd.ErrorEntityNotFound
-	}
-
-	href := results.Results.VMRecord[0].HREF
-	vm, err := client.vcdClient.Client.GetVMByHref(href)
+	vm, err := vApp.GetVMByName(vmName, true)
 	if err != nil {
-		return nil, fmt.Errorf("unable to find vm by HREF [%s]: [%v]", href, err)
+		return nil, fmt.Errorf("unable to find vm [%s] in vApp [%s]: [%v]", vmName, client.ClusterVAppName, err)
 	}
 
 	return vm, nil
 }
 
+// FindVMByUUID finds a VM in a vApp using the UUID. The client is expected to have a valid
+// bearer token when this function is called.
 func (client *Client) FindVMByUUID(vcdVmUUID string) (*govcd.VM, error) {
 	if vcdVmUUID == "" {
 		return nil, fmt.Errorf("vmUUID mandatory for FindVMByUUID")
 	}
 
+	klog.Infof("Trying to find vm [%s] in vApp [%s] by UUID", vcdVmUUID, client.ClusterVAppName)
 	vmUUID := strings.TrimPrefix(vcdVmUUID, VCDVMIDPrefix)
-	href := fmt.Sprintf("%v/vApp/vm-%s", client.vcdClient.Client.VCDHREF.String(),
-		strings.ToLower(vmUUID))
-	vm, err := client.vcdClient.Client.GetVMByHref(href)
+
+	vApp, err := client.vdc.GetVAppByName(client.ClusterVAppName, true)
 	if err != nil {
-		return nil, fmt.Errorf("unable to find vm by HREF [%s]: [%v]", href, err)
+		return nil, fmt.Errorf("unable to find vApp [%s] by name: [%v]", client.ClusterVAppName, err)
+	}
+
+
+	vm, err := vApp.GetVMById(vmUUID, true)
+	if err != nil {
+		return nil, fmt.Errorf("unable to find vm UUID [%s] in vApp [%s]: [%v]",
+			vmUUID, client.ClusterVAppName, err)
 	}
 
 	return vm, nil
 }
-
 
 // IsVmNotAvailable : In VCD, if the VM is not available, it can be an access error or the VM may not be present.
 // Hence we sometimes get an error different from govcd.ErrorEntityNotFound

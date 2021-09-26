@@ -125,6 +125,8 @@ func runCommand() {
 		cloudConfig.VCD.Host,
 		cloudConfig.VCD.Org,
 		cloudConfig.VCD.VDC,
+		cloudConfig.VCD.VAppName,
+		cloudConfig.VCD.UserOrg,
 		cloudConfig.VCD.User,
 		cloudConfig.VCD.Secret,
 		cloudConfig.VCD.RefreshToken,
