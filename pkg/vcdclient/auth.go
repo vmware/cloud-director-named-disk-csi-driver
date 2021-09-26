@@ -34,6 +34,7 @@ type VCDAuthConfig struct {
 	VDC          string `json:"vdc"`
 	Insecure     bool   `json:"insecure"`
 	Token        string `json:"token"`
+	IsSysAdmin   bool   // will be set by GetBearerToken()
 }
 
 func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response, error) {
@@ -63,12 +64,13 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to set authorization header: [%v]", err)
 		}
-		vcdClient.Client.IsSysAdmin, err = isAdminUser(vcdClient)
+		config.IsSysAdmin, err = isAdminUser(vcdClient)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to determine if the user is a system administrator: [%v]", err)
 		}
+		vcdClient.Client.IsSysAdmin = config.IsSysAdmin
 
-		klog.Infof("Running CSI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
+		klog.Infof("Running CPI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
 		return vcdClient, resp, nil
 	}
 	resp, err = vcdClient.GetAuthResponse(config.User, config.Password, config.UserOrg)
