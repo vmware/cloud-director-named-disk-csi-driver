@@ -14,10 +14,11 @@ RUN ["make", "build-within-docker"]
 
 ########################################################
 
-FROM ubuntu:16.04
+FROM photon:4.0-20210910
 
-RUN apt-get update -y && \
-    apt-get install -y udev
+# udev is to get scsi_id, e2fsprogs is for mkfs.ext4
+RUN tdnf install -y udev && \
+	tdnf install -y e2fsprogs
 
 WORKDIR /opt/vcloud/bin
 
