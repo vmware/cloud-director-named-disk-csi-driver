@@ -76,7 +76,7 @@ func (client *Client) RefreshBearerToken() error {
 			client.vcdAuthConfig.UserOrg, client.vcdAuthConfig.User, href)
 	}
 
-	// Fill up the vdc field again so that clients can reuse legacy API
+	// reset legacy client
 	org, err := client.vcdClient.GetOrgByNameOrId(client.ClusterOrgName)
 	if err != nil {
 		return fmt.Errorf("unable to get vcd organization [%s]: [%v]",
@@ -101,6 +101,7 @@ func (client *Client) RefreshBearerToken() error {
 	}
 	client.apiClient = swaggerClient.NewAPIClient(swaggerConfig)
 
+	klog.Info("successfully refreshed all clients")
 	return nil
 }
 
