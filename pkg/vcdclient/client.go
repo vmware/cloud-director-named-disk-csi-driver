@@ -6,9 +6,11 @@
 package vcdclient
 
 import (
+	"crypto/tls"
 	"fmt"
 	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
 	"k8s.io/klog"
+	"net/http"
 	"sync"
 
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -21,23 +23,25 @@ var (
 
 // Client :
 type Client struct {
-	vcdAuthConfig *VCDAuthConfig
-	ClusterOrgName     string
-	ClusterOVDCName    string
-	ClusterVAppName    string
-	vcdClient     *govcd.VCDClient
-	vdc           *govcd.Vdc
-	ClusterID     string
-	rwLock        sync.RWMutex
-	apiClient     *swaggerClient.APIClient
+	vcdAuthConfig   *VCDAuthConfig
+	ClusterOrgName  string
+	ClusterOVDCName string
+	ClusterVAppName string
+	vcdClient       *govcd.VCDClient
+	vdc             *govcd.Vdc
+	ClusterID       string
+	rwLock          sync.RWMutex
+	apiClient       *swaggerClient.APIClient
 }
 
 func (client *Client) RefreshBearerToken() error {
 	klog.Infof("Refreshing vcd client")
+
 	href := fmt.Sprintf("%s/api", client.vcdAuthConfig.Host)
 	client.vcdClient.Client.APIVersion = VCloudApiVersion
 
 	klog.Infof("Is user sysadmin: [%v]", client.vcdClient.Client.IsSysAdmin)
+	var token string
 	if client.vcdAuthConfig.RefreshToken != "" {
 		// Refresh vcd client using refresh token
 		accessTokenResponse, _, err := client.vcdAuthConfig.getAccessTokenFromRefreshToken(
@@ -47,6 +51,7 @@ func (client *Client) RefreshBearerToken() error {
 				"failed to get access token from refresh token for user [%s/%s] for url [%s]: [%v]",
 				client.vcdAuthConfig.UserOrg, client.vcdAuthConfig.User, href, err)
 		}
+
 		err = client.vcdClient.SetToken(client.vcdAuthConfig.UserOrg,
 			"Authorization", fmt.Sprintf("Bearer %s", accessTokenResponse.AccessToken))
 		if err != nil {
@@ -55,6 +60,7 @@ func (client *Client) RefreshBearerToken() error {
 		// The previous function call will unset IsSysAdmin boolean for administrator because govcd makes a hard check
 		// on org name. Set the boolean back
 		client.vcdClient.Client.IsSysAdmin = client.vcdAuthConfig.IsSysAdmin
+		token = accessTokenResponse.AccessToken
 	} else if client.vcdAuthConfig.User != "" && client.vcdAuthConfig.Password != "" {
 		// Refresh vcd client using username and password
 		resp, err := client.vcdClient.GetAuthResponse(client.vcdAuthConfig.User, client.vcdAuthConfig.Password,
@@ -63,13 +69,14 @@ func (client *Client) RefreshBearerToken() error {
 			return fmt.Errorf("unable to authenticate [%s/%s] for url [%s]: [%+v] : [%v]",
 				client.vcdAuthConfig.UserOrg, client.vcdAuthConfig.User, href, resp, err)
 		}
+		token = client.vcdClient.Client.VCDToken
 	} else {
 		return fmt.Errorf(
 			"unable to find refresh token or secret to refresh vcd client for user [%s/%s] and url [%s]",
 			client.vcdAuthConfig.UserOrg, client.vcdAuthConfig.User, href)
 	}
 
-	// Fill up the vdc field again so that clients can reuse legacy API
+	// reset legacy client
 	org, err := client.vcdClient.GetOrgByNameOrId(client.ClusterOrgName)
 	if err != nil {
 		return fmt.Errorf("unable to get vcd organization [%s]: [%v]",
@@ -83,6 +90,18 @@ func (client *Client) RefreshBearerToken() error {
 	}
 	client.vdc = vdc
 
+	// reset swagger client
+	swaggerConfig := swaggerClient.NewConfiguration()
+	swaggerConfig.BasePath = fmt.Sprintf("%s/cloudapi", client.vcdAuthConfig.Host)
+	swaggerConfig.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token))
+	swaggerConfig.HTTPClient = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: client.vcdAuthConfig.Insecure},
+		},
+	}
+	client.apiClient = swaggerClient.NewAPIClient(swaggerConfig)
+
+	klog.Info("successfully refreshed all clients")
 	return nil
 }
 
@@ -120,13 +139,13 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string, vAppNa
 	}
 
 	client := &Client{
-		vcdAuthConfig: vcdAuthConfig,
+		vcdAuthConfig:   vcdAuthConfig,
 		ClusterOrgName:  orgName,
 		ClusterOVDCName: vdcName,
 		ClusterVAppName: vAppName,
-		vcdClient:     vcdClient,
-		ClusterID:     clusterID,
-		apiClient:     apiClient,
+		vcdClient:       vcdClient,
+		ClusterID:       clusterID,
+		apiClient:       apiClient,
 	}
 
 	if getVdcClient {

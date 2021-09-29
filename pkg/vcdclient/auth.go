@@ -110,7 +110,7 @@ func (config *VCDAuthConfig) GetSwaggerClientFromSecrets() (*govcd.VCDClient, *s
 	swaggerConfig.AddDefaultHeader("Authorization", authHeader)
 	swaggerConfig.HTTPClient = &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: config.Insecure},
 		},
 	}
 
