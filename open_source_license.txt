@@ -1,0 +1,3385 @@
+cloud-director-named-disk-csi-driver 1.0.0 GA
+
+======================================================================
+
+Copyright (c) 2021 VMware, Inc.  All rights reserved.
+
+This product is licensed to you under the Apache License version 2.0 (the License).  You may not use this product except in compliance with the License.
+
+                             Apache License
+                      Version 2.0, January 2004
+                  http://www.apache.org/licenses/
+
+
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+1. Definitions.
+
+"License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+
+"Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.
+
+"Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
+
+"You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.
+
+"Source" form shall mean the preferred form for making modifications,
+including but not limited to software source code, documentation source, and configuration files.
+
+"Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.
+
+"Work" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).
+
+"Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain
+separable from, or merely link (or bind by name) to the interfaces of,
+the Work and Derivative Works thereof.
+
+"Contribution" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, "submitted" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as "Not a Contribution."
+
+"Contributor" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.
+
+2. Grant of Copyright License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.
+
+3. Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct
+or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.
+
+4. Redistribution. You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:
+
+(a) You must give any other recipients of the Work or Derivative Works a copy of this License; and
+
+(b) You must cause any modified files to carry prominent notices stating that You changed the files; and
+
+(c) You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and
+
+(d) If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and
+wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License.
+
+You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.
+
+5. Submission of Contributions. Unless You explicitly state otherwise,
+any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.
+
+6. Trademarks. This License does not grant permission to use the trade
+names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the
+origin of the Work and reproducing the content of the NOTICE file.
+
+7. Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.
+
+8. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.
+
+9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
+
+END OF TERMS AND CONDITIONS
+
+APPENDIX: How to apply the Apache License to your work.
+
+To apply the Apache License to your work, attach the following boilerplate notice, with the fields enclosed by brackets "[]" replaced with your own identifying information. (Don't include the brackets!)  The text should be enclosed in the appropriate comment syntax for the file format. We also recommend that a file or class name and description of purpose be included on the same "printed page" as the copyright notice for easier identification within third-party archives.
+
+Copyright [yyyy] [name of copyright owner]
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+======================================================================
+
+cloud-director-named-disk-csi-driver 1.0.0 includes a number of components with separate 
+copyright notices and license terms.  This product does not necessarily 
+use all the open source components referred to below. Your use of the 
+source code for these components is subject to the terms and conditions 
+of the following licenses.
+
+
+==================== TABLE OF CONTENTS ====================
+
+The following is a listing of the open source components detailed in
+this document. This list is provided for your convenience; please read
+further if you wish to review the copyright notice(s) and the full text
+of the license associated with each component.
+
+
+SECTION 1: Apache License, V2.0
+
+   >>> akutz_gofsutil-v0.1.2
+   >>> google.golang.org/grpc-v1.31.0
+   >>> k8s.io/klog-v0.3.1
+   >>> gopkg.in/yaml.v2-v2.4.0
+   >>> container-storage-interface_spec-v1.4.0
+   >>> k8s.io/component-base-v0.0.0-20190918200425-ed2f0867c778
+   >>> github.com/spf13/cobra-v0.0.0-20180319062004-c439c4fa0937
+
+SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
+
+   >>> antihax_optional-v1.0.0
+   >>> github.com/stretchr/testify-v1.7.0
+   >>> google/uuid-v1.2.0
+   >>> golang.org/x/oauth2-v0.0.0-20210819190943-2bc19b11175f
+   >>> github.com/spf13/pflag-v1.0.1
+
+
+APPENDIX. Standard License Files
+
+   >>> Apache License, V2.0
+
+
+-------------------- SECTION 1: Apache License, V2.0 --------------------
+
+   >>> akutz_gofsutil-v0.1.2
+
+       License: Apache 2.0
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > BSD-3
+
+       akutz-gofsutil-v0.1.2.tar.gz\akutz-gofsutil-v0.1.2.tar\gofsutil-0.1.2\vendor\golang.org\x\crypto\LICENSE
+
+       Copyright (c) 2009 The Go Authors. All rights reserved.
+
+       Redistribution and use in source and binary forms, with or without
+       modification, are permitted provided that the following conditions are
+       met:
+
+          * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+          * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following disclaimer
+       in the documentation and/or other materials provided with the
+       distribution.
+          * Neither the name of Google Inc. nor the names of its
+       contributors may be used to endorse or promote products derived from
+       this software without specific prior written permission.
+
+       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+       A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+       OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+       Additional IP Rights Grant (Patents)
+
+       "This implementation" means the copyrightable works distributed by
+       Google as part of the Go project.
+
+       Google hereby grants to You a perpetual, worldwide, non-exclusive,
+       no-charge, royalty-free, irrevocable (except as stated in this section)
+       patent license to make, have made, use, offer to sell, sell, import,
+       transfer and otherwise run, modify and propagate the contents of this
+       implementation of Go, where such license applies only to those patent
+       claims, both currently owned or controlled by Google and acquired in
+       the future, licensable by Google that are necessarily infringed by this
+       implementation of Go.  This grant does not include claims that would be
+       infringed only as a consequence of further modification of this
+       implementation.  If you or your agent or exclusive licensee institute or
+       order or agree to the institution of patent litigation against any
+       entity (including a cross-claim or counterclaim in a lawsuit) alleging
+       that this implementation of Go or any code incorporated within this
+       implementation of Go constitutes direct or contributory patent
+       infringement, or inducement of patent infringement, then any patent
+       rights granted to you under this License for this implementation of Go
+       shall terminate as of the date such litigation is filed.
+
+       > MIT
+
+       akutz-gofsutil-v0.1.2.tar.gz\akutz-gofsutil-v0.1.2.tar\gofsutil-0.1.2\vendor\github.com\sirupsen\logrus\LICENSE
+
+       The MIT License (MIT)
+
+       Copyright (c) 2014 Simon Eskildsen
+
+       Permission is hereby granted, free of charge, to any person obtaining a copy
+       of this software and associated documentation files (the "Software"), to deal
+       in the Software without restriction, including without limitation the rights
+       to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+       copies of the Software, and to permit persons to whom the Software is
+       furnished to do so, subject to the following conditions:
+
+       The above copyright notice and this permission notice shall be included in
+       all copies or substantial portions of the Software.
+
+       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+       IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+       FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+       AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+       LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+       OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+       THE SOFTWARE.
+
+
+   >>> google.golang.org/grpc-v1.31.0
+
+       Copyright 2017 gRPC authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache2.0
+
+       attributes/attributes.go
+
+       Copyright 2019
+
+       attributes/attributes_test.go
+
+       Copyright 2019
+
+       backoff/backoff.go
+
+       Copyright 2019
+
+       backoff.go
+
+       Copyright 2017
+
+       balancer/balancer.go
+
+       Copyright 2017
+
+       balancer/base/balancer.go
+
+       Copyright 2017
+
+       balancer/base/base.go
+
+       Copyright 2017
+
+       balancer_conn_wrappers.go
+
+       Copyright 2017
+
+       balancer_conn_wrappers_test.go
+
+       Copyright 2019
+
+       balancer/grpclb/grpclb_config.go
+
+       Copyright 2019
+
+       balancer/grpclb/grpclb_config_test.go
+
+       Copyright 2019
+
+       balancer/grpclb/grpclb.go
+
+       Copyright 2016
+
+       balancer/grpclb/grpclb_picker.go
+
+       Copyright 2017
+
+       balancer/grpclb/grpclb_remote_balancer.go
+
+       Copyright 2017
+
+       balancer/grpclb/grpclb_test.go
+
+       Copyright 2016
+
+       balancer/grpclb/grpclb_test_util_test.go
+
+       Copyright 2019
+
+       balancer/grpclb/grpclb_util.go
+
+       Copyright 2016
+
+       balancer/grpclb/grpclb_util_test.go
+
+       Copyright 2018
+
+       balancer/roundrobin/roundrobin.go
+
+       Copyright 2017
+
+       balancer/roundrobin/roundrobin_test.go
+
+       Copyright 2017
+
+       balancer_switching_test.go
+
+       Copyright 2017
+
+       balancer/weightedroundrobin/weightedroundrobin.go
+
+       Copyright 2019
+
+       benchmark/benchmain/main.go
+
+       Copyright 2017
+
+       benchmark/benchmark.go
+
+       Copyright 2014
+
+       benchmark/benchresult/main.go
+
+       Copyright 2017
+
+       benchmark/client/main.go
+
+       Copyright 2017
+
+       benchmark/flags/flags.go
+
+       Copyright 2019
+
+       benchmark/flags/flags_test.go
+
+       Copyright 2019
+
+       benchmark/grpc_testing/control.proto
+
+       Copyright 2016
+
+       benchmark/grpc_testing/messages.proto
+
+       Copyright 2016
+
+       benchmark/grpc_testing/payloads.proto
+
+       Copyright 2016
+
+       benchmark/grpc_testing/services.proto
+
+       Copyright 2016
+
+       benchmark/grpc_testing/stats.proto
+
+       Copyright 2016
+
+       benchmark/latency/latency.go
+
+       Copyright 2017
+
+       benchmark/latency/latency_test.go
+
+       Copyright 2017
+
+       benchmark/primitives/code_string_test.go
+
+       Copyright 2017
+
+       benchmark/primitives/context_test.go
+
+       Copyright 2017
+
+       benchmark/primitives/primitives_test.go
+
+       Copyright 2017
+
+       benchmark/primitives/syncmap_test.go
+
+       Copyright 2019
+
+       benchmark/server/main.go
+
+       Copyright 2017
+
+       benchmark/stats/curve.go
+
+       Copyright 2019
+
+       benchmark/stats/histogram.go
+
+       Copyright 2017
+
+       benchmark/stats/stats.go
+
+       Copyright 2017
+
+       benchmark/worker/benchmark_client.go
+
+       Copyright 2016
+
+       benchmark/worker/benchmark_server.go
+
+       Copyright 2016
+
+       benchmark/worker/main.go
+
+       Copyright 2016
+
+       call.go
+
+       Copyright 2014
+
+       call_test.go
+
+       Copyright 2014
+
+       channelz/service/func_linux.go
+
+       Copyright 2018
+
+       channelz/service/func_nonlinux.go
+
+       Copyright 2018
+
+       channelz/service/service.go
+
+       Copyright 2018
+
+       channelz/service/service_sktopt_test.go
+
+       Copyright 2018
+
+       channelz/service/service_test.go
+
+       Copyright 2018
+
+       channelz/service/util_sktopt_386_test.go
+
+       Copyright 2018
+
+       channelz/service/util_sktopt_amd64_test.go
+
+       Copyright 2018
+
+       clientconn.go
+
+       Copyright 2014
+
+       clientconn_state_transition_test.go
+
+       Copyright 2018
+
+       clientconn_test.go
+
+       Copyright 2014
+
+       codec.go
+
+       Copyright 2014
+
+       codec_test.go
+
+       Copyright 2014
+
+       codes/codes.go
+
+       Copyright 2014
+
+       codes/codes_test.go
+
+       Copyright 2017
+
+       codes/code_string.go
+
+       Copyright 2017
+
+       connectivity/connectivity.go
+
+       Copyright 2017
+
+       credentials/alts/alts.go
+
+       Copyright 2018
+
+       credentials/alts/alts_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/authinfo/authinfo.go
+
+       Copyright 2018
+
+       credentials/alts/internal/authinfo/authinfo_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/common.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/aeadrekey.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/aeadrekey_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/aes128gcm.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/aes128gcmrekey.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/aes128gcmrekey_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/aes128gcm_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/common.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/counter.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/counter_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/record.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/record_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/conn/utils.go
+
+       Copyright 2018
+
+       credentials/alts/internal/handshaker/handshaker.go
+
+       Copyright 2018
+
+       credentials/alts/internal/handshaker/handshaker_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/handshaker/service/service.go
+
+       Copyright 2018
+
+       credentials/alts/internal/handshaker/service/service_test.go
+
+       Copyright 2018
+
+       credentials/alts/internal/testutil/testutil.go
+
+       Copyright 2018
+
+       credentials/alts/utils.go
+
+       Copyright 2018
+
+       credentials/alts/utils_test.go
+
+       Copyright 2018
+
+       credentials/credentials.go
+
+       Copyright 2014
+
+       credentials/credentials_test.go
+
+       Copyright 2016
+
+       credentials/go12.go
+
+       Copyright 2019
+
+       credentials/google/google.go
+
+       Copyright 2018
+
+       credentials/internal/syscallconn_appengine.go
+
+       Copyright 2018
+
+       credentials/internal/syscallconn.go
+
+       Copyright 2018
+
+       credentials/internal/syscallconn_test.go
+
+       Copyright 2018
+
+       credentials/oauth/oauth.go
+
+       Copyright 2015
+
+       credentials/tls.go
+
+       Copyright 2014
+
+       dialoptions.go
+
+       Copyright 2018
+
+       doc.go
+
+       Copyright 2015
+
+       encoding/encoding.go
+
+       Copyright 2017
+
+       encoding/gzip/gzip.go
+
+       Copyright 2017
+
+       encoding/proto/proto_benchmark_test.go
+
+       Copyright 2014
+
+       encoding/proto/proto.go
+
+       Copyright 2018
+
+       encoding/proto/proto_test.go
+
+       Copyright 2018
+
+       grpclog/glogger/glogger.go
+
+       Copyright 2015
+
+       grpclog/grpclog.go
+
+       Copyright 2017
+
+       grpclog/logger.go
+
+       Copyright 2015
+
+       grpclog/loggerv2.go
+
+       Copyright 2017
+
+       grpclog/loggerv2_test.go
+
+       Copyright 2017
+
+       grpc_test.go
+
+       Copyright 2018
+
+       health/client.go
+
+       Copyright 2018
+
+       health/client_test.go
+
+       Copyright 2018
+
+       health/server.go
+
+       Copyright 2017
+
+       health/server_internal_test.go
+
+       Copyright 2018
+
+       health/server_test.go
+
+       Copyright 2018
+
+       interceptor.go
+
+       Copyright 2016
+
+       internal/backoff/backoff.go
+
+       Copyright 2017
+
+       internal/balancerload/load.go
+
+       Copyright 2019
+
+       internal/binarylog/binarylog_end2end_test.go
+
+       Copyright 2018
+
+       internal/binarylog/binarylog.go
+
+       Copyright 2018
+
+       internal/binarylog/binarylog_test.go
+
+       Copyright 2018
+
+       internal/binarylog/binarylog_testutil.go
+
+       Copyright 2018
+
+       internal/binarylog/env_config.go
+
+       Copyright 2018
+
+       internal/binarylog/env_config_test.go
+
+       Copyright 2018
+
+       internal/binarylog/method_logger.go
+
+       Copyright 2018
+
+       internal/binarylog/method_logger_test.go
+
+       Copyright 2018
+
+       internal/binarylog/regexp_test.go
+
+       Copyright 2018
+
+       internal/binarylog/sink.go
+
+       Copyright 2018
+
+       internal/buffer/unbounded.go
+
+       Copyright 2019
+
+       internal/buffer/unbounded_test.go
+
+       Copyright 2019
+
+       internal/cache/timeoutCache.go
+
+       Copyright 2019
+
+       internal/cache/timeoutCache_test.go
+
+       Copyright 2019
+
+       internal/channelz/funcs.go
+
+       Copyright 2018
+
+       internal/channelz/types.go
+
+       Copyright 2018
+
+       internal/channelz/types_linux.go
+
+       Copyright 2018
+
+       internal/channelz/types_nonlinux.go
+
+       Copyright 2018
+
+       internal/channelz/util_linux.go
+
+       Copyright 2018
+
+       internal/channelz/util_nonlinux.go
+
+       Copyright 2018
+
+       internal/channelz/util_test.go
+
+       Copyright 2018
+
+       internal/envconfig/envconfig.go
+
+       Copyright 2018
+
+       internal/grpcrand/grpcrand.go
+
+       Copyright 2018
+
+       internal/grpcsync/event.go
+
+       Copyright 2018
+
+       internal/grpcsync/event_test.go
+
+       Copyright 2018
+
+       internal/grpctest/example_test.go
+
+       Copyright 2019
+
+       internal/grpctest/grpctest.go
+
+       Copyright 2018
+
+       internal/grpctest/grpctest_test.go
+
+       Copyright 2018
+
+       internal/grpcutil/method.go
+
+       Copyright 2018
+
+       internal/grpcutil/method_test.go
+
+       Copyright 2018
+
+       internal/internal.go
+
+       Copyright 2016
+
+       internal/leakcheck/leakcheck.go
+
+       Copyright 2017
+
+       internal/leakcheck/leakcheck_test.go
+
+       Copyright 2017
+
+       internal/profiling/buffer/buffer_appengine.go
+
+       Copyright 2019
+
+       internal/profiling/buffer/buffer.go
+
+       Copyright 2019
+
+       internal/profiling/buffer/buffer_test.go
+
+       Copyright 2019
+
+       internal/profiling/goid_modified.go
+
+       Copyright 2019
+
+       internal/profiling/goid_regular.go
+
+       Copyright 2019
+
+       internal/profiling/profiling.go
+
+       Copyright 2019
+
+       internal/profiling/profiling_test.go
+
+       Copyright 2019
+
+       internal/proto/grpc_service_config/example_test.go
+
+       Copyright 2019
+
+       internal/resolver/dns/dns_resolver.go
+
+       Copyright 2018
+
+       internal/resolver/dns/dns_resolver_test.go
+
+       Copyright 2018
+
+       internal/resolver/dns/go113.go
+
+       Copyright 2019
+
+       internal/resolver/passthrough/passthrough.go
+
+       Copyright 2017
+
+       internal/syscall/syscall_linux.go
+
+       Copyright 2018
+
+       internal/syscall/syscall_nonlinux.go
+
+       Copyright 2018
+
+       internal/testutils/pipe_listener.go
+
+       Copyright 2018
+
+       internal/testutils/pipe_listener_test.go
+
+       Copyright 2018
+
+       internal/testutils/status_equal.go
+
+       Copyright 2019
+
+       internal/testutils/status_equal_test.go
+
+       Copyright 2019
+
+       internal/transport/bdp_estimator.go
+
+       Copyright 2017
+
+       internal/transport/controlbuf.go
+
+       Copyright 2014
+
+       internal/transport/defaults.go
+
+       Copyright 2018
+
+       internal/transport/flowcontrol.go
+
+       Copyright 2014
+
+       internal/transport/handler_server.go
+
+       Copyright 2016
+
+       internal/transport/handler_server_test.go
+
+       Copyright 2016
+
+       internal/transport/http2_client.go
+
+       Copyright 2014
+
+       internal/transport/http2_server.go
+
+       Copyright 2014
+
+       internal/transport/http_util.go
+
+       Copyright 2014
+
+       internal/transport/http_util_test.go
+
+       Copyright 2014
+
+       internal/transport/keepalive_test.go
+
+       Copyright 2019
+
+       internal/transport/transport.go
+
+       Copyright 2014
+
+       internal/transport/transport_test.go
+
+       Copyright 2014
+
+       internal/wrr/edf.go
+
+       Copyright 2019
+
+       internal/wrr/random.go
+
+       Copyright 2019
+
+       internal/wrr/wrr.go
+
+       Copyright 2019
+
+       internal/wrr/wrr_test.go
+
+       Copyright 2019
+
+       interop/alts/client/client.go
+
+       Copyright 2018
+
+       interop/alts/server/server.go
+
+       Copyright 2018
+
+       interop/client/client.go
+
+       Copyright 2014
+
+       interop/fake_grpclb/fake_grpclb.go
+
+       Copyright 2018
+
+       interop/grpclb_fallback/client.go
+
+       Copyright 2019
+
+       interop/grpc_testing/test.proto
+
+       Copyright 2017
+
+       interop/http2/negative_http2_client.go
+
+       Copyright 2016
+
+       interop/interop_test.sh
+
+       Copyright 2019
+
+       interop/server/server.go
+
+       Copyright 2014
+
+       interop/test_utils.go
+
+       Copyright 2014
+
+       keepalive/keepalive.go
+
+       Copyright 2017
+
+       metadata/metadata.go
+
+       Copyright 2014
+
+       metadata/metadata_test.go
+
+       Copyright 2014
+
+       peer/peer.go
+
+       Copyright 2014
+
+       picker_wrapper.go
+
+       Copyright 2017
+
+       picker_wrapper_test.go
+
+       Copyright 2017
+
+       pickfirst.go
+
+       Copyright 2017
+
+       pickfirst_test.go
+
+       Copyright 2017
+
+       preloader.go
+
+       Copyright 2019
+
+       profiling/cmd/catapult.go
+
+       Copyright 2019
+
+       profiling/cmd/flags.go
+
+       Copyright 2019
+
+       profiling/cmd/local.go
+
+       Copyright 2019
+
+       profiling/cmd/main.go
+
+       Copyright 2019
+
+       profiling/cmd/remote.go
+
+       Copyright 2019
+
+       profiling/profiling.go
+
+       Copyright 2019
+
+       profiling/proto/service.proto
+
+       Copyright 2019
+
+       profiling/service/service.go
+
+       Copyright 2019
+
+       proxy.go
+
+       Copyright 2017
+
+       proxy_test.go
+
+       Copyright 2017
+
+       reflection/grpc_reflection_v1alpha/reflection.proto
+
+       Copyright 2016
+
+       reflection/grpc_testing/proto2_ext2.proto
+
+       Copyright 2017
+
+       reflection/grpc_testing/proto2_ext.proto
+
+       Copyright 2017
+
+       reflection/grpc_testing/proto2.proto
+
+       Copyright 2017
+
+       reflection/grpc_testing/test.proto
+
+       Copyright 2017
+
+       reflection/serverreflection.go
+
+       Copyright 2016
+
+       reflection/serverreflection_test.go
+
+       Copyright 2016
+
+       resolver_conn_wrapper.go
+
+       Copyright 2017
+
+       resolver_conn_wrapper_test.go
+
+       Copyright 2017
+
+       resolver/dns/dns_resolver.go
+
+       Copyright 2018
+
+       resolver/manual/manual.go
+
+       Copyright 2017
+
+       resolver/passthrough/passthrough.go
+
+       Copyright 2017
+
+       resolver/resolver.go
+
+       Copyright 2017
+
+       rpc_util.go
+
+       Copyright 2014
+
+       rpc_util_test.go
+
+       Copyright 2014
+
+       server.go
+
+       Copyright 2014
+
+       server_test.go
+
+       Copyright 2016
+
+       service_config.go
+
+       Copyright 2017
+
+       serviceconfig/serviceconfig.go
+
+       Copyright 2019
+
+       service_config_test.go
+
+       Copyright 2017
+
+       stats/grpc_testing/test.proto
+
+       Copyright 2017
+
+       stats/handlers.go
+
+       Copyright 2016
+
+       stats/stats.go
+
+       Copyright 2016
+
+       stats/stats_test.go
+
+       Copyright 2016
+
+       status/status_ext_test.go
+
+       Copyright 2019
+
+       status/status.go
+
+       Copyright 2017
+
+       status/status_test.go
+
+       Copyright 2017
+
+       stream.go
+
+       Copyright 2014
+
+       stress/client/main.go
+
+       Copyright 2016
+
+       stress/grpc_testing/metrics.proto
+
+       Copyright 2015-2016
+
+       stress/metrics_client/main.go
+
+       Copyright 2016
+
+       tap/tap.go
+
+       Copyright 2016
+
+       test/balancer_test.go
+
+       Copyright 2018
+
+       test/bufconn/bufconn.go
+
+       Copyright 2017
+
+       test/bufconn/bufconn_test.go
+
+       Copyright 2017
+
+       test/channelz_linux_go110_test.go
+
+       Copyright 2018
+
+       test/channelz_test.go
+
+       Copyright 2018
+
+       test/codec_perf/perf.proto
+
+       Copyright 2017
+
+       test/context_canceled_test.go
+
+       Copyright 2019
+
+       test/creds_test.go
+
+       Copyright 2018
+
+       testdata/testdata.go
+
+       Copyright 2017
+
+       test/end2end_test.go
+
+       Copyright 2014
+
+       test/goaway_test.go
+
+       Copyright 2019
+
+       test/go_vet/vet.go
+
+       Copyright 2018
+
+       test/gracefulstop_test.go
+
+       Copyright 2017
+
+       test/grpc_testing/test.proto
+
+       Copyright 2017
+
+       test/healthcheck_test.go
+
+       Copyright 2018
+
+       test/race.go
+
+       Copyright 2016
+
+       test/rawConnWrapper.go
+
+       Copyright 2018
+
+       test/retry_test.go
+
+       Copyright 2018
+
+       test/servertester.go
+
+       Copyright 2016
+
+       test/stream_cleanup_test.go
+
+       Copyright 2019
+
+       trace.go
+
+       Copyright 2015
+
+       trace_test.go
+
+       Copyright 2019
+
+       version.go
+
+       Copyright 2018
+
+       xds/internal/balancer/balancergroup/balancergroup.go
+
+       Copyright 2019
+
+       xds/internal/balancer/balancergroup/balancergroup_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/cdsbalancer/cdsbalancer.go
+
+       Copyright 2019
+
+       xds/internal/balancer/cdsbalancer/cdsbalancer_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/config.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/eds.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/eds_impl.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/eds_impl_priority.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/eds_impl_priority_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/eds_impl_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/eds_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/util.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/util_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/xds_client_wrapper.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/xds_client_wrapper_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/xds_lrs_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/edsbalancer/xds_old.go
+
+       Copyright 2019
+
+       xds/internal/balancer/lrs/lrs.go
+
+       Copyright 2019
+
+       xds/internal/balancer/lrs/lrs_test.go
+
+       Copyright 2019
+
+       xds/internal/balancer/orca/orca.go
+
+       Copyright 2019
+
+       xds/internal/balancer/orca/orca_test.go
+
+       Copyright 2019
+
+       xds/internal/client/bootstrap/bootstrap.go
+
+       Copyright 2019
+
+       xds/internal/client/bootstrap/bootstrap_test.go
+
+       Copyright 2019
+
+       xds/internal/client/client.go
+
+       Copyright 2019
+
+       xds/internal/client/client_loadreport.go
+
+       Copyright 2019
+
+       xds/internal/client/client_test.go
+
+       Copyright 2019
+
+       xds/internal/client/testutil_test.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_ack_test.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_cds.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_cds_test.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_eds.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_eds_test.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_eds_testutil.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_lds.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_lds_test.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_rds.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_rds_test.go
+
+       Copyright 2019
+
+       xds/internal/client/v2client_test.go
+
+       Copyright 2019
+
+       xds/internal/internal.go
+
+       Copyright 2019
+
+       xds/internal/internal_test.go
+
+       Copyright 2019
+
+       xds/internal/resolver/xds_resolver.go
+
+       Copyright 2019
+
+       xds/internal/resolver/xds_resolver_test.go
+
+       Copyright 2019
+
+       xds/internal/testutils/channel.go
+
+       Copyright 2019
+
+       xds/internal/testutils/fakeclient/client.go
+
+       Copyright 2019
+
+       xds/internal/testutils/fakeserver/server.go
+
+       Copyright 2019
+
+
+   >>> k8s.io/klog-v0.3.1
+
+       License: Apache 2.0
+
+
+   >>> gopkg.in/yaml.v2-v2.4.0
+
+       Found in: ./LICENSE
+
+       Copyright {yyyy
+
+          Licensed under the Apache License, Version 2.0 (the "License");
+          you may not use this file except in compliance with the License.
+          You may obtain a copy of the License at
+        *
+        * http://www.apache.org/licenses/LICENSE-2.0
+        *
+        * Unless required by applicable law or agreed to in writing, software distributed under the License
+        * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+        * or implied. See the License for the specific language governing permissions and limitations under
+        * the License.
+
+
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache2.0
+
+       ./NOTICE
+
+       Copyright 2011-2016 Canonical Ltd.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+        *
+        * http://www.apache.org/licenses/LICENSE-2.0
+        *
+        * Unless required by applicable law or agreed to in writing, software distributed under the License
+        * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+        * or implied. See the License for the specific language governing permissions and limitations under
+        * the License.
+
+       > MIT
+
+       ./LICENSE.libyaml
+
+       Copyright (c) 2006 Kirill Simonov
+
+       Permission is hereby granted, free of charge, to any person obtaining a copy of
+       this software and associated documentation files (the "Software"), to deal in
+       the Software without restriction, including without limitation the rights to
+       use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+       of the Software, and to permit persons to whom the Software is furnished to do
+       so, subject to the following conditions:
+
+       The above copyright notice and this permission notice shall be included in all
+       copies or substantial portions of the Software.
+
+
+       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+   >>> container-storage-interface_spec-v1.4.0
+
+
+
+   >>> k8s.io/component-base-v0.0.0-20190918200425-ed2f0867c778
+
+       Found in: component-base-master/metrics/legacyregistry/registry.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache 2.0
+
+       component-base-master/cli/flag/ciphersuites_flag.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/ciphersuites_flag_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/colon_separated_multimap_string_string.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/colon_separated_multimap_string_string_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/configuration_map.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/flags.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/flags_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/langle_separated_map_string_string.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/langle_separated_map_string_string_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/map_string_bool.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/map_string_bool_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/map_string_string.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/map_string_string_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/namedcertkey_flag.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/namedcertkey_flag_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/noop.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/omitempty.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/sectioned.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/string_flag.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/string_slice_flag.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/string_slice_flag_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/flag/tristate.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/globalflag/globalflags.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/globalflag/globalflags_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/cli/run.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/codec/codec.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/doc.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/options/leaderelectionconfig.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/testing/apigroup.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/testing/apigroup_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/testing/defaulting.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/testing/helpers.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/testing/roundtrip.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/types.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/v1alpha1/conversion.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/v1alpha1/defaults.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/v1alpha1/doc.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/v1alpha1/register.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/v1alpha1/types.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/validation/validation.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/config/validation/validation_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/configz/configz.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/configz/configz_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/doc.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/featuregate/feature_gate.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/featuregate/feature_gate_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/featuregate/testing/feature_gate.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/config.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/datapol/datapol.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/datapol/datapol_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/datapol/externaltypes.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/datapol/externaltypes_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/example/cmd/logger.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/json/json_benchmark_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/json/json.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/json/json_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/json/klog_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/json/register/register.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/json/register/register_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/logreduction/logreduction.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/logreduction/logreduction_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/logs.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/options.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/options_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/registry.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/sanitization/klog_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/sanitization/sanitization.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/sanitization/sanitization_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/testinit/testinit.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/logs/validate.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/collector.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/collector_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/counter.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/counter_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/desc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/desc_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/gauge.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/gauge_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/histogram.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/histogram_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/http.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/http_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/labels.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/metric.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/options.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/options_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/opts.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/opts_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/processstarttime.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/processstarttime_others.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/processstarttime_windows.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/prometheus/clientgo/leaderelection/metrics.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/prometheus/clientgo/metrics.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/prometheus/ratelimiter/rate_limiter.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/prometheus/ratelimiter/rate_limiter_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/prometheus/restclient/metrics.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/prometheus/version/metrics.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/prometheus/workqueue/metrics.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/registry.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/registry_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/summary.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/summary_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/testutil/metrics.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/testutil/metrics_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/testutil/promlint.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/testutil/promlint_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/testutil/testutil.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/testutil/testutil_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/value.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/version.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/version_parser.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/version_parser_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/metrics/wrappers.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/term/term.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/traces/utils.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/version/base.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/version/verflag/verflag.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       component-base-master/version/version.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+
+   >>> github.com/spf13/cobra-v0.0.0-20180319062004-c439c4fa0937
+
+       License: Apache 2.0
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache 2.0
+
+       cobra-master/cobra/cmd/add.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/helpers.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/license_apache_2.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/license_bsd_clause_2.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/license_bsd_clause_3.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/license_gpl_2.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/license_gpl_3.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/license_mit.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/root.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/testdata/main.go.golden
+
+       Copyright (c) 2021 NAME HERE
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/testdata/root.go.golden
+
+       Copyright (c) 2021 NAME HERE
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/cmd/testdata/test.go.golden
+
+       Copyright (c) 2021 NAME HERE
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra.go
+
+       Copyright (c) 2013 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/main.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/command.go
+
+       Copyright (c) 2013 Steve Francia <spf@spf13.com>
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/doc/man_docs.go
+
+       Copyright 2015 Red Hat Inc.
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/doc/md_docs.go
+
+       Copyright 2015 Red Hat Inc.
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/doc/rest_docs.go
+
+       Copyright 2015 Red Hat Inc.
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/doc/util.go
+
+       Copyright 2015 Red Hat Inc.
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/doc/yaml_docs.go
+
+       Copyright 2016 French Ben
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       > BSD-3
+
+       cobra-master/cobra/cmd/licenses.go
+
+       Copyright (c) 2015 Steve Francia <spf@spf13.com>
+
+       See SECTION 7 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cobra-master/cobra/README.md
+
+       Copyright (c) 2020 Steve Francia <spf@spf13.com>
+
+       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+
+
+-------------------- SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES --------------------
+
+   >>> antihax_optional-v1.0.0
+
+       The MIT License (MIT)
+       Copyright (c) 2016 Adam Hintz
+
+       Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+       The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+   >>> github.com/stretchr/testify-v1.7.0
+
+       Found in: LICENSE
+
+       Copyright (c) 2012-2020 Mat Ryer, Tyler Bunnell and contributors
+
+       MIT.LICENSE
+
+
+   >>> google/uuid-v1.2.0
+
+
+
+   >>> golang.org/x/oauth2-v0.0.0-20210819190943-2bc19b11175f
+
+       Copyright (c) 2009 The Go Authors. All rights reserved.
+
+       Redistribution and use in source and binary forms, with or without
+       modification, are permitted provided that the following conditions are
+       met:
+
+          * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+          * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following disclaimer
+       in the documentation and/or other materials provided with the
+       distribution.
+          * Neither the name of Google Inc. nor the names of its
+       contributors may be used to endorse or promote products derived from
+       this software without specific prior written permission.
+
+       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+       A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+       OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > BSD-3
+
+       amazon/amazon.go
+
+       Copyright 2017 The oauth2 Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authhandler/authhandler.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authhandler/authhandler_test.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       bitbucket/bitbucket.go
+
+       Copyright 2015 The oauth2 Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cern/cern.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       clientcredentials/clientcredentials.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       clientcredentials/clientcredentials_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       endpoints/endpoints.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       endpoints/endpoints_test.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       example_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       facebook/facebook.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       fitbit/fitbit.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       foursquare/foursquare.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       github/github.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       gitlab/gitlab.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/appengine_gen1.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/appengine_gen2_flex.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/appengine.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/default.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/doc.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/downscope/downscoping.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/downscope/tokenbroker_test.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/example_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/google.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/google_test.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/aws.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/aws_test.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/basecredentials.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/basecredentials_test.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/clientauth.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/clientauth_test.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/err.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/err_test.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/filecredsource.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/filecredsource_test.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/impersonate.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/impersonate_test.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/sts_exchange.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/sts_exchange_test.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/urlcredsource.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/urlcredsource_test.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/jwt.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/jwt_test.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/sdk.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/sdk_test.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       heroku/heroku.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       hipchat/hipchat.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       instagram/instagram.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/client_appengine.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/doc.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/oauth2.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/token.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/token_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jira/jira.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jira/jira_test.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jws/jws.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jws/jws_test.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jwt/example_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jwt/jwt.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jwt/jwt_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       kakao/kakao.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       LICENSE
+
+       Copyright (c) 2009 The Go Authors
+
+       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
+
+       linkedin/linkedin.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       mailchimp/mailchimp.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       mailru/mailru.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       mediamath/mediamath.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       microsoft/microsoft.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       nokiahealth/nokiahealth.go
+
+       Copyright 2018 The oauth2 Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       oauth2_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       odnoklassniki/odnoklassniki.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       paypal/paypal.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       slack/slack.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       spotify/spotify.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stackoverflow/stackoverflow.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       token.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       token_test.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       transport.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       twitch/twitch.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       uber/uber.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       vk/vk.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       yahoo/yahoo.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       yandex/yandex.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+
+   >>> github.com/spf13/pflag-v1.0.1
+
+       Found in: pflag-master/LICENSE
+
+       Copyright (c) 2012 The Go Authors
+
+       Redistribution and use in source and binary forms, with or without
+       modification, are permitted provided that the following conditions are
+       met:
+
+          * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+          * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following disclaimer
+       in the documentation and/or other materials provided with the
+       distribution.
+          * Neither the name of Google Inc. nor the names of its
+       contributors may be used to endorse or promote products derived from
+       this software without specific prior written permission.
+
+       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+       A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+       OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > BSD-3
+
+       pflag-master/bool_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/example_test.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/export_test.go
+
+       Copyright 2010 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/flag.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/flag_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/float32_slice_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/float64_slice_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/golangflag.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/golangflag_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/int32_slice_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/int64_slice_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/int_slice_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/string_array_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pflag-master/string_slice_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+
+==================== APPENDIX. Standard License Files ====================
+
+-------------------- SECTION 1: Apache License, V2.0 --------------------
+
+Apache License 
+
+Version 2.0, January 2004 
+http://www.apache.org/licenses/ 
+
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION 
+
+1. Definitions.
+
+"License" shall mean the terms and conditions for use, reproduction,
+and distribution as defined by Sections 1 through 9 of this document.
+
+"Licensor" shall mean the copyright owner or entity authorized by the
+copyright owner that is granting the License.  
+
+"Legal Entity" shall mean the union of the acting entity and all other
+entities that control, are controlled by, or are under common control
+with that entity. For the purposes of this definition, "control" means
+(i) the power, direct or indirect, to cause the direction or management
+of such entity, whether by contract or otherwise, or (ii) ownership
+of fifty percent (50%) or more of the outstanding shares, or (iii)
+beneficial ownership of such entity.
+
+"You" (or "Your") shall mean an individual or Legal Entity exercising
+permissions granted by this License.  
+
+"Source" form shall mean the preferred form for making modifications,
+including but not limited to software source code, documentation source,
+and configuration files.
+
+"Object" form shall mean any form resulting from mechanical transformation
+or translation of a Source form, including but not limited to compiled
+object code, generated documentation, and conversions to other media
+types.  
+
+"Work" shall mean the work of authorship, whether in Source or
+Object form, made available under the License, as indicated by a copyright
+notice that is included in or attached to the work (an example is provided
+in the Appendix below).  
+
+"Derivative Works" shall mean any work, whether in Source or Object form,
+that is based on (or derived from) the Work and for which the editorial
+revisions, annotations, elaborations, or other modifications represent,
+as a whole, an original work of authorship. For the purposes of this
+License, Derivative Works shall not include works that remain separable
+from, or merely link (or bind by name) to the interfaces of, the Work
+and Derivative Works thereof.
+
+"Contribution" shall mean any work of authorship, including the
+original version of the Work and any modifications or additions to
+that Work or Derivative Works thereof, that is intentionally submitted
+to Licensor for inclusion in the Work by the copyright owner or by an
+individual or Legal Entity authorized to submit on behalf of the copyright
+owner. For the purposes of this definition, "submitted" means any form of
+electronic, verbal, or written communication sent to the Licensor or its
+representatives, including but not limited to communication on electronic
+mailing lists, source code control systems, and issue tracking systems
+that are managed by, or on behalf of, the Licensor for the purpose of
+discussing and improving the Work, but excluding communication that is
+conspicuously marked or otherwise designated in writing by the copyright
+owner as "Not a Contribution."
+
+"Contributor" shall mean Licensor and any individual or Legal Entity
+on behalf of whom a Contribution has been received by Licensor and
+subsequently incorporated within the Work.
+
+2. Grant of Copyright License.
+Subject to the terms and conditions of this License, each Contributor
+hereby grants to You a perpetual, worldwide, non-exclusive, no-charge,
+royalty-free, irrevocable copyright license to reproduce, prepare
+Derivative Works of, publicly display, publicly perform, sublicense, and
+distribute the Work and such Derivative Works in Source or Object form.
+
+3. Grant of Patent License.
+Subject to the terms and conditions of this License, each Contributor
+hereby grants to You a perpetual, worldwide, non-exclusive, no-charge,
+royalty- free, irrevocable (except as stated in this section) patent
+license to make, have made, use, offer to sell, sell, import, and
+otherwise transfer the Work, where such license applies only to those
+patent claims licensable by such Contributor that are necessarily
+infringed by their Contribution(s) alone or by combination of
+their Contribution(s) with the Work to which such Contribution(s)
+was submitted. If You institute patent litigation against any entity
+(including a cross-claim or counterclaim in a lawsuit) alleging that the
+Work or a Contribution incorporated within the Work constitutes direct
+or contributory patent infringement, then any patent licenses granted
+to You under this License for that Work shall terminate as of the date
+such litigation is filed.
+
+4. Redistribution.
+You may reproduce and distribute copies of the Work or Derivative Works
+thereof in any medium, with or without modifications, and in Source or
+Object form, provided that You meet the following conditions:
+
+  a. You must give any other recipients of the Work or Derivative Works
+     a copy of this License; and
+
+  b. You must cause any modified files to carry prominent notices stating
+     that You changed the files; and
+
+  c. You must retain, in the Source form of any Derivative Works that
+     You distribute, all copyright, patent, trademark, and attribution
+     notices from the Source form of the Work, excluding those notices
+     that do not pertain to any part of the Derivative Works; and
+
+  d. If the Work includes a "NOTICE" text file as part of its
+     distribution, then any Derivative Works that You distribute must
+     include a readable copy of the attribution notices contained
+     within such NOTICE file, excluding those notices that do not
+     pertain to any part of the Derivative Works, in at least one of
+     the following places: within a NOTICE text file distributed as part
+     of the Derivative Works; within the Source form or documentation,
+     if provided along with the Derivative Works; or, within a display
+     generated by the Derivative Works, if and wherever such third-party
+     notices normally appear. The contents of the NOTICE file are for
+     informational purposes only and do not modify the License. You
+     may add Your own attribution notices within Derivative Works that
+     You distribute, alongside or as an addendum to the NOTICE text
+     from the Work, provided that such additional attribution notices
+     cannot be construed as modifying the License.  You may add Your own
+     copyright statement to Your modifications and may provide additional
+     or different license terms and conditions for use, reproduction, or
+     distribution of Your modifications, or for any such Derivative Works
+     as a whole, provided Your use, reproduction, and distribution of the
+     Work otherwise complies with the conditions stated in this License.
+
+5. Submission of Contributions.
+Unless You explicitly state otherwise, any Contribution intentionally
+submitted for inclusion in the Work by You to the Licensor shall be
+under the terms and conditions of this License, without any additional
+terms or conditions.  Notwithstanding the above, nothing herein shall
+supersede or modify the terms of any separate license agreement you may
+have executed with Licensor regarding such Contributions.
+
+6. Trademarks.
+This License does not grant permission to use the trade names, trademarks,
+service marks, or product names of the Licensor, except as required for
+reasonable and customary use in describing the origin of the Work and
+reproducing the content of the NOTICE file.
+
+7. Disclaimer of Warranty.
+Unless required by applicable law or agreed to in writing, Licensor
+provides the Work (and each Contributor provides its Contributions) on
+an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+express or implied, including, without limitation, any warranties or
+conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR
+A PARTICULAR PURPOSE. You are solely responsible for determining the
+appropriateness of using or redistributing the Work and assume any risks
+associated with Your exercise of permissions under this License.
+
+8. Limitation of Liability.
+In no event and under no legal theory, whether in tort (including
+negligence), contract, or otherwise, unless required by applicable law
+(such as deliberate and grossly negligent acts) or agreed to in writing,
+shall any Contributor be liable to You for damages, including any direct,
+indirect, special, incidental, or consequential damages of any character
+arising as a result of this License or out of the use or inability to
+use the Work (including but not limited to damages for loss of goodwill,
+work stoppage, computer failure or malfunction, or any and all other
+commercial damages or losses), even if such Contributor has been advised
+of the possibility of such damages.
+
+9. Accepting Warranty or Additional Liability.
+While redistributing the Work or Derivative Works thereof, You may
+choose to offer, and charge a fee for, acceptance of support, warranty,
+indemnity, or other liability obligations and/or rights consistent with
+this License. However, in accepting such obligations, You may act only
+on Your own behalf and on Your sole responsibility, not on behalf of
+any other Contributor, and only if You agree to indemnify, defend, and
+hold each Contributor harmless for any liability incurred by, or claims
+asserted against, such Contributor by reason of your accepting any such
+warranty or additional liability.
+
+END OF TERMS AND CONDITIONS 
+
+==================== LICENSE TEXT REFERENCE TABLE ====================
+
+-------------------- SECTION 1 --------------------
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-------------------- SECTION 2 --------------------
+Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+-------------------- SECTION 3 --------------------
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-------------------- SECTION 4 --------------------
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+-------------------- SECTION 5 --------------------
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+-------------------- SECTION 6 --------------------
+**AGPL**, **MIT**, **2-Clause BSD** or **3-Clause BSD**.
+-------------------- SECTION 7 --------------------
+// Parts inspired by https://github.com/ryanuber/go-license
+
+
+
+======================================================================
+
+To the extent any open source components are licensed under the GPL
+and/or LGPL, or other similar licenses that require the source code
+and/or modifications to source code to be made available, you may obtain
+a copy of the source code corresponding to the binaries for such open source
+components and modifications thereto, if any, (the "Source Files"), by downloading the
+Source Files from VMware's github site for this product, or by sending a request, with your name
+and address to: VMware, Inc., 3401 Hillview Avenue, Palo Alto, CA 94304, United States of America.
+All such requests should clearly specify: OPEN SOURCE FILES REQUEST, Attention General Counsel. VMware shall
+mail a copy of the Source Files to you on a CD or equivalent physical medium. This offer to obtain a copy of the Source
+Files is valid for three years from the date you acquired this software product.
+
+[CLOUDDIRECTORNAMEDDISKCSIDRIVER100GAAV101121]
