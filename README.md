@@ -3,9 +3,9 @@ This repository contains the source code and build methods to build a Kubernetes
 
 The version of the VMware Cloud Director API and Installation that are compatible for a given CSI container image are provided in the following compatibility matrix:
 
-| CSI Version | VMware Cloud Director API | VMware Cloud Director Installation |
-| :---------: | :-----------------------: | :--------------------------------: |
-| 1.0.0 | 36.0+ | 10.3.1+|
+| CSI Version | VMware Cloud Director API | VMware Cloud Director Installation | Kubernetes Versions |
+| :---------: | :-----------------------: | :--------------------------------: | :----------------- |
+| 1.0.0 | 36.0+ | 10.3.1+|<ul><li>1.21.2</li><li>1.20.5</li><li>1.20.4</li><li>1.19.12</li></ul>|
 
 This extension is intended to be installed into a Kubernetes cluster installed with [VMware Cloud Director](https://www.vmware.com/products/cloud-director.html) as a Cloud Provider, by a user that has the rights as described in the sections below.
 
@@ -33,7 +33,7 @@ This `ClusterAdminUser` needs to be created from a `ClusterAdminRole` with the f
 
 ## CSI Feature matrix
 | Feature | Support Scope |
-| :---------: | :-----------------------: |
+| :---------: | :----------------------- |
 | Storage Type | Independent Shareable Named Disks of VCD |
 |Provisioning|<ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>|
 |Access Modes|<ul><li>ReadOnlyMany</li><li>ReadWriteOnly</li></ul>|
