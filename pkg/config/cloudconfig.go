@@ -24,9 +24,13 @@ type VCDConfig struct {
 	UserOrg  string // this defaults to Org or a prefix of User
 	VAppName string `yaml:"vAppName"`
 
-	User         string `yaml:"user" default:""`
-	Secret       string `yaml:"secret" default:""`
-	RefreshToken string `yaml:"refreshToken" default:""`
+	// The User, Secret and RefreshToken are obtained from a secret mounted to /etc/kubernetes/vcloud/basic-auth
+	// with files at username, password and refreshToken respectively.
+	// The User could be userOrg/user or just user. In the latter case, we assume
+	// that Org is the org in which the user exists.
+	User         string
+	Secret       string
+	RefreshToken string
 }
 
 // CloudConfig contains the config that will be read from the secret
@@ -69,12 +73,6 @@ func ParseCloudConfig(configReader io.Reader) (*CloudConfig, error) {
 		return nil, fmt.Errorf("Unable to decode yaml file: [%v]", err)
 	}
 
-	fullUserName := config.VCD.User
-	config.VCD.UserOrg, config.VCD.User, err = getUserAndOrg(fullUserName, config.VCD.Org)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get user org and name: [%v]", err)
-	}
-
 	return config, validateCloudConfig(config)
 }
 
@@ -87,13 +85,17 @@ func SetAuthorization(config *CloudConfig) error {
 			return fmt.Errorf("unable to get refresh token: [%v]", err)
 		}
 		config.VCD.RefreshToken = string(refreshToken)
-		return nil
+		if config.VCD.RefreshToken != "" {
+			return nil
+		}
 	}
-	klog.Infof("unable to get refresh token. Looking for username and password")
+	klog.Infof("Unable to get refresh token. Looking for username and password")
+
 	username, err := ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/username")
 	if err != nil {
 		return fmt.Errorf("unable to get username: [%v]", err)
 	}
+
 	secret, err := ioutil.ReadFile("/etc/kubernetes/vcloud/basic-auth/password")
 	if err != nil {
 		return fmt.Errorf("unable to get password: [%v]", err)
