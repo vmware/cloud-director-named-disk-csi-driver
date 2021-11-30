@@ -70,7 +70,7 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 		}
 		vcdClient.Client.IsSysAdmin = config.IsSysAdmin
 
-		klog.Infof("Running as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
+		klog.Infof("Running CSI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
 		return vcdClient, resp, nil
 	}
 
