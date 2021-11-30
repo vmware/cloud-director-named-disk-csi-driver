@@ -116,7 +116,7 @@ func runCommand() {
 		}
 
 		waitTime := 10 * time.Second
-		klog.Infof("unable to set authorization in config: [%v]", err)
+		klog.Infof("Unable to set authorization in config: [%v]", err)
 		klog.Infof("Waiting for [%v] before trying again...", waitTime)
 		time.Sleep(waitTime)
 	}

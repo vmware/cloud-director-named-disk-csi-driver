@@ -136,7 +136,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:0.1.0.latest
+          image: harbor-repo.vmware.com/vcloud/cloud-director-named-disk-csi-driver:main-branch.latest
           imagePullPolicy: IfNotPresent
           command:
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
@@ -150,16 +150,6 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
-            - name: VCD_BASIC_AUTH_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: vcloud-basic-auth
-                  key: username
-            - name: VCD_BASIC_AUTH_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: vcloud-basic-auth
-                  key: password
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy/
