@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
 	"net/http"
 	"strings"
@@ -523,30 +524,9 @@ func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClien
 		return nil, "", nil, fmt.Errorf("error when getting defined entity: [%v]", err)
 	}
 
-	statusEntry, ok := defEnt.Entity["status"]
-	if !ok {
-		return nil, "", nil, fmt.Errorf("could not find 'status' entry in defined entity")
-	}
-	statusMap, ok := statusEntry.(map[string]interface{})
-	if !ok {
-		return nil, "", nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
-	}
-	pvInterfaces := statusMap["persistentVolumes"]
-	if pvInterfaces == nil {
-		return make([]string, 0), etag, &defEnt, nil
-	}
-
-	pvInterfacesSlice, ok := pvInterfaces.([]interface{})
-	if !ok {
-		return nil, "", nil, fmt.Errorf("unable to convert [%T] to slice of interface", pvInterfaces)
-	}
-	pvIdStrs := make([]string, len(pvInterfacesSlice))
-	for idx, pvInterface := range pvInterfacesSlice {
-		currPv, ok := pvInterface.(string)
-		if !ok {
-			return nil, "", nil, fmt.Errorf("unable to convert [%T] to string", pvInterface)
-		}
-		pvIdStrs[idx] = currPv
+	pvIdStrs, err := util.GetPVsFromRDE(&defEnt)
+	if err != nil {
+		return nil, "", nil, fmt.Errorf("failed to retrieve PVs from RDE: [%v]", err)
 	}
 	return pvIdStrs, etag, &defEnt, nil
 }
@@ -554,21 +534,17 @@ func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClien
 // This function will modify the passed in defEnt
 func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag string,
 	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
-	statusEntry, ok := defEnt.Entity["status"]
-	if !ok {
-		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
-	}
-	statusMap, ok := statusEntry.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
+	updatedRDE, err := util.ReplacePVsInRDE(defEnt, updatedPvs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]", client.ClusterID, err)
 	}
 
-	statusMap["persistentVolumes"] = updatedPvs
 	// can set invokeHooks as optional parameter
-	_, httpResponse, err := client.apiClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *defEnt, etag, client.ClusterID, nil)
+	_, httpResponse, err := client.apiClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag, client.ClusterID, nil)
 	if err != nil {
 		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
 	}
+	klog.Infof("Successfully updated RDE [%s] with persistentVolumes: [%s]", client.ClusterID, updatedPvs)
 	return httpResponse, nil
 }
 
