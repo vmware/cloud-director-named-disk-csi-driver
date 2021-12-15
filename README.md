@@ -13,6 +13,8 @@ This extension is intended to be installed into a Kubernetes cluster installed w
 
 This driver is in a GA state and will be supported in production.
 
+Note: This driver is not impacted by the Apache Log4j open source component vulnerability.
+
 ## Terminology
 1. VCD: VMware Cloud Director
 2. ClusterAdminRole: This is the role that has enough rights to create and administer a Kubernetes Cluster in VCD. This role can be created by cloning the [vApp Author Role](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Tenant-Portal-Guide/GUID-BC504F6B-3D38-4F25-AACF-ED584063754F.html) and then adding the following rights (details on adding the rights below can be found in the [CSE docs](https://github.com/rocknes/container-service-extension/blob/cse_3_1_docs/docs/cse3_1/RBAC.md#additional-required-rights)):
