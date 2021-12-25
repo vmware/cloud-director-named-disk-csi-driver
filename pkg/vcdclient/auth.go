@@ -10,13 +10,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"k8s.io/klog"
 	"net/http"
 	"net/url"
 	"strings"
 
 	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
-	"k8s.io/klog"
 )
 
 const (
@@ -83,16 +83,6 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 	return vcdClient, resp, nil
 }
 
-func (config *VCDAuthConfig) GetVCDClientFromSecrets() (*govcd.VCDClient, error) {
-
-	vcdClient, _, err := config.GetBearerToken()
-	if err != nil {
-		return nil, fmt.Errorf("unable to get bearer token from secrets: [%v]", err)
-	}
-
-	return vcdClient, nil
-}
-
 func (config *VCDAuthConfig) GetSwaggerClientFromSecrets() (*govcd.VCDClient, *swaggerClient.APIClient, error) {
 
 	vcdClient, _, err := config.GetBearerToken()
@@ -143,13 +133,13 @@ type tokenResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(
-	isSysadminUser bool) (*tokenResponse, *http.Response, error) {
-
+func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(isSysadminUser bool) (*tokenResponse, *http.Response, error) {
 	accessTokenUrl := fmt.Sprintf("%s/oauth/provider/token", config.Host)
 	if !isSysadminUser {
 		accessTokenUrl = fmt.Sprintf("%s/oauth/tenant/%s/token", config.Host, config.UserOrg)
 	}
+	klog.Infof("Accessing URL [%s]", accessTokenUrl)
+
 	payload := url.Values{}
 	payload.Set("grant_type", "refresh_token")
 	payload.Set("refresh_token", config.RefreshToken)
@@ -159,19 +149,23 @@ func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: config.Insecure},
 		},
 	}
-	oauthRequest, err := http.NewRequest("POST", accessTokenUrl,
-		strings.NewReader(payload.Encode()))
+	oauthRequest, err := http.NewRequest("POST", accessTokenUrl, strings.NewReader(payload.Encode())) // URL-encoded payload
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get access token from refresh token: [%v]", err)
 	}
+
 	oauthRequest.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	oauthResponse, err := client.Do(oauthRequest)
 	if err != nil {
 		return nil, oauthResponse, fmt.Errorf("request to get access token failed: [%v]", err)
 	}
 	if oauthResponse.StatusCode != http.StatusOK {
-		return nil, oauthResponse, fmt.Errorf("error while getting access token from refresh token: [%v]", err)
+		klog.Infof("Failed to get bearer token using request: [%#v]", oauthRequest.URL)
+		return nil, oauthResponse,
+			fmt.Errorf("unexpected http response while getting access token from refresh token: [%d]",
+				oauthResponse.StatusCode)
 	}
+
 	body, err := ioutil.ReadAll(oauthResponse.Body)
 	if err != nil {
 		return nil, oauthResponse, fmt.Errorf("unable to read response body while getting access token from refresh token: [%v]", err)
@@ -181,7 +175,6 @@ func (config *VCDAuthConfig) getAccessTokenFromRefreshToken(
 			klog.Errorf("failed to close response body: [%v]", err)
 		}
 	}()
-
 	var accessTokenResponse tokenResponse
 	if err = json.Unmarshal(body, &accessTokenResponse); err != nil {
 		return nil, oauthResponse, fmt.Errorf("error unmarshaling the token response: [%v]", err)
@@ -207,8 +200,7 @@ type currentSessionsResponse struct {
 }
 
 func isAdminUser(vcdClient *govcd.VCDClient) (bool, error) {
-	currentSessionUrl, err :=
-		vcdClient.Client.OpenApiBuildEndpoint("1.0.0/sessions/current")
+	currentSessionUrl, err := vcdClient.Client.OpenApiBuildEndpoint("1.0.0/sessions/current")
 	if err != nil {
 		return false, fmt.Errorf("failed to construct current session url [%v]", err)
 	}
