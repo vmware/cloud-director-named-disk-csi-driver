@@ -174,7 +174,7 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 	// update RDE
 	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
 		if err = client.addPvToRDE(disk.Id); err != nil {
-			return nil, fmt.Errorf("unable to add PV Id [%s] to RDE: [%v]", disk.Id, err)
+			return nil, NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
 
@@ -377,7 +377,7 @@ func (client *Client) DeleteDisk(name string) error {
 	// update RDE
 	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
 		if err = client.removePvFromRDE(disk.Id); err != nil {
-			return fmt.Errorf("unable to remove PV Id [%s] from RDE: [%v]", disk.Id, err)
+			return NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
 
