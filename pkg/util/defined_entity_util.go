@@ -8,7 +8,7 @@ import (
 const (
 	EntityTypePrefix = "urn:vcloud:type"
 	CAPVCDEntityTypeVendor = "vmware"
-	CAPVCDEntityTypeNss = "capvcd"
+	CAPVCDEntityTypeNss = "capvcdCluster"
 	CAPVCDEntityTypeVersion = "1.0.0"
 
 	NativeClusterEntityTypeVendor = "cse"
