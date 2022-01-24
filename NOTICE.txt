@@ -1,4 +1,4 @@
-cloud-director-named-disk-csi-driver 1.0.0
+cloud-director-named-disk-csi-driver 1.1.0
 
 Copyright (c) 2021 VMware, Inc. All Rights Reserved.
 
