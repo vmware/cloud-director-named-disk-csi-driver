@@ -3,13 +3,14 @@ This repository contains the source code and build methods to build a Kubernetes
 
 The version of the VMware Cloud Director API and Installation that are compatible for a given CSI container image are provided in the following compatibility matrix:
 
-| CSI Version | VMware Cloud Director API | VMware Cloud Director Installation | Kubernetes Versions |
-| :---------: | :-----------------------: | :--------------------------------: | :----------------- |
-| 1.0.0 | 36.0+ | 10.3.1+|<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+| CSI Version | VMware Cloud Director API | VMware Cloud Director Installation | Notes | Kubernetes Versions |
+| :---------: | :-----------------------: | :--------------------------------: | :----: | :----------------- |
+| 1.0.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) | First cut with support for Named Independent Disks |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+| 1.1.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Remove legacy Kubernetes dependencies.</li><li>Support for CAPVCD RDEs.</li></ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
 
 This extension is intended to be installed into a Kubernetes cluster installed with [VMware Cloud Director](https://www.vmware.com/products/cloud-director.html) as a Cloud Provider, by a user that has the rights as described in the sections below.
 
-**cloud-director-named-disk-csi-driver** is distributed as a container image hosted at [Distribution Harbor](https://projects.registry.vmware.com) as `projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:<CSI version>`.
+**cloud-director-named-disk-csi-driver** is distributed as a container image hosted at [Distribution Harbor](https://projects.registry.vmware.com) as `projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:<CSI version>.latest`.
 
 This driver is in a GA state and will be supported in production.
 
