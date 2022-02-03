@@ -68,6 +68,8 @@ func getTestVCDClient(inputMap map[string]interface{}) (*Client, error) {
 				cloudConfig.VCD.User = getStrValStrict(val, cloudConfig.VCD.User)
 			case "secret":
 				cloudConfig.VCD.Secret = getStrValStrict(val, cloudConfig.VCD.Secret)
+			case "userOrg":
+				cloudConfig.VCD.UserOrg = getStrValStrict(val, cloudConfig.VCD.UserOrg)
 			case "insecure":
 				insecure = getBoolValStrict(val, true)
 			case "clusterID":
