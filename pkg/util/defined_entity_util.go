@@ -2,7 +2,7 @@ package util
 
 import (
 	 "fmt"
-	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
+	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 )
 
 const (

@@ -4,27 +4,26 @@ go 1.15
 
 require (
 	github.com/akutz/gofsutil v0.1.2
-	github.com/antihax/optional v1.0.0
+	github.com/arunmk/cloud-provider-for-cloud-director v0.0.0-20220228001623-83097c425810
 	github.com/container-storage-interface/spec v1.4.0
 	github.com/google/uuid v1.2.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/sirupsen/logrus v1.2.0 // indirect
 	github.com/spf13/cobra v0.0.0-20180319062004-c439c4fa0937
 	github.com/spf13/pflag v1.0.1
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220223182332-4063236c0077
 	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
+	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sys v0.0.0-20210314195730-07df6a141424 // indirect
 	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/apimachinery v0.0.0 // indirect
-	k8s.io/component-base v0.0.0
-	k8s.io/klog v0.3.1
+	k8s.io/component-base v0.22.1
+	k8s.io/klog v1.0.0
 )
 
 replace k8s.io/api => k8s.io/api v0.0.0-20190918195907-bd6ac527cfd2
