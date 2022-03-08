@@ -1,7 +1,7 @@
 package util
 
 import (
-	 "fmt"
+	"fmt"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 )
 
@@ -21,7 +21,7 @@ var (
 	NativeEntityTypeID = fmt.Sprintf("%s:%s:%s:%s", EntityTypePrefix, NativeClusterEntityTypeVendor, NativeClusterEntityTypeNss, NativeClusterEntityTypeVersion)
 )
 
-func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
+func GetVirtualIPsFromRDE(rde  *swaggerClient.DefinedEntity) ([]string, error) {
 	statusEntry, ok := rde.Entity["status"]
 	if !ok {
 		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
@@ -31,34 +31,37 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
 	}
 
-	var pvInterfaces interface{}
+	var virtualIpInterfaces interface{}
 	if rde.EntityType == CAPVCDEntityTypeID {
-		pvInterfaces = statusMap["persistentVolumes"]
+		virtualIpInterfaces = statusMap["virtualIPs"]
 	} else if rde.EntityType == NativeEntityTypeID {
-		pvInterfaces = statusMap["persistentVolumes"]
+		virtualIpInterfaces = statusMap["virtual_IPs"]
 	} else {
-		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
+		return nil, fmt.Errorf("entity type %s not supported by CPI", rde.EntityType)
 	}
-	if pvInterfaces == nil {
+
+	if virtualIpInterfaces == nil {
 		return make([]string, 0), nil
 	}
 
-	pvInterfacesSlice, ok := pvInterfaces.([]interface{})
+	virtualIpInterfacesSlice, ok := virtualIpInterfaces.([]interface{})
 	if !ok {
-		return nil, fmt.Errorf("unable to convert [%T] to slice of interface", pvInterfaces)
+		return nil, fmt.Errorf("unable to convert [%T] to slice of interface", virtualIpInterfaces)
 	}
-	pvIdStrs := make([]string, len(pvInterfacesSlice))
-	for idx, pvInterface := range pvInterfacesSlice {
-		currPv, ok := pvInterface.(string)
+	virtualIpStrs := make([]string, len(virtualIpInterfacesSlice))
+	for ind, ipInterface := range virtualIpInterfacesSlice {
+		currIp, ok := ipInterface.(string)
 		if !ok {
-			return nil, fmt.Errorf("unable to convert [%T] to string", pvInterface)
+			return nil, fmt.Errorf("unable to convert [%T] to string", ipInterface)
 		}
-		pvIdStrs[idx] = currPv
+		virtualIpStrs[ind] = currIp
 	}
-	return pvIdStrs, nil
+	return virtualIpStrs, nil
 }
 
-func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swaggerClient.DefinedEntity, error) {
+// ReplaceVirtualIPsInRDE replaces the virtual IPs array in the inputted rde. It does not make an API call to update
+// the RDE.
+func ReplaceVirtualIPsInRDE(rde *swaggerClient.DefinedEntity, updatedIps []string) (*swaggerClient.DefinedEntity, error) {
 	statusEntry, ok := rde.Entity["status"]
 	if !ok {
 		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
@@ -67,13 +70,10 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 	if !ok {
 		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
 	}
-
 	if rde.EntityType == CAPVCDEntityTypeID {
-		statusMap["persistentVolumes"] = updatedPvs
-	} else if rde.EntityType == NativeEntityTypeID {
-		statusMap["persistentVolumes"] = updatedPvs
-	} else {
-		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
+		statusMap["virtualIPs"] = updatedIps
+	} else if rde. EntityType == NativeEntityTypeID {
+		statusMap["virtual_IPs"] = updatedIps
 	}
 	return rde, nil
 }

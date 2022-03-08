@@ -46,8 +46,29 @@ type APIClient struct {
 
 	// API Services
 
-	DefinedEntityApi *DefinedEntityApiService
+	CertificateLibraryApi *CertificateLibraryApiService
 
+	EdgeGatewayApi *EdgeGatewayApiService
+
+	EdgeGatewayLoadBalancerPoolApi *EdgeGatewayLoadBalancerPoolApiService
+
+	EdgeGatewayLoadBalancerPoolsApi *EdgeGatewayLoadBalancerPoolsApiService
+
+	EdgeGatewayLoadBalancerVirtualServiceApi *EdgeGatewayLoadBalancerVirtualServiceApiService
+
+	EdgeGatewayLoadBalancerVirtualServicesApi *EdgeGatewayLoadBalancerVirtualServicesApiService
+
+	EdgeGatewayNatRuleApi *EdgeGatewayNatRuleApiService
+
+	EdgeGatewayNatRulesApi *EdgeGatewayNatRulesApiService
+
+	LoadBalancerServiceEngineGroupAssignmentsApi *LoadBalancerServiceEngineGroupAssignmentsApiService
+
+	OrgVdcNetworkApi *OrgVdcNetworkApiService
+
+	OrgVdcNetworksApi *OrgVdcNetworksApiService
+
+	DefinedEntityApi *DefinedEntityApiService
 }
 
 type service struct {
@@ -66,7 +87,18 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
-	c.DefinedEntityApi = (*DefinedEntityApiService)(&c.common)
+	c.CertificateLibraryApi = (*CertificateLibraryApiService)(&c.common)
+	c.EdgeGatewayApi = (*EdgeGatewayApiService)(&c.common)
+	c.EdgeGatewayLoadBalancerPoolApi = (*EdgeGatewayLoadBalancerPoolApiService)(&c.common)
+	c.EdgeGatewayLoadBalancerPoolsApi = (*EdgeGatewayLoadBalancerPoolsApiService)(&c.common)
+	c.EdgeGatewayLoadBalancerVirtualServiceApi = (*EdgeGatewayLoadBalancerVirtualServiceApiService)(&c.common)
+	c.EdgeGatewayLoadBalancerVirtualServicesApi = (*EdgeGatewayLoadBalancerVirtualServicesApiService)(&c.common)
+	c.EdgeGatewayNatRuleApi = (*EdgeGatewayNatRuleApiService)(&c.common)
+	c.EdgeGatewayNatRulesApi = (*EdgeGatewayNatRulesApiService)(&c.common)
+	c.LoadBalancerServiceEngineGroupAssignmentsApi = (*LoadBalancerServiceEngineGroupAssignmentsApiService)(&c.common)
+	c.OrgVdcNetworkApi = (*OrgVdcNetworkApiService)(&c.common)
+	c.OrgVdcNetworksApi = (*OrgVdcNetworksApiService)(&c.common)
+	c.DefinedEntityApi = (*DefinedEntityApiService) (&c.common)
 
 	return c
 }

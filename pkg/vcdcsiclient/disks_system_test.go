@@ -4,10 +4,11 @@
 */
 
 
-package vcdclient
+package vcdcsiclient
 
 import (
 	"fmt"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"net/http"
 	"testing"
 
@@ -28,7 +29,7 @@ func foundStringInSlice(find string, slice []string) bool {
 func TestDiskCreateAttach(t *testing.T) {
 
 	// get client
-	vcdClient, err := getTestVCDClient(map[string]interface{}{
+	vcdClient, err := vcdclient.getTestVCDClient(map[string]interface{}{
 		"getVdcClient": true,
 	})
 	assert.NoError(t, err, "Unable to get VCD client")

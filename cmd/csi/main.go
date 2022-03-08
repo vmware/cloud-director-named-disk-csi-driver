@@ -8,9 +8,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/config"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/csi"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"os"
 	"time"
@@ -126,19 +127,27 @@ func runCommand() {
 		cloudConfig.VCD.Org,
 		cloudConfig.VCD.VDC,
 		cloudConfig.VCD.VAppName,
+		"",
+		"",
 		cloudConfig.VCD.UserOrg,
 		cloudConfig.VCD.User,
 		cloudConfig.VCD.Secret,
 		cloudConfig.VCD.RefreshToken,
 		true,
 		cloudConfig.ClusterID,
+		nil,
+		0,
+		0,
+		"",
 		true,
 	)
 	if err != nil {
 		panic (fmt.Errorf("unable to initiate vcd client: [%v]", err))
 	}
 
-	d.Setup(vcdClient, nodeID)
+	d.Setup(&vcdcsiclient.Client{
+		VCDClient: vcdClient,
+	}, nodeID)
 
 	// blocking call
 	if err = d.Run(); err != nil {

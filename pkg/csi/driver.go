@@ -9,7 +9,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"net"
 	"os"
@@ -107,10 +107,10 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(vcdClient *vcdclient.Client, nodeID string) {
+func (d *VCDDriver) Setup(vcdCSIClient *vcdcsiclient.Client, nodeID string) {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
-	d.cs = NewControllerService(d, vcdClient)
+	d.cs = NewControllerService(d, vcdCSIClient.VCDClient)
 	d.ids = NewIdentityServer(d)
 }
 
@@ -169,7 +169,7 @@ func (d *VCDDriver) Run() error {
 	return d.srv.Serve(listener)
 }
 
-// Stop .. will stop :)
+// Stop will stop the grpc server
 func (d *VCDDriver) Stop() {
 	klog.Infof("Stopping server")
 	d.srv.Stop()

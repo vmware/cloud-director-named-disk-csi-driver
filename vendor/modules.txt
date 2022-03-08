@@ -2,8 +2,9 @@
 ## explicit
 github.com/akutz/gofsutil
 # github.com/antihax/optional v1.0.0
-## explicit
 github.com/antihax/optional
+# github.com/apparentlymart/go-cidr v1.1.0
+github.com/apparentlymart/go-cidr/cidr
 # github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 github.com/araddon/dateparse
 # github.com/container-storage-interface/spec v1.4.0
@@ -39,7 +40,6 @@ github.com/peterhellberg/link
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
 # github.com/sirupsen/logrus v1.2.0
-## explicit
 github.com/sirupsen/logrus
 # github.com/spf13/cobra v0.0.0-20180319062004-c439c4fa0937
 ## explicit
@@ -53,6 +53,11 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220308004511-f3877b95877d
+## explicit
+github.com/vmware/cloud-provider-for-cloud-director/pkg/util
+github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient
+github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient
 # github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 ## explicit
 github.com/vmware/go-vcloud-director/v2/govcd
@@ -177,14 +182,13 @@ google.golang.org/protobuf/types/known/wrapperspb
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3
-# k8s.io/apimachinery v0.0.0 => k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
-## explicit
+# k8s.io/apimachinery v0.22.1 => k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
 k8s.io/apimachinery/pkg/util/runtime
 k8s.io/apimachinery/pkg/util/wait
-# k8s.io/component-base v0.0.0 => k8s.io/component-base v0.0.0-20190918200425-ed2f0867c778
+# k8s.io/component-base v0.22.1 => k8s.io/component-base v0.0.0-20190918200425-ed2f0867c778
 ## explicit
 k8s.io/component-base/logs
-# k8s.io/klog v0.3.1
+# k8s.io/klog v1.0.0
 ## explicit
 k8s.io/klog
 # k8s.io/api => k8s.io/api v0.0.0-20190918195907-bd6ac527cfd2

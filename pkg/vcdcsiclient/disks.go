@@ -3,28 +3,32 @@
     SPDX-License-Identifier: Apache-2.0
 */
 
-package vcdclient
+package vcdcsiclient
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
+	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
-	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
-	"net/http"
-	"strings"
-
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"k8s.io/klog"
+	"net/http"
+	"strings"
 )
+
+
+type Client struct {
+	VCDClient *vcdclient.Client
+}
 
 
 const (
 	VCDBusTypeSCSI           = "6"
 	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
-	NoRdePrefix = "NO_RDE_"
 )
 
 
@@ -58,7 +62,7 @@ func (client *Client) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (g
 	var createDiskLink *types.Link
 
 	// Find the proper link for request
-	for _, vdcLink := range client.vdc.Vdc.Link {
+	for _, vdcLink := range client.VCDClient.VDC.Vdc.Link {
 		if vdcLink.Rel == types.RelAdd && vdcLink.Type == types.MimeDiskCreateParams {
 			klog.Infof(
 				"Create disk - found the proper link for request, HREF: %s, name: %s, type: %s, id: %s, rel: %s \n",
@@ -76,9 +80,9 @@ func (client *Client) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (g
 	}
 
 	newDisk := vcdtypes.Disk{}
-	resp, err := client.vcdClient.Client.ExecuteRequestWithApiVersion(createDiskLink.HREF, http.MethodPost,
+	resp, err := client.VCDClient.VCDClient.Client.ExecuteRequestWithApiVersion(createDiskLink.HREF, http.MethodPost,
 		createDiskLink.Type, "error creating Disk with params: [%#v]", diskCreateParams, &newDisk,
-		client.vcdClient.Client.APIVersion)
+		client.VCDClient.VCDClient.Client.APIVersion)
 	if err != nil {
 		return govcd.Task{}, fmt.Errorf("unable to post create link [%v]: resp: [%v]: [%v]",
 			createDiskLink.HREF, resp, err)
@@ -91,7 +95,7 @@ func (client *Client) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (g
 	klog.Infof("AFTER CREATE DISK\n %s\n", prettyDisk(newDisk))
 
 	// Return the task that is waiting
-	newTask := govcd.NewTask(&client.vcdClient.Client)
+	newTask := govcd.NewTask(&client.VCDClient.VCDClient.Client)
 	newTask.Task = newDisk.Tasks.Task[0]
 
 	return *newTask, nil
@@ -100,8 +104,8 @@ func (client *Client) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (g
 // CreateDisk will create a new independent disk with params specified
 func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, busSubType string,
 	description string, storageProfile string, shareable bool) (*vcdtypes.Disk, error) {
-	client.rwLock.Lock()
-	defer client.rwLock.Unlock()
+	client.VCDClient.RWLock.Lock()
+	defer client.VCDClient.RWLock.Unlock()
 
 	klog.Infof("Entered CreateDisk with name [%s] size [%d]MB, storageProfile [%s] shareable[%v]\n",
 		diskName, sizeMB, storageProfile, shareable)
@@ -139,7 +143,7 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 		Disk: d,
 	}
 	if storageProfile != "" {
-		storageReference, err := client.vdc.FindStorageProfileReference(storageProfile)
+		storageReference, err := client.VCDClient.VDC.FindStorageProfileReference(storageProfile)
 		if err != nil {
 			return nil, fmt.Errorf("unable to find storage profile [%s] for disk [%s]",
 				storageProfile, diskName)
@@ -172,9 +176,9 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 	klog.Infof("Disk created: [%#v]", disk)
 
 	// update RDE
-	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
+	if client.VCDClient.ClusterID != "" && !strings.HasPrefix(client.VCDClient.ClusterID, vcdclient.NoRdePrefix) {
 		if err = client.addPvToRDE(disk.Id); err != nil {
-			return nil, NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is empty or generated", disk.Id))
+			return nil, vcdclient.NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
 
@@ -188,9 +192,9 @@ func (client *Client) govcdGetDiskByHref(diskHref string) (*vcdtypes.Disk, error
 	klog.Infof("[TRACE] Get Disk By Href: %s\n", diskHref)
 	disk := &vcdtypes.Disk{}
 
-	_, err := client.vcdClient.Client.ExecuteRequestWithApiVersion(diskHref, http.MethodGet,
+	_, err := client.VCDClient.VCDClient.Client.ExecuteRequestWithApiVersion(diskHref, http.MethodGet,
 		"", "error retrieving Disk: %#v", nil, disk,
-		client.vcdClient.Client.APIVersion)
+		client.VCDClient.VCDClient.Client.APIVersion)
 	if err != nil && strings.Contains(err.Error(), "MajorErrorCode:403") {
 		return nil, govcd.ErrorEntityNotFound
 	}
@@ -207,12 +211,12 @@ func (client *Client) govcdGetDisksByName(diskName string, refresh bool) (*[]vcd
 	klog.Infof("Get Disk By Name: %s\n", diskName)
 	var diskList []vcdtypes.Disk
 	if refresh {
-		err := client.vdc.Refresh()
+		err := client.VCDClient.VDC.Refresh()
 		if err != nil {
 			return nil, fmt.Errorf("disk name should not be empty")
 		}
 	}
-	for _, resourceEntities := range client.vdc.Vdc.ResourceEntities {
+	for _, resourceEntities := range client.VCDClient.VDC.Vdc.ResourceEntities {
 		for _, resourceEntity := range resourceEntities.ResourceEntity {
 			if resourceEntity.Name == diskName && resourceEntity.Type == "application/vnd.vmware.vcloud.disk+xml" {
 				disk, err := client.govcdGetDiskByHref(resourceEntity.HREF)
@@ -279,9 +283,9 @@ func (client *Client) govcdAttachedVM(disk *vcdtypes.Disk) ([]*types.Reference, 
 	// Decode request
 	attachedVMs := vcdtypes.Vms{}
 
-	_, err := client.vcdClient.Client.ExecuteRequestWithApiVersion(attachedVMLink.HREF, http.MethodGet,
+	_, err := client.VCDClient.VCDClient.Client.ExecuteRequestWithApiVersion(attachedVMLink.HREF, http.MethodGet,
 		attachedVMLink.Type, "error getting attached vms: %s", nil, &attachedVMs,
-		client.vcdClient.Client.APIVersion)
+		client.VCDClient.VCDClient.Client.APIVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -333,15 +337,15 @@ func (client *Client) govcdDelete(disk *vcdtypes.Disk) (govcd.Task, error) {
 	}
 
 	// Return the task
-	return client.vcdClient.Client.ExecuteTaskRequestWithApiVersion(deleteDiskLink.HREF, http.MethodDelete,
+	return client.VCDClient.VCDClient.Client.ExecuteTaskRequestWithApiVersion(deleteDiskLink.HREF, http.MethodDelete,
 		"", "error delete disk: %s", nil,
-		client.vcdClient.Client.APIVersion)
+		client.VCDClient.VCDClient.Client.APIVersion)
 }
 
 // DeleteDisk will delete independent disk by its name
 func (client *Client) DeleteDisk(name string) error {
-	client.rwLock.Lock()
-	defer client.rwLock.Unlock()
+	client.VCDClient.RWLock.Lock()
+	defer client.VCDClient.RWLock.Unlock()
 
 	klog.Infof("Entered DeleteDisk for disk [%s]\n", name)
 
@@ -375,9 +379,9 @@ func (client *Client) DeleteDisk(name string) error {
 	}
 
 	// update RDE
-	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
+	if client.VCDClient.ClusterID != "" && !strings.HasPrefix(client.VCDClient.ClusterID, vcdclient.NoRdePrefix) {
 		if err = client.removePvFromRDE(disk.Id); err != nil {
-			return NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is empty or generated", disk.Id))
+			return vcdclient.NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
 
@@ -394,9 +398,9 @@ func (client *Client) govcdRefresh(disk *vcdtypes.Disk) error {
 
 	unmarshalledDisk := &vcdtypes.Disk{}
 
-	_, err := client.vcdClient.Client.ExecuteRequestWithApiVersion(disk.HREF, http.MethodGet,
+	_, err := client.VCDClient.VCDClient.Client.ExecuteRequestWithApiVersion(disk.HREF, http.MethodGet,
 		"", "error refreshing independent disk: %s", nil, unmarshalledDisk,
-		client.vcdClient.Client.APIVersion)
+		client.VCDClient.VCDClient.Client.APIVersion)
 	if err != nil {
 		return err
 	}
@@ -410,8 +414,8 @@ func (client *Client) govcdRefresh(disk *vcdtypes.Disk) error {
 
 // AttachVolume will attach diskName to vm
 func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
-	client.rwLock.Lock()
-	defer client.rwLock.Unlock()
+	client.VCDClient.RWLock.Lock()
+	defer client.VCDClient.RWLock.Unlock()
 
 	if disk == nil {
 		return fmt.Errorf("disk passed shoulf not be nil")
@@ -467,8 +471,8 @@ func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
 
 // DetachVolume will detach diskName from vm
 func (client *Client) DetachVolume(vm *govcd.VM, diskName string) error {
-	client.rwLock.Lock()
-	defer client.rwLock.Unlock()
+	client.VCDClient.RWLock.Lock()
+	defer client.VCDClient.RWLock.Unlock()
 
 	klog.Infof("Entered DetachVolume for vm [%v], disk [%s]\n", vm, diskName)
 
@@ -520,7 +524,8 @@ func (client *Client) DetachVolume(vm *govcd.VM, diskName string) error {
 }
 
 func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClient.DefinedEntity, error) {
-	defEnt, _, etag, err := client.apiClient.DefinedEntityApi.GetDefinedEntity(context.TODO(), client.ClusterID)
+	defEnt, _, etag, err := client.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+		client.VCDClient.ClusterID)
 	if err != nil {
 		return nil, "", nil, fmt.Errorf("error when getting defined entity: [%v]", err)
 	}
@@ -537,15 +542,18 @@ func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag strin
 	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
 	updatedRDE, err := util.ReplacePVsInRDE(defEnt, updatedPvs)
 	if err != nil {
-		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]", client.ClusterID, err)
+		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]",
+			client.VCDClient.ClusterID, err)
 	}
 
 	// can set invokeHooks as optional parameter
-	_, httpResponse, err := client.apiClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag, client.ClusterID, nil)
+	_, httpResponse, err := client.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
+		client.VCDClient.ClusterID, nil)
 	if err != nil {
 		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
 	}
-	klog.Infof("Successfully updated RDE [%s] with persistentVolumes: [%s]", client.ClusterID, updatedPvs)
+	klog.Infof("Successfully updated RDE [%s] with persistentVolumes: [%s]",
+		client.VCDClient.ClusterID, updatedPvs)
 	return httpResponse, nil
 }
 
@@ -574,7 +582,8 @@ func (client *Client) addPvToRDE(addPv string) error {
 			if httpResponse.StatusCode == http.StatusPreconditionFailed {
 				continue
 			}
-			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]", addPv, client.ClusterID, err)
+			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]",
+				addPv, client.VCDClient.ClusterID, err)
 		}
 		return nil
 	}
@@ -606,7 +615,8 @@ func (client *Client) removePvFromRDE(removePv string) error {
 			return nil
 		}
 		if httpResponse.StatusCode != http.StatusPreconditionFailed {
-			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]", removePv, client.ClusterID, err)
+			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]",
+				removePv, client.VCDClient.ClusterID, err)
 		}
 	}
 	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")

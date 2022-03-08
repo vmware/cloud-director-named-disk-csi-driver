@@ -8,7 +8,7 @@ package vcdclient
 import (
 	"crypto/tls"
 	"fmt"
-	swaggerClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdswaggerclient"
+	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"k8s.io/klog"
 	"net/http"
@@ -53,7 +53,7 @@ func (config *VCDAuthConfig) GetBearerToken() (*govcd.VCDClient, *http.Response,
 		}
 		config.IsSysAdmin = vcdClient.Client.IsSysAdmin
 
-		klog.Infof("Running CSI as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
+		klog.Infof("Running module as sysadmin [%v]", vcdClient.Client.IsSysAdmin)
 		return vcdClient, resp, nil
 	}
 
@@ -72,9 +72,9 @@ func (config *VCDAuthConfig) GetSwaggerClientFromSecrets() (*govcd.VCDClient, *s
 	if err != nil {
 		return nil, nil, fmt.Errorf("unable to get bearer token from secrets: [%v]", err)
 	}
-	swaggerConfig := swaggerClient.NewConfiguration()
 	authHeader := fmt.Sprintf("Bearer %s", vcdClient.Client.VCDToken)
 
+	swaggerConfig := swaggerClient.NewConfiguration()
 	swaggerConfig.BasePath = fmt.Sprintf("%s/cloudapi", config.Host)
 	swaggerConfig.AddDefaultHeader("Authorization", authHeader)
 	swaggerConfig.HTTPClient = &http.Client{

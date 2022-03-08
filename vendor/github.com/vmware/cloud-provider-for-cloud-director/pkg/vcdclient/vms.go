@@ -27,7 +27,7 @@ func (client *Client) FindVMByName(vmName string) (*govcd.VM, error) {
 	}
 
 	klog.Infof("Trying to find vm [%s] in vApp [%s] by name", vmName, client.ClusterVAppName)
-	vApp, err := client.vdc.GetVAppByName(client.ClusterVAppName, true)
+	vApp, err := client.VDC.GetVAppByName(client.ClusterVAppName, true)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find vApp [%s] by name: [%v]", client.ClusterVAppName, err)
 	}
@@ -50,7 +50,7 @@ func (client *Client) FindVMByUUID(vcdVmUUID string) (*govcd.VM, error) {
 	klog.Infof("Trying to find vm [%s] in vApp [%s] by UUID", vcdVmUUID, client.ClusterVAppName)
 	vmUUID := strings.TrimPrefix(vcdVmUUID, VCDVMIDPrefix)
 
-	vApp, err := client.vdc.GetVAppByName(client.ClusterVAppName, true)
+	vApp, err := client.VDC.GetVAppByName(client.ClusterVAppName, true)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find vApp [%s] by name: [%v]", client.ClusterVAppName, err)
 	}
