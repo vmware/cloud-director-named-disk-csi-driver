@@ -4,7 +4,6 @@ go 1.15
 
 require (
 	github.com/akutz/gofsutil v0.1.2
-	github.com/arunmk/cloud-provider-for-cloud-director v0.0.0-20220228001623-83097c425810
 	github.com/container-storage-interface/spec v1.4.0
 	github.com/google/uuid v1.2.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
@@ -13,7 +12,7 @@ require (
 	github.com/spf13/pflag v1.0.1
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220223182332-4063236c0077
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220308004511-f3877b95877d
 	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect

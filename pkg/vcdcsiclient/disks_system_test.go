@@ -8,7 +8,7 @@ package vcdcsiclient
 
 import (
 	"fmt"
-	"github.com/arunmk/cloud-provider-for-cloud-director/pkg/vcdclient"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"net/http"
 	"testing"
 

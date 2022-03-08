@@ -47,8 +47,6 @@ github.com/apparentlymart/go-cidr v1.1.0 h1:2mAhrMoF+nhXqxTzSZMUzDHkLjmIHC+Zzn4t
 github.com/apparentlymart/go-cidr v1.1.0/go.mod h1:EBcsNrHc3zQeuaeCeCtQruQm+n9/YjEn/vI25Lg7Gwc=
 github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195 h1:c4mLfegoDw6OhSJXTd2jUEQgZUQuJWtocudb97Qn9EM=
 github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195/go.mod h1:SLqhdZcd+dF3TEVL2RMoob5bBP5R1P1qkox+HtCBgGI=
-github.com/arunmk/cloud-provider-for-cloud-director v0.0.0-20220228001623-83097c425810 h1:EPerGnro97GvuagtPf0KywDZ/q0jRYzfX4ktBlbPRuo=
-github.com/arunmk/cloud-provider-for-cloud-director v0.0.0-20220228001623-83097c425810/go.mod h1:ObZsAr/RmWy6haIr1xxn4uC+Jt1z2GncWlbDnJ6NQo0=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/blang/semver v3.5.0+incompatible/go.mod h1:kRBLl5iJ+tD4TcOOxsy/0fnwebNt5EWlYSAyrTnjyyk=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -221,6 +219,8 @@ github.com/thecodeteam/gofsutil v0.1.2/go.mod h1:7bDOpr2aMnmdm9RTdxBEeqdOr+8RpnQ
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220223182332-4063236c0077 h1:D/IXnrWF7FvVHRHfWS2u/eKAs+QZ2oR4QncxHuo7YrM=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220223182332-4063236c0077/go.mod h1:Xjq7ibF2/X1RmOj5LjcN72hj9F02ei1y1x6NxXcWyQY=
+github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220308004511-f3877b95877d h1:DKlCgwmK/U/HozZrpIR1lGpb/bYljphQ/L+gajx6TI8=
+github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220308004511-f3877b95877d/go.mod h1:Xjq7ibF2/X1RmOj5LjcN72hj9F02ei1y1x6NxXcWyQY=
 github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3 h1:VJolXzgomaRPrgzSr0EduuUtJIJEf5RdoLbktZFQqIc=
 github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3/go.mod h1:2BS1yw61VN34WI0/nUYoInFvBc3Zcuf84d4ESiAAl68=
 github.com/xiang90/probing v0.0.0-20160813154853-07dd2e8dfe18/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=

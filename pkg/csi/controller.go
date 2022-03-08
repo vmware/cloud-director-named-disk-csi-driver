@@ -8,7 +8,7 @@ package csi
 import (
 	"context"
 	"fmt"
-	"github.com/arunmk/cloud-provider-for-cloud-director/pkg/vcdclient"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"

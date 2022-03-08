@@ -9,7 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/arunmk/cloud-provider-for-cloud-director/pkg/vcdclient"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"

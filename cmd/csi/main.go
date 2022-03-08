@@ -8,7 +8,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/arunmk/cloud-provider-for-cloud-director/pkg/vcdclient"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/config"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"

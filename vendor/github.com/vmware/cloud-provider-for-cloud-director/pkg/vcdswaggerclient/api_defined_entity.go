@@ -35,7 +35,7 @@ Creates a defined entity based on the entity type (URN).
  * @param entity
  * @param id
  * @param optional nil or *DefinedEntityApiCreateDefinedEntityOpts - Optional Parameters:
-     * @param "InvokeHooks" (optional.Interface of interface{}) -  Only users with Admin FullControl access to the Entity Type can pass this parameter. The default value is &#39;true&#39;.
+     * @param "InvokeHooks" (optional.Interface of interface{}) -  Only users with Admin FullControl access to the Entity Type can pass this parameter. The default value is true.
 
 
 */
