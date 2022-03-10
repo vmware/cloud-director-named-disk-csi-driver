@@ -8,11 +8,12 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/cobra v0.0.0-20180319062004-c439c4fa0937
 	github.com/spf13/pflag v1.0.1
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220308004511-f3877b95877d
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220310035027-7279bde98090
 	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
