@@ -3,23 +3,34 @@ package util
 import (
 	"fmt"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
+	"strings"
 )
 
 const (
-	EntityTypePrefix = "urn:vcloud:type"
 	CAPVCDEntityTypeVendor = "vmware"
 	CAPVCDEntityTypeNss = "capvcdCluster"
-	CAPVCDEntityTypeVersion = "1.0.0"
 
 	NativeClusterEntityTypeVendor = "cse"
 	NativeClusterEntityTypeNss = "nativeCluster"
-	NativeClusterEntityTypeVersion = "2.0.0"
 )
 
-var (
-	CAPVCDEntityTypeID = fmt.Sprintf("%s:%s:%s:%s", EntityTypePrefix, CAPVCDEntityTypeVendor, CAPVCDEntityTypeNss, CAPVCDEntityTypeVersion)
-	NativeEntityTypeID = fmt.Sprintf("%s:%s:%s:%s", EntityTypePrefix, NativeClusterEntityTypeVendor, NativeClusterEntityTypeNss, NativeClusterEntityTypeVersion)
-)
+func isCAPVCDEntityType(entityTypeID string) bool {
+	entityTypeIDSplit := strings.Split(entityTypeID, ":")
+	// format is urn:vcloud:type:<vendor>:<nss>:<version>
+	if len(entityTypeIDSplit) != 6 {
+		return false
+	}
+	return entityTypeIDSplit[3] == CAPVCDEntityTypeVendor && entityTypeIDSplit[4] == CAPVCDEntityTypeNss
+}
+
+func isNativeClusterEntityType(entityTypeID string) bool {
+	entityTypeIDSplit := strings.Split(entityTypeID, ":")
+	// format is urn:vcloud:type:<vendor>:<nss>:<version>
+	if len(entityTypeIDSplit) != 6 {
+		return false
+	}
+	return entityTypeIDSplit[3] == NativeClusterEntityTypeVendor && entityTypeIDSplit[4] == NativeClusterEntityTypeNss
+}
 
 func GetVirtualIPsFromRDE(rde  *swaggerClient.DefinedEntity) ([]string, error) {
 	statusEntry, ok := rde.Entity["status"]
@@ -32,9 +43,9 @@ func GetVirtualIPsFromRDE(rde  *swaggerClient.DefinedEntity) ([]string, error) {
 	}
 
 	var virtualIpInterfaces interface{}
-	if rde.EntityType == CAPVCDEntityTypeID {
+	if isCAPVCDEntityType(rde.EntityType) {
 		virtualIpInterfaces = statusMap["virtualIPs"]
-	} else if rde.EntityType == NativeEntityTypeID {
+	} else if isNativeClusterEntityType(rde.EntityType) {
 		virtualIpInterfaces = statusMap["virtual_IPs"]
 	} else {
 		return nil, fmt.Errorf("entity type %s not supported by CPI", rde.EntityType)
@@ -70,9 +81,9 @@ func ReplaceVirtualIPsInRDE(rde *swaggerClient.DefinedEntity, updatedIps []strin
 	if !ok {
 		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
 	}
-	if rde.EntityType == CAPVCDEntityTypeID {
+	if isCAPVCDEntityType(rde.EntityType) {
 		statusMap["virtualIPs"] = updatedIps
-	} else if rde. EntityType == NativeEntityTypeID {
+	} else if isNativeClusterEntityType(rde.EntityType) {
 		statusMap["virtual_IPs"] = updatedIps
 	}
 	return rde, nil

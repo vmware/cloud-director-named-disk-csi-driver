@@ -172,10 +172,12 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string, vAppNa
 	client.VCDClient = vcdClient
 	// We will specifically cache the gateway ID that corresponds to the
 	// network name since it is used frequently in the loadbalancer context.
-	ctx := context.Background()
-	if err = client.CacheGatewayDetails(ctx); err != nil {
-		return nil, fmt.Errorf("unable to get gateway edge from network name [%s]: [%v]",
-			client.networkName, err)
+	if networkName != "" {
+		ctx := context.Background()
+		if err = client.CacheGatewayDetails(ctx); err != nil {
+			return nil, fmt.Errorf("unable to get gateway edge from network name [%s]: [%v]",
+				client.networkName, err)
+		}
 	}
 	clientSingleton = client
 

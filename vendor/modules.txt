@@ -28,8 +28,6 @@ github.com/hashicorp/go-version
 # github.com/inconshreveable/mousetrap v1.0.0
 ## explicit
 github.com/inconshreveable/mousetrap
-# github.com/konsorten/go-windows-terminal-sequences v1.0.1
-github.com/konsorten/go-windows-terminal-sequences
 # github.com/kr/pretty v0.2.1
 github.com/kr/pretty
 # github.com/kr/text v0.2.0
@@ -39,7 +37,8 @@ github.com/kr/text
 github.com/peterhellberg/link
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/sirupsen/logrus v1.2.0
+# github.com/sirupsen/logrus v1.8.1
+## explicit
 github.com/sirupsen/logrus
 # github.com/spf13/cobra v0.0.0-20180319062004-c439c4fa0937
 ## explicit
@@ -53,7 +52,7 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220308004511-f3877b95877d
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220310035027-7279bde98090
 ## explicit
 github.com/vmware/cloud-provider-for-cloud-director/pkg/util
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient
@@ -63,8 +62,6 @@ github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient
 github.com/vmware/go-vcloud-director/v2/govcd
 github.com/vmware/go-vcloud-director/v2/types/v56
 github.com/vmware/go-vcloud-director/v2/util
-# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-golang.org/x/crypto/ssh/terminal
 # golang.org/x/net v0.0.0-20201021035429-f5854403a974
 ## explicit
 golang.org/x/net/context
