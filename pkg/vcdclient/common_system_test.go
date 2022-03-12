@@ -74,6 +74,8 @@ func getTestVCDClient(inputMap map[string]interface{}) (*Client, error) {
 				insecure = getBoolValStrict(val, true)
 			case "clusterID":
 				cloudConfig.ClusterID = getStrValStrict(val, cloudConfig.ClusterID)
+			case "refreshToken":
+				cloudConfig.VCD.RefreshToken = getStrValStrict(val, cloudConfig.VCD.RefreshToken)
 			case "getVdcClient":
 				getVdcClient = getBoolValStrict(val, false)
 			}
