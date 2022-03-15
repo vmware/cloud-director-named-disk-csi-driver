@@ -55,10 +55,14 @@ func (client *Client) RefreshBearerToken() error {
 	href := fmt.Sprintf("%s/api", client.VCDAuthConfig.Host)
 	client.VCDClient.Client.APIVersion = VCloudApiVersion
 
-	klog.Infof("Is user sysadmin: [%v]", client.VCDClient.Client.IsSysAdmin)
+	klog.Infof("Is user sysadmin: [%v]", client.VCDAuthConfig.IsSysAdmin)
 	if client.VCDAuthConfig.RefreshToken != "" {
-		// Refresh vcd client using refresh token
-		err := client.VCDClient.SetToken(client.VCDAuthConfig.UserOrg,
+		userOrg := client.VCDAuthConfig.UserOrg
+		if client.VCDAuthConfig.IsSysAdmin {
+			userOrg = "system"
+		}
+		// Refresh vcd client using refresh token as system org user
+		err := client.VCDClient.SetToken(userOrg,
 			govcd.ApiTokenHeader, client.VCDAuthConfig.RefreshToken)
 		if err != nil {
 			return fmt.Errorf("failed to refresh VCD client with the refresh token: [%v]", err)
