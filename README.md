@@ -7,6 +7,7 @@ The version of the VMware Cloud Director API and Installation that are compatibl
 | :---------: | :-----------------------: | :--------------------------------: | :----: | :----------------- |
 | 1.0.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) | First cut with support for Named Independent Disks |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
 | 1.1.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Remove legacy Kubernetes dependencies.</li><li>Support for CAPVCD RDEs.</li></ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+| 1.1.1 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Fixed refresh-token based authentication issue observed when VCD cells are fronted by a load balancer (Fixes #26).</ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
 
 This extension is intended to be installed into a Kubernetes cluster installed with [VMware Cloud Director](https://www.vmware.com/products/cloud-director.html) as a Cloud Provider, by a user that has the rights as described in the sections below.
 
@@ -19,9 +20,9 @@ Note: This driver is not impacted by the Apache Log4j open source component vuln
 ## Terminology
 1. VCD: VMware Cloud Director
 2. ClusterAdminRole: This is the role that has enough rights to create and administer a Kubernetes Cluster in VCD. This role can be created by cloning the [vApp Author Role](https://docs.vmware.com/en/VMware-Cloud-Director/10.3/VMware-Cloud-Director-Tenant-Portal-Guide/GUID-BC504F6B-3D38-4F25-AACF-ED584063754F.html) and then adding the following rights (details on adding the rights below can be found in the [CSE docs](https://github.com/rocknes/container-service-extension/blob/cse_3_1_docs/docs/cse3_1/RBAC.md#additional-required-rights)):
-    1. Full Control: CSE:NATIVECLUSTER
-    2. Edit: CSE:NATIVECLUSTER
-    3. View: CSE:NATIVECLUSTER
+   1. Full Control: CSE:NATIVECLUSTER
+   2. Edit: CSE:NATIVECLUSTER
+   3. View: CSE:NATIVECLUSTER
 3. ClusterAdminUser: For CSI functionality, there needs to be a set of additional rights added to the `ClusterAdminRole` as described in the "Additional Rights for CSI" section below. The Kubernetes Cluster needs to be **created** by a user belonging to this **enhanced** `ClusterAdminRole`. For convenience, let us term this user as the `ClusterAdminUser`.
 
 ## VMware Cloud Director Configuration
@@ -34,6 +35,12 @@ This `ClusterAdminUser` needs to be created from a `ClusterAdminRole` with the f
    1. User => Manage user's own API TOKEN
 2. Organization VDC => Create a Shared Disk
 
+## Upgrde CSI
+To upgrade CSI to the latest version (v1.1.1), please execute the following command
+```shell
+kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.1.1.latest"}]}}}}'
+kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "harbor-repo.vmware.com/vcloud/cloud-director-named-disk-csi-driver:1.1.1.latest"}]}}}}'
+```
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
