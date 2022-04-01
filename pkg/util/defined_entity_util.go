@@ -1,21 +1,31 @@
 package util
 
 import (
-	 "fmt"
+	"fmt"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"strings"
 )
 
 const (
-	EntityTypePrefix = "urn:vcloud:type"
 	CAPVCDEntityTypeVendor = "vmware"
-	CAPVCDEntityTypeNss = "capvcdCluster"
-	CAPVCDEntityTypeVersion = "1.0.0"
+	CAPVCDEntityTypeNss    = "capvcdCluster"
 
 	NativeClusterEntityTypeVendor = "cse"
-	NativeClusterEntityTypeNss = "nativeCluster"
-	NativeClusterEntityTypeVersion = "2.0.0"
+	NativeClusterEntityTypeNss    = "nativeCluster"
 )
+
+type VCDResource struct {
+	Type string `json:"type,omitempty"`
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+type CSIStatus struct {
+	Name              string        `json:"name,omitempty"`
+	Version           string        `json:"version,omitempty"`
+	VCDResourceSet    []VCDResource `json:"vcdResourceSet,omitempty"`
+	Errors            []string      `json:"errors,omitempty"`
+	PersistentVolumes []string      `json:"persistentVolumes,omitempty"`
+}
 
 func isCAPVCDEntityType(entityTypeID string) bool {
 	entityTypeIDSplit := strings.Split(entityTypeID, ":")
@@ -47,7 +57,16 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 
 	var pvInterfaces interface{}
 	if isCAPVCDEntityType(rde.EntityType) {
-		pvInterfaces = statusMap["persistentVolumes"]
+		// TODO: Upgrade CSI section in CAPVCD RDE
+		csiStatusInterface, ok := statusMap["csi"]
+		if !ok {
+			return nil, fmt.Errorf("RDE [%s] is missing CSI status", rde.Id)
+		}
+		csiStatusMap, ok := csiStatusInterface.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("failed to convert CSI status in RDE [%s] to map[string]interface{}", rde.Id)
+		}
+		pvInterfaces = csiStatusMap["persistentVolumes"]
 	} else if isNativeClusterEntityType(rde.EntityType) {
 		pvInterfaces = statusMap["persistentVolumes"]
 	} else {
@@ -83,7 +102,17 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 	}
 
 	if isCAPVCDEntityType(rde.EntityType) {
-		statusMap["persistentVolumes"] = updatedPvs
+		// TODO: Upgrade capvcdCluster RDE to 1.1.0
+		csiStatusInterface, ok := statusMap["csi"]
+		if !ok {
+			statusMap["csi"] = make(map[string]interface{})
+			csiStatusInterface = statusMap["csi"]
+		}
+		csiStatusMap, ok := csiStatusInterface.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("failed to parse 'csi' section in the status of RDE [%s]", rde.Id)
+		}
+		csiStatusMap["persistentVolumes"] = updatedPvs
 	} else if isNativeClusterEntityType(rde.EntityType) {
 		statusMap["persistentVolumes"] = updatedPvs
 	} else {
