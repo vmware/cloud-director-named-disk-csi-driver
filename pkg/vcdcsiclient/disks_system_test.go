@@ -74,8 +74,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	assert.Error(t, err, "should not be able to create same disk with different parameters")
 	assert.Nil(t, disk1, "disk should not be created")
 
-	// get VM
-	//nodeID := "vm1"
+	// get VM nodeID should be the existing VM name
 	nodeID := "mstr-eb9x"
 	vm, err := vcdClient.FindVMByName(nodeID)
 	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)

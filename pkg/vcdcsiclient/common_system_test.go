@@ -25,25 +25,6 @@ func init() {
 	}
 }
 
-// Ports :
-type Ports struct {
-	HTTP  int32 `yaml:"http" default:"80"`
-	HTTPS int32 `yaml:"https" default:"443"`
-}
-
-// OneArm :
-//type OneArm struct {
-//	StartIP string `yaml:"startIP"`
-//	EndIP   string `yaml:"endIP"`
-//}
-
-// LBConfig :
-type LBConfig struct {
-	OneArm           *vcdclient.OneArm `yaml:"oneArm,omitempty"`
-	Ports            Ports             `yaml:"ports"`
-	CertificateAlias string            `yaml:"certAlias"`
-}
-
 func getStrValStrict(val interface{}, defaultVal string) string {
 	if strVal, ok := val.(string); ok {
 		return strVal
@@ -55,22 +36,6 @@ func getStrValStrict(val interface{}, defaultVal string) string {
 func getBoolValStrict(val interface{}, defaultVal bool) bool {
 	if boolVal, ok := val.(bool); ok {
 		return boolVal
-	}
-
-	return defaultVal
-}
-
-func getOneArmValStrict(val interface{}, defaultVal *vcdclient.OneArm) *vcdclient.OneArm {
-	if oneArmVal, ok := val.(*vcdclient.OneArm); ok {
-		return oneArmVal
-	}
-
-	return defaultVal
-}
-
-func getInt32ValStrict(val interface{}, defaultVal int32) int32 {
-	if int32Val, ok := val.(int32); ok {
-		return int32Val
 	}
 
 	return defaultVal
@@ -91,10 +56,6 @@ func getTestVCDClient(inputMap map[string]interface{}) (*vcdclient.Client, error
 	}
 
 	insecure := true
-	oneArm := &vcdclient.OneArm{
-		StartIPAddress: cloudConfig.LB.OneArm.StartIP,
-		EndIPAddress:   cloudConfig.LB.OneArm.EndIP,
-	}
 	cloudConfig.VCD.RefreshToken = "cUb5vlHzTJvkki47yIAI8qH1JWXI29ek"
 	getVdcClient := false
 	if inputMap != nil {
@@ -104,10 +65,6 @@ func getTestVCDClient(inputMap map[string]interface{}) (*vcdclient.Client, error
 				cloudConfig.VCD.Host = getStrValStrict(val, cloudConfig.VCD.Host)
 			case "org":
 				cloudConfig.VCD.Org = getStrValStrict(val, cloudConfig.VCD.Org)
-			case "network":
-				cloudConfig.VCD.VDCNetwork = getStrValStrict(val, cloudConfig.VCD.VDCNetwork)
-			case "subnet":
-				cloudConfig.VCD.VIPSubnet = getStrValStrict(val, cloudConfig.VCD.VIPSubnet)
 			case "user":
 				cloudConfig.VCD.User = getStrValStrict(val, cloudConfig.VCD.User)
 			case "secret":
@@ -116,14 +73,6 @@ func getTestVCDClient(inputMap map[string]interface{}) (*vcdclient.Client, error
 				insecure = getBoolValStrict(val, true)
 			case "clusterID":
 				cloudConfig.ClusterID = getStrValStrict(val, cloudConfig.ClusterID)
-			case "oneArm":
-				oneArm = getOneArmValStrict(val, oneArm)
-			case "httpPort":
-				cloudConfig.LB.Ports.HTTP = getInt32ValStrict(val, cloudConfig.LB.Ports.HTTP)
-			case "httpsPort":
-				cloudConfig.LB.Ports.HTTPS = getInt32ValStrict(val, cloudConfig.LB.Ports.HTTPS)
-			case "certAlias":
-				cloudConfig.LB.CertificateAlias = getStrValStrict(val, cloudConfig.LB.CertificateAlias)
 			case "getVdcClient":
 				getVdcClient = getBoolValStrict(val, false)
 			case "refreshToken":
@@ -139,18 +88,18 @@ func getTestVCDClient(inputMap map[string]interface{}) (*vcdclient.Client, error
 		cloudConfig.VCD.Org,
 		cloudConfig.VCD.VDC,
 		cloudConfig.VCD.VAppName,
-		cloudConfig.VCD.VDCNetwork,
-		cloudConfig.VCD.VIPSubnet,
+		"",
+		"",
 		cloudConfig.VCD.UserOrg,
 		cloudConfig.VCD.User,
 		cloudConfig.VCD.Secret,
 		cloudConfig.VCD.RefreshToken,
 		insecure,
 		cloudConfig.ClusterID,
-		oneArm,
-		cloudConfig.LB.Ports.HTTP,
-		cloudConfig.LB.Ports.HTTPS,
-		cloudConfig.LB.CertificateAlias,
+		nil,
+		0,
+		0,
+		"",
 		getVdcClient,
 	)
 }
