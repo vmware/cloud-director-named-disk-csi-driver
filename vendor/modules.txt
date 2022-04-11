@@ -54,6 +54,7 @@ github.com/stretchr/testify/require
 ## explicit
 # github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220312005953-16cf7f1d567a
 ## explicit
+github.com/vmware/cloud-provider-for-cloud-director/pkg/config
 github.com/vmware/cloud-provider-for-cloud-director/pkg/util
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient

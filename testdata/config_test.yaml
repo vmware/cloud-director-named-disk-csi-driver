@@ -2,4 +2,5 @@ vcd:
   host: "https://vmware-cloud-director.com"
   org: "org"
   vdc: "org_ovdc"
+  vAppName: "vapp name"
 clusterid: "clusterid"
