@@ -35,11 +35,11 @@ This `ClusterAdminUser` needs to be created from a `ClusterAdminRole` with the f
    1. User => Manage user's own API TOKEN
 2. Organization VDC => Create a Shared Disk
 
-## Upgrde CSI
-To upgrade CSI to the latest version (v1.1.1), please execute the following command
+## Upgrade CSI
+To upgrade CSI to the latest version (v1.2.0), please execute the following command
 ```shell
-kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.1.1.latest"}]}}}}'
-kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.1.1.latest"}]}}}}'
+kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.2.0.latest"}]}}}}'
+kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.2.0.latest"}]}}}}'
 ```
 ## CSI Feature matrix
 | Feature | Support Scope |
