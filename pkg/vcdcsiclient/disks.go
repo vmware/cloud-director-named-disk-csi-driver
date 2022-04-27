@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package vcdcsiclient
@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
@@ -20,17 +20,16 @@ import (
 	"strings"
 )
 
-
 type Client struct {
-	VCDClient *vcdclient.Client
+	VCDClient *vcdsdk.Client
+	ClusterID string
 }
-
 
 const (
 	VCDBusTypeSCSI           = "6"
 	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
+	NoRdePrefix              = `NO_RDE_`
 )
-
 
 // Returns a Disk structure as JSON
 func prettyDisk(disk vcdtypes.Disk) string {
@@ -140,7 +139,7 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 
 	diskParams := &vcdtypes.DiskCreateParams{
 		Xmlns: types.XMLNamespaceVCloud,
-		Disk: d,
+		Disk:  d,
 	}
 	if storageProfile != "" {
 		storageReference, err := client.VCDClient.VDC.FindStorageProfileReference(storageProfile)
@@ -176,9 +175,9 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 	klog.Infof("Disk created: [%#v]", disk)
 
 	// update RDE
-	if client.VCDClient.ClusterID != "" && !strings.HasPrefix(client.VCDClient.ClusterID, vcdclient.NoRdePrefix) {
+	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
 		if err = client.addPvToRDE(disk.Id); err != nil {
-			return nil, vcdclient.NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is empty or generated", disk.Id))
+			return nil, vcdsdk.NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
 
@@ -242,7 +241,7 @@ func (client *Client) GetDiskByName(name string) (*vcdtypes.Disk, error) {
 	}
 
 	disks, err := client.govcdGetDisksByName(name, true)
-	if err != nil  && err != govcd.ErrorEntityNotFound {
+	if err != nil && err != govcd.ErrorEntityNotFound {
 		return nil, fmt.Errorf("unable to GetDiskByName for [%s] from vdc: [%v]", name, err)
 	}
 	if err == govcd.ErrorEntityNotFound || disks == nil || len(*disks) == 0 {
@@ -379,9 +378,9 @@ func (client *Client) DeleteDisk(name string) error {
 	}
 
 	// update RDE
-	if client.VCDClient.ClusterID != "" && !strings.HasPrefix(client.VCDClient.ClusterID, vcdclient.NoRdePrefix) {
+	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
 		if err = client.removePvFromRDE(disk.Id); err != nil {
-			return vcdclient.NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is empty or generated", disk.Id))
+			return vcdsdk.NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
 
@@ -446,7 +445,7 @@ func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
 	}
 
 	params := &types.DiskAttachOrDetachParams{
-		Disk:      &types.Reference{HREF: disk.HREF},
+		Disk: &types.Reference{HREF: disk.HREF},
 	}
 
 	klog.Infof("Attaching disk with params [%v]", params)
@@ -525,7 +524,7 @@ func (client *Client) DetachVolume(vm *govcd.VM, diskName string) error {
 
 func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClient.DefinedEntity, error) {
 	defEnt, _, etag, err := client.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		client.VCDClient.ClusterID)
+		client.ClusterID)
 	if err != nil {
 		return nil, "", nil, fmt.Errorf("error when getting defined entity: [%v]", err)
 	}
@@ -543,17 +542,17 @@ func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag strin
 	updatedRDE, err := util.ReplacePVsInRDE(defEnt, updatedPvs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]",
-			client.VCDClient.ClusterID, err)
+			client.ClusterID, err)
 	}
 
 	// can set invokeHooks as optional parameter
 	_, httpResponse, err := client.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
-		client.VCDClient.ClusterID, nil)
+		client.ClusterID, nil)
 	if err != nil {
 		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
 	}
 	klog.Infof("Successfully updated RDE [%s] with persistentVolumes: [%s]",
-		client.VCDClient.ClusterID, updatedPvs)
+		client.ClusterID, updatedPvs)
 	return httpResponse, nil
 }
 
@@ -583,7 +582,7 @@ func (client *Client) addPvToRDE(addPv string) error {
 				continue
 			}
 			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]",
-				addPv, client.VCDClient.ClusterID, err)
+				addPv, client.ClusterID, err)
 		}
 		return nil
 	}
@@ -606,9 +605,9 @@ func (client *Client) removePvFromRDE(removePv string) error {
 			}
 		}
 		if foundIdx == -1 {
-			return nil  // no need to update RDE
+			return nil // no need to update RDE
 		}
-		updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx + 1:]...)
+		updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx+1:]...)
 
 		httpResponse, err := client.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
 		if err == nil {
@@ -616,7 +615,7 @@ func (client *Client) removePvFromRDE(removePv string) error {
 		}
 		if httpResponse.StatusCode != http.StatusPreconditionFailed {
 			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]",
-				removePv, client.VCDClient.ClusterID, err)
+				removePv, client.ClusterID, err)
 		}
 	}
 	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")

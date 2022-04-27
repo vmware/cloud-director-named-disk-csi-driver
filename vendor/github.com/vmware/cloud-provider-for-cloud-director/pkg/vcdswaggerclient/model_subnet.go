@@ -10,7 +10,7 @@
 
 package swagger
 
-// A network subnet defined by its gateway, 
+// A network subnet defined by its gateway,
 type Subnet struct {
 	// The gateway for the subnet.
 	Gateway string `json:"gateway"`

@@ -7,6 +7,7 @@ package vcdcsiclient
 
 import (
 	"fmt"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"net/http"
 	"testing"
 
@@ -76,7 +77,23 @@ func TestDiskCreateAttach(t *testing.T) {
 
 	// get VM nodeID should be the existing VM name
 	nodeID := "mstr-eb9x"
-	vm, err := vcdClient.FindVMByName(nodeID)
+
+	vdcManager, err := vcdsdk.NewVDCManager(vcdCsiClient.VCDClient, vcdCsiClient.VCDClient.ClusterOrgName, vcdCsiClient.VCDClient.ClusterOVDCName, "")
+	if err != nil {
+		assert.NoError(t, err, "unable to get vdcManager")
+		//return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+	}
+	vApp, err := vdcManager.GetOrCreateVApp(vcdCsiClient.VCDClient.ClusterOVDCName)
+	if err != nil {
+		assert.NoError(t, err, "unable to get vApp from ovdcNetwork [%s]", vcdCsiClient.VCDClient.ClusterOVDCName)
+		//return nil, fmt.Errorf("unable to get vApp from ovdcNetwork [%s]: [%v]", vcdCsiClient.VCDClient.ClusterOVDCName, err)
+	}
+	if vApp.VApp == nil || vApp.VApp.Name == "" {
+		assert.NoError(t, err, "unable to get vApp name from vApp")
+		//return nil, fmt.Errorf("unable to get vApp name from vApp: [%v]", err)
+	}
+	vdcManager.VAppName = vApp.VApp.Name
+	vm, err := vdcManager.FindVMByName(nodeID)
 	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)
 	require.NotNil(t, vm, "vm should not be nil")
 

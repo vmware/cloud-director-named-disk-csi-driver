@@ -9,13 +9,14 @@
  */
 
 package swagger
+
 // OrgVdcNetworkStatus : Represents status of a Org Vdc network. This value will be PENDING if the network has been recorded by VCD but has not been fully configured, CONFIGURING if the network is in transition, REALIZED if the existing state of the network has been fully realized, or REALIZED_FAILED if there was an error creating the network.
 type OrgVdcNetworkStatus string
 
 // List of OrgVdcNetworkStatus
 const (
-	PENDING_OrgVdcNetworkStatus OrgVdcNetworkStatus = "PENDING"
-	CONFIGURING_OrgVdcNetworkStatus OrgVdcNetworkStatus = "CONFIGURING"
-	REALIZED_OrgVdcNetworkStatus OrgVdcNetworkStatus = "REALIZED"
+	PENDING_OrgVdcNetworkStatus            OrgVdcNetworkStatus = "PENDING"
+	CONFIGURING_OrgVdcNetworkStatus        OrgVdcNetworkStatus = "CONFIGURING"
+	REALIZED_OrgVdcNetworkStatus           OrgVdcNetworkStatus = "REALIZED"
 	REALIZATION_FAILED_OrgVdcNetworkStatus OrgVdcNetworkStatus = "REALIZATION_FAILED"
 )

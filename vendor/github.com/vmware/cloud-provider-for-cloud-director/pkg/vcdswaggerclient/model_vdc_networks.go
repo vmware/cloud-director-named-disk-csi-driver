@@ -10,7 +10,7 @@
 
 package swagger
 
-// List of Org vDC networks 
+// List of Org vDC networks
 type VdcNetworks struct {
 	// How many results there are in total (i.e., considering all pages).
 	ResultTotal int32 `json:"resultTotal,omitempty"`
@@ -22,5 +22,5 @@ type VdcNetworks struct {
 	PageSize int32 `json:"pageSize,omitempty"`
 	// Association info for each result.
 	Associations []Association `json:"associations,omitempty"`
-	Values []VdcNetwork `json:"values,omitempty"`
+	Values       []VdcNetwork  `json:"values,omitempty"`
 }

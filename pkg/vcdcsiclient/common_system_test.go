@@ -7,8 +7,8 @@ package vcdcsiclient
 
 import (
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/config"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/config"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"os"
 	"path/filepath"
 )
@@ -41,7 +41,7 @@ func getBoolValStrict(val interface{}, defaultVal bool) bool {
 	return defaultVal
 }
 
-func getTestVCDClient(inputMap map[string]interface{}) (*vcdclient.Client, error) {
+func getTestVCDClient(inputMap map[string]interface{}) (*vcdsdk.Client, error) {
 
 	testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")
 	configReader, err := os.Open(testConfigFilePath)
@@ -83,23 +83,15 @@ func getTestVCDClient(inputMap map[string]interface{}) (*vcdclient.Client, error
 		}
 	}
 
-	return vcdclient.NewVCDClientFromSecrets(
+	return vcdsdk.NewVCDClientFromSecrets(
 		cloudConfig.VCD.Host,
 		cloudConfig.VCD.Org,
 		cloudConfig.VCD.VDC,
-		cloudConfig.VCD.VAppName,
-		"",
-		"",
 		cloudConfig.VCD.UserOrg,
 		cloudConfig.VCD.User,
 		cloudConfig.VCD.Secret,
 		cloudConfig.VCD.RefreshToken,
 		insecure,
-		cloudConfig.ClusterID,
-		nil,
-		0,
-		0,
-		"",
 		getVdcClient,
 	)
 }
