@@ -52,11 +52,12 @@ type controllerServer struct {
 }
 
 // NewControllerService creates a controllerService
-func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client) csi.ControllerServer {
+func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, cluserID string) csi.ControllerServer {
 	return &controllerServer{
 		Driver: driver,
 		VCDCSIClient: &vcdcsiclient.Client{
 			VCDClient: vcdClient,
+			ClusterID: cluserID,
 		},
 	}
 }
