@@ -46,19 +46,20 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	}
 
 	var pvInterfaces interface{}
-	if isCAPVCDEntityType(rde.EntityType) {
+	switch {
+	case isCAPVCDEntityType(rde.EntityType):
 		csiEntry, ok := statusMap["csi"]
 		if !ok {
 			return nil, fmt.Errorf("could not find 'csi' entry in defined entity")
 		}
 		csiMap, ok := csiEntry.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("unable to convert [%T] to map", csiEntry)
+			return nil, fmt.Errorf("unable to convert [%T] to map[string]interface{}", csiEntry)
 		}
 		pvInterfaces = csiMap["persistentVolumes"]
-	} else if isNativeClusterEntityType(rde.EntityType) {
+	case isNativeClusterEntityType(rde.EntityType):
 		pvInterfaces = statusMap["persistentVolumes"]
-	} else {
+	default:
 		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
 	}
 	if pvInterfaces == nil {
@@ -89,20 +90,22 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 	if !ok {
 		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
 	}
-	if isCAPVCDEntityType(rde.EntityType) {
+	switch {
+	case isCAPVCDEntityType(rde.EntityType):
 		csiEntry, ok := statusMap["csi"]
 		if !ok {
 			return nil, fmt.Errorf("could not find 'csi' entry in defined entity")
 		}
 		csiMap, ok := csiEntry.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("unable to convert [%T] to map", csiEntry)
+			return nil, fmt.Errorf("unable to convert [%T] to map[string]interface{}", csiEntry)
 		}
 		csiMap["persistentVolumes"] = updatedPvs
-	} else if isNativeClusterEntityType(rde.EntityType) {
+	case isNativeClusterEntityType(rde.EntityType):
 		statusMap["persistentVolumes"] = updatedPvs
-	} else {
+	default:
 		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
 	}
 	return rde, nil
+
 }
