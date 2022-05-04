@@ -1,19 +1,19 @@
 package util
 
 import (
-	 "fmt"
+	"fmt"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"strings"
 )
 
 const (
-	EntityTypePrefix = "urn:vcloud:type"
-	CAPVCDEntityTypeVendor = "vmware"
-	CAPVCDEntityTypeNss = "capvcdCluster"
+	EntityTypePrefix        = "urn:vcloud:type"
+	CAPVCDEntityTypeVendor  = "vmware"
+	CAPVCDEntityTypeNss     = "capvcdCluster"
 	CAPVCDEntityTypeVersion = "1.0.0"
 
-	NativeClusterEntityTypeVendor = "cse"
-	NativeClusterEntityTypeNss = "nativeCluster"
+	NativeClusterEntityTypeVendor  = "cse"
+	NativeClusterEntityTypeNss     = "nativeCluster"
 	NativeClusterEntityTypeVersion = "2.0.0"
 )
 
@@ -46,11 +46,20 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	}
 
 	var pvInterfaces interface{}
-	if isCAPVCDEntityType(rde.EntityType) {
+	switch {
+	case isCAPVCDEntityType(rde.EntityType):
+		csiEntry, ok := statusMap["csi"]
+		if !ok {
+			return nil, fmt.Errorf("could not find 'csi' entry in defined entity")
+		}
+		csiMap, ok := csiEntry.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("unable to convert [%T] to map[string]interface{}", csiEntry)
+		}
+		pvInterfaces = csiMap["persistentVolumes"]
+	case isNativeClusterEntityType(rde.EntityType):
 		pvInterfaces = statusMap["persistentVolumes"]
-	} else if isNativeClusterEntityType(rde.EntityType) {
-		pvInterfaces = statusMap["persistentVolumes"]
-	} else {
+	default:
 		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
 	}
 	if pvInterfaces == nil {
@@ -81,13 +90,22 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 	if !ok {
 		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
 	}
-
-	if isCAPVCDEntityType(rde.EntityType) {
+	switch {
+	case isCAPVCDEntityType(rde.EntityType):
+		csiEntry, ok := statusMap["csi"]
+		if !ok {
+			return nil, fmt.Errorf("could not find 'csi' entry in defined entity")
+		}
+		csiMap, ok := csiEntry.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("unable to convert [%T] to map[string]interface{}", csiEntry)
+		}
+		csiMap["persistentVolumes"] = updatedPvs
+	case isNativeClusterEntityType(rde.EntityType):
 		statusMap["persistentVolumes"] = updatedPvs
-	} else if isNativeClusterEntityType(rde.EntityType) {
-		statusMap["persistentVolumes"] = updatedPvs
-	} else {
+	default:
 		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
 	}
 	return rde, nil
+
 }
