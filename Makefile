@@ -5,7 +5,7 @@ version := $(shell cat ${GITROOT}/release/version)
 
 REGISTRY?="harbor-repo.vmware.com/vcloud"
 
-.PHONY: build-within-docker
+.PHONY: build-within-docker vendor
 
 build-within-docker:
 	mkdir -p /build/cloud-director-named-disk-csi-driver
