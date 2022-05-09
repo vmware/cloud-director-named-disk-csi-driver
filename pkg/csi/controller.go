@@ -52,12 +52,13 @@ type controllerServer struct {
 }
 
 // NewControllerService creates a controllerService
-func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, cluserID string) csi.ControllerServer {
+func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, cluserID string, vAppName string) csi.ControllerServer {
 	return &controllerServer{
 		Driver: driver,
 		VCDCSIClient: &vcdcsiclient.Client{
 			VCDClient: vcdClient,
 			ClusterID: cluserID,
+			VAppName:  vAppName,
 		},
 	}
 }
@@ -215,19 +216,11 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 
 	klog.Infof("Getting node details for [%s]", nodeID)
 	//Todo: handle the err
-	vdcManager, err := vcdsdk.NewVDCManager(cs.VCDCSIClient.VCDClient, cs.VCDCSIClient.VCDClient.ClusterOrgName, cs.VCDCSIClient.VCDClient.ClusterOVDCName, "")
+	vdcManager, err := vcdsdk.NewVDCManager(cs.VCDCSIClient.VCDClient, cs.VCDCSIClient.VCDClient.ClusterOrgName, cs.VCDCSIClient.VCDClient.ClusterOVDCName)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
 	}
-	vApp, err := vdcManager.GetOrCreateVApp(cs.VCDCSIClient.VCDClient.ClusterOVDCName)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get vApp from ovdcNetwork [%s]: [%v]", cs.VCDCSIClient.VCDClient.ClusterOVDCName, err)
-	}
-	if vApp.VApp == nil || vApp.VApp.Name == "" {
-		return nil, fmt.Errorf("unable to get vApp name from vApp: [%v]", err)
-	}
-	vdcManager.VAppName = vApp.VApp.Name
-	vm, err := vdcManager.FindVMByName(nodeID)
+	vm, err := vdcManager.FindVMByName(cs.VCDCSIClient.VAppName, nodeID)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find VM for node [%s]: [%v]", nodeID, err)
 	}
@@ -283,19 +276,11 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 			"ControllerUnpublishVolume: Volume ID must be provided")
 	}
 
-	vdcManager, err := vcdsdk.NewVDCManager(cs.VCDCSIClient.VCDClient, cs.VCDCSIClient.VCDClient.ClusterOrgName, cs.VCDCSIClient.VCDClient.ClusterOVDCName, "")
+	vdcManager, err := vcdsdk.NewVDCManager(cs.VCDCSIClient.VCDClient, cs.VCDCSIClient.VCDClient.ClusterOrgName, cs.VCDCSIClient.VCDClient.ClusterOVDCName)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
 	}
-	vApp, err := vdcManager.GetOrCreateVApp(cs.VCDCSIClient.VCDClient.ClusterOVDCName)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get vApp from ovdcNetwork [%s]: [%v]", cs.VCDCSIClient.VCDClient.ClusterOVDCName, err)
-	}
-	if vApp.VApp == nil || vApp.VApp.Name == "" {
-		return nil, fmt.Errorf("unable to get vApp name from vApp: [%v]", err)
-	}
-	vdcManager.VAppName = vApp.VApp.Name
-	vm, err := vdcManager.FindVMByName(nodeID)
+	vm, err := vdcManager.FindVMByName(cs.VCDCSIClient.VAppName, nodeID)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound,
 			"Could not find VM with nodeID [%s] from which to detach [%s]", nodeID, volumeID)

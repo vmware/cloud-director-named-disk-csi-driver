@@ -110,7 +110,7 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 func (d *VCDDriver) Setup(vcdCSIClient *vcdcsiclient.Client, nodeID string) {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
-	d.cs = NewControllerService(d, vcdCSIClient.VCDClient, vcdCSIClient.ClusterID)
+	d.cs = NewControllerService(d, vcdCSIClient.VCDClient, vcdCSIClient.ClusterID, vcdCSIClient.VAppName)
 	d.ids = NewIdentityServer(d)
 }
 

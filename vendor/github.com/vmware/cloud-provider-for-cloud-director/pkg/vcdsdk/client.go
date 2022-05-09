@@ -17,11 +17,6 @@ import (
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 )
 
-var (
-	clientCreatorLock sync.Mutex
-	clientSingleton   *Client = nil
-)
-
 // Client :
 type Client struct {
 	VCDAuthConfig   *VCDAuthConfig // s
@@ -113,27 +108,8 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string, userOr
 
 	// TODO: Remove pkg/config dependency from vcdsdk; currently common_system_test.go depends on pkg/config
 	newUserOrg, newUsername, err := config.GetUserAndOrg(user, orgName, userOrg)
-
 	if err != nil {
 		return nil, fmt.Errorf("error parsing username before authenticating to VCD: [%v]", err)
-	}
-
-	clientCreatorLock.Lock()
-	defer clientCreatorLock.Unlock()
-
-	// Return old client if everything matches. Else create new one and cache it.
-	// This is suboptimal but is not a common case.
-	if clientSingleton != nil {
-		if clientSingleton.VCDAuthConfig.Host == host &&
-			clientSingleton.ClusterOrgName == orgName &&
-			clientSingleton.ClusterOVDCName == vdcName &&
-			clientSingleton.VCDAuthConfig.UserOrg == newUserOrg &&
-			clientSingleton.VCDAuthConfig.User == newUsername &&
-			clientSingleton.VCDAuthConfig.Password == password &&
-			clientSingleton.VCDAuthConfig.RefreshToken == refreshToken &&
-			clientSingleton.VCDAuthConfig.Insecure == insecure {
-			return clientSingleton, nil
-		}
 	}
 
 	vcdAuthConfig := NewVCDAuthConfigFromSecrets(host, newUsername, password, refreshToken, newUserOrg, insecure) //
@@ -163,8 +139,7 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string, userOr
 		}
 	}
 	client.VCDClient = vcdClient
-	clientSingleton = client
 
-	klog.Infof("Client singleton is sysadmin: [%v]", clientSingleton.VCDClient.Client.IsSysAdmin)
-	return clientSingleton, nil
+	klog.Infof("Client is sysadmin: [%v]", client.VCDClient.Client.IsSysAdmin)
+	return client, nil
 }
