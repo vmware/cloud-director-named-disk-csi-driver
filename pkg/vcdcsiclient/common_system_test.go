@@ -17,12 +17,37 @@ var (
 	gitRoot string = ""
 )
 
+type authorizationDetails struct {
+	Username               string `yaml:"username"`
+	Password               string `yaml:"password"`
+	RefreshToken           string `yaml:"refreshToken"`
+	UserOrg                string `yaml:"userOrg"`
+	SystemUser             string `yaml:"systemUser"`
+	SystemUserPassword     string `yaml:"systemUserPassword"`
+	SystemUserRefreshToken string `yaml:"systemUserRefreshToken"`
+}
+
 func init() {
 	gitRoot = os.Getenv("GITROOT")
 	if gitRoot == "" {
 		// It is okay to panic here as this will be caught during dev
 		panic("GITROOT should be set")
 	}
+}
+
+func getTestConfig() (*config.CloudConfig, error) {
+	testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")
+	configReader, err := os.Open(testConfigFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to open file [%s]: [%v]", testConfigFilePath, err)
+	}
+	defer configReader.Close()
+
+	cloudConfig, err := config.ParseCloudConfig(configReader)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to parse cloud config file [%s]: [%v]", testConfigFilePath, err)
+	}
+	return cloudConfig, nil
 }
 
 func getStrValStrict(val interface{}, defaultVal string) string {
@@ -41,22 +66,9 @@ func getBoolValStrict(val interface{}, defaultVal bool) bool {
 	return defaultVal
 }
 
-func getTestVCDClient(inputMap map[string]interface{}) (*vcdsdk.Client, error) {
-
-	testConfigFilePath := filepath.Join(gitRoot, "testdata/config_test.yaml")
-	configReader, err := os.Open(testConfigFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to open file [%s]: [%v]", testConfigFilePath, err)
-	}
-	defer configReader.Close()
-
-	cloudConfig, err := config.ParseCloudConfig(configReader)
-	if err != nil {
-		return nil, fmt.Errorf("Unable to parse cloud config file [%s]: [%v]", testConfigFilePath, err)
-	}
-
+func getTestVCDClient(config *config.CloudConfig, inputMap map[string]interface{}) (*vcdsdk.Client, error) {
+	cloudConfig := *config // Make a copy of cloudConfig so modified inputs don't carry over to next test
 	insecure := true
-	cloudConfig.VCD.RefreshToken = "cUb5vlHzTJvkki47yIAI8qH1JWXI29ek"
 	getVdcClient := false
 	if inputMap != nil {
 		for key, val := range inputMap {
