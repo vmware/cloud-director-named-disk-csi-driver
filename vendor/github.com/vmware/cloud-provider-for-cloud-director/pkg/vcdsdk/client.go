@@ -163,8 +163,7 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string, userOr
 		}
 	}
 	client.VCDClient = vcdClient
-	clientSingleton = client
 
-	klog.Infof("Client singleton is sysadmin: [%v]", clientSingleton.VCDClient.Client.IsSysAdmin)
-	return clientSingleton, nil
+	klog.Infof("Client is sysadmin: [%v]", client.VCDClient.Client.IsSysAdmin)
+	return client, nil
 }

@@ -52,6 +52,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	})
 	vcdCsiClient.VCDClient = vcdClient
 	vcdCsiClient.VAppName = cloudConfig.VCD.VAppName
+	vcdCsiClient.ClusterID = cloudConfig.ClusterID
 	assert.NoError(t, err, "Unable to get VCD client")
 	require.NotNil(t, vcdClient, "VCD Client should not be nil")
 
@@ -138,7 +139,7 @@ func TestDiskCreateAttach(t *testing.T) {
 
 	// Check PV was removed from RDE
 	currRDEPvs, _, _, err = vcdCsiClient.GetRDEPersistentVolumes()
-	assert.Error(t, err, "unable to get RDE PVs after deleting disk")
+	assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
 	assert.False(t, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should not be found in RDE")
 }
 

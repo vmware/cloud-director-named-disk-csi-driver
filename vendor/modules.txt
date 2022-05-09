@@ -57,7 +57,7 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220506230155-58b2f49f052f
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220508221901-1304924dad33
 ## explicit
 github.com/vmware/cloud-provider-for-cloud-director/pkg/config
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk
@@ -183,6 +183,7 @@ google.golang.org/protobuf/types/known/wrapperspb
 ## explicit
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c
+## explicit
 gopkg.in/yaml.v3
 # k8s.io/apimachinery v0.22.1 => k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
 k8s.io/apimachinery/pkg/util/runtime

@@ -140,6 +140,7 @@ func runCommand() {
 	d.Setup(&vcdcsiclient.Client{
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
+		VAppName:  cloudConfig.VCD.VAppName,
 	}, nodeID)
 
 	// blocking call

@@ -94,7 +94,9 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 	case isCAPVCDEntityType(rde.EntityType):
 		csiEntry, ok := statusMap["csi"]
 		if !ok {
-			return nil, fmt.Errorf("could not find 'csi' entry in defined entity")
+			newCsiMap := make(map[string]interface{})
+			newCsiMap["persistentVolumes"] = updatedPvs
+			statusMap["csi"] = newCsiMap
 		}
 		csiMap, ok := csiEntry.(map[string]interface{})
 		if !ok {
