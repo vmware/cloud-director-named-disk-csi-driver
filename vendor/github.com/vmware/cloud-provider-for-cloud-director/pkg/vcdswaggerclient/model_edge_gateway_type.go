@@ -9,12 +9,13 @@
  */
 
 package swagger
+
 // EdgeGatewayType : The type of the edge gateway.
 type EdgeGatewayType string
 
 // List of EdgeGatewayType
 const (
-	NSXV_BACKED_EdgeGatewayType EdgeGatewayType = "NSXV_BACKED"
-	NSXT_BACKED_EdgeGatewayType EdgeGatewayType = "NSXT_BACKED"
+	NSXV_BACKED_EdgeGatewayType   EdgeGatewayType = "NSXV_BACKED"
+	NSXT_BACKED_EdgeGatewayType   EdgeGatewayType = "NSXT_BACKED"
 	NSXT_IMPORTED_EdgeGatewayType EdgeGatewayType = "NSXT_IMPORTED"
 )

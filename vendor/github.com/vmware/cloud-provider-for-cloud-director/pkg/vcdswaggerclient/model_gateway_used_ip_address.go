@@ -10,7 +10,7 @@
 
 package swagger
 
-// Describes an IP address currently be used by the edge gateway. The IP belongs to the IPs allocated to the edge. 
+// Describes an IP address currently be used by the edge gateway. The IP belongs to the IPs allocated to the edge.
 type GatewayUsedIpAddress struct {
 	// The external network that this IP Address belongs to.
 	NetworkRef *EntityReference `json:"networkRef,omitempty"`

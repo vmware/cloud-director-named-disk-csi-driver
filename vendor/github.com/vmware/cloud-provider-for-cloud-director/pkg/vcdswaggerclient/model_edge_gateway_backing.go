@@ -10,7 +10,7 @@
 
 package swagger
 
-// The backing details of the edge gateway 
+// The backing details of the edge gateway
 type EdgeGatewayBacking struct {
 	// The identifier of the edge gateways backing router.
 	BackingId string `json:"backingId,omitempty"`

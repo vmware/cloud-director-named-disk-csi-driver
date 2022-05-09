@@ -14,11 +14,11 @@ package swagger
 type LoadBalancerServiceEngineGroupAssignment struct {
 	// The identifier of the Load Balancer Service Engine Groups in URN format.
 	Id string `json:"id,omitempty"`
-	// The maximum number of virtual services the Edge Gateway is allowed to use. This is required if the Load Balancer Service Engine Group has reservation type 'SHARED'. This must be unset if the Load Balancer Service Engine Group has reservation type 'DEDICATED'. 
+	// The maximum number of virtual services the Edge Gateway is allowed to use. This is required if the Load Balancer Service Engine Group has reservation type 'SHARED'. This must be unset if the Load Balancer Service Engine Group has reservation type 'DEDICATED'.
 	MaxVirtualServices int32 `json:"maxVirtualServices,omitempty"`
-	// The number of guaranteed virtual services available to the Edge Gateway. This is required if the Load Balancer Service Engine Group has reservation type 'SHARED'. This must be unset if the Load Balancer Service Engine Group has reservation type 'DEDICATED'. 
+	// The number of guaranteed virtual services available to the Edge Gateway. This is required if the Load Balancer Service Engine Group has reservation type 'SHARED'. This must be unset if the Load Balancer Service Engine Group has reservation type 'DEDICATED'.
 	MinVirtualServices int32 `json:"minVirtualServices,omitempty"`
-	// The current number of deployed virutal services. 
+	// The current number of deployed virutal services.
 	NumDeployedVirtualServices int32 `json:"numDeployedVirtualServices,omitempty"`
 	// The associated Load Balancer Service Engine Group.
 	ServiceEngineGroupRef *EntityReference `json:"serviceEngineGroupRef"`

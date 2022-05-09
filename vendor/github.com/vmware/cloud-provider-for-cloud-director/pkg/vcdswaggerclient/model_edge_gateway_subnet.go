@@ -10,7 +10,7 @@
 
 package swagger
 
-// Subnet for edge gateway that contains the IPs from the external network that are allocated to the edge. 
+// Subnet for edge gateway that contains the IPs from the external network that are allocated to the edge.
 type EdgeGatewaySubnet struct {
 	// The gateway for the subnet.
 	Gateway string `json:"gateway"`
@@ -30,7 +30,7 @@ type EdgeGatewaySubnet struct {
 	TotalIpCount int32 `json:"totalIpCount,omitempty"`
 	// The number of IP address used from the static IP ranges.
 	UsedIpCount int32 `json:"usedIpCount,omitempty"`
-	// The primary IP address allocated for this subnet. If not specified, this IP is auto-allocated.  This IP belongs to the external network and can be used for system-configured NAT rules such as DNS forwarder configuration. 
+	// The primary IP address allocated for this subnet. If not specified, this IP is auto-allocated.  This IP belongs to the external network and can be used for system-configured NAT rules such as DNS forwarder configuration.
 	PrimaryIp string `json:"primaryIp,omitempty"`
 	// Used for create and update api calls. If set to true, IP Ranges are automatically generated based on totalIpCount.
 	AutoAllocateIpRanges bool `json:"autoAllocateIpRanges,omitempty"`

@@ -16,10 +16,10 @@ import (
 
 // VCDConfig :
 type VCDConfig struct {
-	Host string `yaml:"host"`
-	VDC  string `yaml:"vdc"`
-	Org  string `yaml:"org"`
-	UserOrg      string // this defaults to Org or a prefix of User
+	Host    string `yaml:"host"`
+	VDC     string `yaml:"vdc"`
+	Org     string `yaml:"org"`
+	UserOrg string // this defaults to Org or a prefix of User
 
 	// It is allowed to pass the following variables using the config. However,
 	// that is unsafe security practice. However there can be user scenarios and
@@ -32,10 +32,6 @@ type VCDConfig struct {
 	User         string
 	Secret       string
 	RefreshToken string
-
-	VDCNetwork string `yaml:"network"`
-	VIPSubnet  string `yaml:"vipSubnet"`
-	VAppName  string  `yaml:"vAppName"`
 }
 
 // Ports :
@@ -55,6 +51,8 @@ type LBConfig struct {
 	OneArm           *OneArm `yaml:"oneArm,omitempty"`
 	Ports            Ports   `yaml:"ports"`
 	CertificateAlias string  `yaml:"certAlias"`
+	VDCNetwork       string  `yaml:"network"`
+	VIPSubnet        string  `yaml:"vipSubnet"`
 }
 
 // CloudConfig contains the config that will be read from the secret
@@ -62,9 +60,10 @@ type CloudConfig struct {
 	VCD       VCDConfig `yaml:"vcd"`
 	LB        LBConfig  `yaml:"loadbalancer"`
 	ClusterID string    `yaml:"clusterid"`
+	VAppName  string    `yaml:"vAppName"`
 }
 
-func getUserAndOrg(fullUserName string, clusterOrg string) (userOrg string, userName string, err error) {
+func GetUserAndOrg(fullUserName string, clusterOrg string, currentUserOrg string) (userOrg string, userName string, err error) {
 	// If the full username is specified as org/user, the scenario is that the user
 	// may belong to an org different from the cluster, but still has the
 	// necessary rights to view the VMs on this org. Else if the username is
@@ -76,8 +75,13 @@ func getUserAndOrg(fullUserName string, clusterOrg string) (userOrg string, user
 			"invalid username format; expected at most two fields separated by /, obtained [%d]",
 			len(parts))
 	}
+	// Add additional fallback to clusterOrg if current userOrg does not exist, this allows auth to continue properly
 	if len(parts) == 1 {
-		userOrg = clusterOrg
+		if currentUserOrg == "" {
+			userOrg = clusterOrg
+		} else {
+			userOrg = currentUserOrg
+		}
 		userName = parts[0]
 	} else {
 		userOrg = parts[0]
@@ -98,7 +102,7 @@ func ParseCloudConfig(configReader io.Reader) (*CloudConfig, error) {
 	if err = decoder.Decode(&config); err != nil {
 		return nil, fmt.Errorf("unable to decode yaml file: [%v]", err)
 	}
-
+	config.VCD.Host = strings.TrimRight(config.VCD.Host, "/")
 	return config, nil
 }
 
@@ -116,7 +120,7 @@ func SetAuthorization(config *CloudConfig) error {
 	} else {
 		trimmedUserName := strings.TrimSuffix(string(username), "\n")
 		if string(trimmedUserName) != "" {
-			config.VCD.UserOrg, config.VCD.User, err = getUserAndOrg(trimmedUserName, config.VCD.Org)
+			config.VCD.UserOrg, config.VCD.User, err = GetUserAndOrg(trimmedUserName, config.VCD.Org, config.VCD.UserOrg)
 			if err != nil {
 				return fmt.Errorf("unable to get user org and name: [%v]", err)
 			}
@@ -154,10 +158,10 @@ func ValidateCloudConfig(config *CloudConfig) error {
 	if config.VCD.Host == "" {
 		return fmt.Errorf("need a valid vCloud Host")
 	}
-	if config.VCD.VDCNetwork == "" {
+	if config.LB.VDCNetwork == "" {
 		return fmt.Errorf("need a valid ovdc network name")
 	}
-	if config.VCD.VAppName == "" {
+	if config.VAppName == "" {
 		return fmt.Errorf("need a valid vApp name")
 	}
 

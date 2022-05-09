@@ -1,4 +1,3 @@
-
 /*
  * VMware Cloud Director OpenAPI
  *
@@ -41,7 +40,6 @@ func (a *EdgeGatewayNatRuleApiService) DeleteNatRule(ctx context.Context, gatewa
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -99,16 +97,15 @@ func (a *EdgeGatewayNatRuleApiService) DeleteNatRule(ctx context.Context, gatewa
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 404 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHttpResponse, newErr
@@ -133,10 +130,10 @@ EdgeGatewayNatRuleApiService Retrieves a specific NAT Rule configuration of the 
 */
 func (a *EdgeGatewayNatRuleApiService) GetNatRule(ctx context.Context, gatewayId string, ruleId string) (EdgeNatRule, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue EdgeNatRule
 	)
 
@@ -197,19 +194,19 @@ func (a *EdgeGatewayNatRuleApiService) GetNatRule(ctx context.Context, gatewayId
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v EdgeNatRule
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -220,7 +217,7 @@ func (a *EdgeGatewayNatRuleApiService) GetNatRule(ctx context.Context, gatewayId
 
 		if localVarHttpResponse.StatusCode == 404 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -250,7 +247,6 @@ func (a *EdgeGatewayNatRuleApiService) UpdateNatRule(ctx context.Context, edgeNa
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -310,16 +306,15 @@ func (a *EdgeGatewayNatRuleApiService) UpdateNatRule(ctx context.Context, edgeNa
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 400 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHttpResponse, newErr
@@ -330,7 +325,7 @@ func (a *EdgeGatewayNatRuleApiService) UpdateNatRule(ctx context.Context, edgeNa
 
 		if localVarHttpResponse.StatusCode == 404 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHttpResponse, newErr
@@ -344,4 +339,3 @@ func (a *EdgeGatewayNatRuleApiService) UpdateNatRule(ctx context.Context, edgeNa
 
 	return localVarHttpResponse, nil
 }
-

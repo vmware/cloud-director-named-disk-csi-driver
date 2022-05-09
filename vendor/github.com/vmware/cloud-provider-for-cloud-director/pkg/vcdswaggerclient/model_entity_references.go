@@ -10,7 +10,7 @@
 
 package swagger
 
-// A list of entity references. 
+// A list of entity references.
 type EntityReferences struct {
 	// How many results there are in total (i.e., considering all pages).
 	ResultTotal int32 `json:"resultTotal,omitempty"`

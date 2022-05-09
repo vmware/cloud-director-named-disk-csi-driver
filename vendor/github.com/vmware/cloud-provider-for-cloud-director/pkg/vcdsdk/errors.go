@@ -1,8 +1,8 @@
-package vcdclient
+package vcdsdk
 
 import (
-    "fmt"
-    "runtime/debug"
+	"fmt"
+	"runtime/debug"
 )
 
 type VirtualServicePendingError struct {

@@ -1,4 +1,3 @@
-
 /*
  * VMware Cloud Director OpenAPI
  *
@@ -42,7 +41,6 @@ func (a *EdgeGatewayNatRulesApiService) CreateNatRule(ctx context.Context, edgeN
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -101,16 +99,15 @@ func (a *EdgeGatewayNatRulesApiService) CreateNatRule(ctx context.Context, edgeN
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 400 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHttpResponse, newErr
@@ -121,7 +118,7 @@ func (a *EdgeGatewayNatRulesApiService) CreateNatRule(ctx context.Context, edgeN
 
 		if localVarHttpResponse.StatusCode == 404 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHttpResponse, newErr
@@ -151,17 +148,17 @@ Retrieves all NAT Rules on the edge gateway.  Pagination is supported to get the
 */
 
 type EdgeGatewayNatRulesApiGetNatRulesOpts struct {
-	Cursor optional.String
-	SortAsc optional.String
+	Cursor   optional.String
+	SortAsc  optional.String
 	SortDesc optional.String
 }
 
 func (a *EdgeGatewayNatRulesApiService) GetNatRules(ctx context.Context, pageSize int32, gatewayId string, localVarOptionals *EdgeGatewayNatRulesApiGetNatRulesOpts) (EdgeNatRules, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue EdgeNatRules
 	)
 
@@ -237,19 +234,19 @@ func (a *EdgeGatewayNatRulesApiService) GetNatRules(ctx context.Context, pageSiz
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v EdgeNatRules
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -260,7 +257,7 @@ func (a *EdgeGatewayNatRulesApiService) GetNatRules(ctx context.Context, pageSiz
 
 		if localVarHttpResponse.StatusCode == 404 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -274,4 +271,3 @@ func (a *EdgeGatewayNatRulesApiService) GetNatRules(ctx context.Context, pageSiz
 
 	return localVarReturnValue, localVarHttpResponse, nil
 }
-

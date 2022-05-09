@@ -7,7 +7,11 @@ package vcdcsiclient
 
 import (
 	"fmt"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
@@ -28,11 +32,26 @@ func TestDiskCreateAttach(t *testing.T) {
 
 	vcdCsiClient := new(Client)
 
+	authFile := filepath.Join(gitRoot, "testdata/auth_test.yaml")
+	authFileContent, err := ioutil.ReadFile(authFile)
+	assert.NoError(t, err, "There should be no error reading the auth file contents.")
+
+	var authDetails authorizationDetails
+	err = yaml.Unmarshal(authFileContent, &authDetails)
+	assert.NoError(t, err, "There should be no error parsing auth file content.")
+
+	cloudConfig, err := getTestConfig()
+	assert.NoError(t, err, "There should be no error opening and parsing cloud config file contents.")
+
 	// get client
-	vcdClient, err := getTestVCDClient(map[string]interface{}{
+	vcdClient, err := getTestVCDClient(cloudConfig, map[string]interface{}{
 		"getVdcClient": true,
+		"user":         authDetails.Username,
+		"secret":       authDetails.Password,
+		"userOrg":      authDetails.UserOrg,
 	})
 	vcdCsiClient.VCDClient = vcdClient
+	vcdCsiClient.VAppName = cloudConfig.VCD.VAppName
 	assert.NoError(t, err, "Unable to get VCD client")
 	require.NotNil(t, vcdClient, "VCD Client should not be nil")
 
@@ -75,8 +94,25 @@ func TestDiskCreateAttach(t *testing.T) {
 	assert.Nil(t, disk1, "disk should not be created")
 
 	// get VM nodeID should be the existing VM name
-	nodeID := "mstr-eb9x"
-	vm, err := vcdClient.FindVMByName(nodeID)
+	nodeID := "capi-cluster-md0-86c84dc7f9-ggt6b"
+
+	vdcManager, err := vcdsdk.NewVDCManager(vcdCsiClient.VCDClient, vcdCsiClient.VCDClient.ClusterOrgName, vcdCsiClient.VCDClient.ClusterOVDCName, vcdCsiClient.VAppName)
+	if err != nil {
+		assert.NoError(t, err, "unable to get vdcManager")
+		//return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+	}
+	//// Todo find a suitable way to handle cluster
+	//vApp, err := vdcManager.GetOrCreateVApp(vcdCsiClient.VCDClient.ClusterOVDCName)
+	//if err != nil {
+	//	assert.NoError(t, err, "unable to get vApp from ovdcNetwork [%s]", vcdCsiClient.VCDClient.ClusterOVDCName)
+	//	//return nil, fmt.Errorf("unable to get vApp from ovdcNetwork [%s]: [%v]", vcdCsiClient.VCDClient.ClusterOVDCName, err)
+	//}
+	//if vApp.VApp == nil || vApp.VApp.Name == "" {
+	//	assert.NoError(t, err, "unable to get vApp name from vApp")
+	//	//return nil, fmt.Errorf("unable to get vApp name from vApp: [%v]", err)
+	//}
+	//vdcManager.VAppName = vApp.VApp.Name
+	vm, err := vdcManager.FindVMByName(nodeID)
 	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)
 	require.NotNil(t, vm, "vm should not be nil")
 
@@ -102,18 +138,27 @@ func TestDiskCreateAttach(t *testing.T) {
 
 	// Check PV was removed from RDE
 	currRDEPvs, _, _, err = vcdCsiClient.GetRDEPersistentVolumes()
-	assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
+	assert.Error(t, err, "unable to get RDE PVs after deleting disk")
 	assert.False(t, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should not be found in RDE")
-
-	return
 }
 
 func TestRdeEtag(t *testing.T) {
 
 	vcdCsiClient := new(Client)
 
+	authFile := filepath.Join(gitRoot, "testdata/auth_test.yaml")
+	authFileContent, err := ioutil.ReadFile(authFile)
+	assert.NoError(t, err, "There should be no error reading the auth file contents.")
+
+	var authDetails authorizationDetails
+	err = yaml.Unmarshal(authFileContent, &authDetails)
+	assert.NoError(t, err, "There should be no error parsing auth file content.")
+
+	cloudConfig, err := getTestConfig()
+	assert.NoError(t, err, "There should be no error opening and parsing cloud config file contents.")
+
 	// get client
-	vcdClient, err := getTestVCDClient(map[string]interface{}{
+	vcdClient, err := getTestVCDClient(cloudConfig, map[string]interface{}{
 		"getVdcClient": true,
 	})
 	vcdCsiClient.VCDClient = vcdClient

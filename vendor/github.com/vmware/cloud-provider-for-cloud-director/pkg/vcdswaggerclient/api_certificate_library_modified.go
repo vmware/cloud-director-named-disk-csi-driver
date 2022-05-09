@@ -1,4 +1,3 @@
-
 /*
  * VMware Cloud Director OpenAPI
  *
@@ -38,10 +37,10 @@ Add an item to the certificate library
 */
 func (a *CertificateLibraryApiService) AddCertificateLibraryItem(ctx context.Context, newCertificateLibraryItem CertificateLibraryItem) (CertificateLibraryItem, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Post")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Post")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue CertificateLibraryItem
 	)
 
@@ -102,19 +101,19 @@ func (a *CertificateLibraryApiService) AddCertificateLibraryItem(ctx context.Con
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 201 {
 			var v CertificateLibraryItem
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -140,10 +139,10 @@ Adds the specified consumer reference to a library item.
 */
 func (a *CertificateLibraryApiService) AddConsumerRefToCertLibraryItem(ctx context.Context, consumerReference EntityReference, certLibraryItemId string) (EntityReference, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Post")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Post")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue EntityReference
 	)
 
@@ -205,19 +204,19 @@ func (a *CertificateLibraryApiService) AddConsumerRefToCertLibraryItem(ctx conte
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v EntityReference
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -246,7 +245,6 @@ func (a *CertificateLibraryApiService) DeleteCertificateLibraryItem(ctx context.
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -303,10 +301,9 @@ func (a *CertificateLibraryApiService) DeleteCertificateLibraryItem(ctx context.
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
@@ -326,10 +323,10 @@ Retrieves the specified certificate library item. Note: This API also supports a
 */
 func (a *CertificateLibraryApiService) GetCertificateLibraryItem(ctx context.Context, id string) (CertificateLibraryItem, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue CertificateLibraryItem
 	)
 
@@ -389,19 +386,19 @@ func (a *CertificateLibraryApiService) GetCertificateLibraryItem(ctx context.Con
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v CertificateLibraryItem
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -432,17 +429,17 @@ Get list of consumers (as references) of a particular certificate library item
 */
 
 type CertificateLibraryApiQueryCertLibraryItemConsumerRefsOpts struct {
-	Filter optional.String
-	SortAsc optional.String
+	Filter   optional.String
+	SortAsc  optional.String
 	SortDesc optional.String
 }
 
 func (a *CertificateLibraryApiService) QueryCertLibraryItemConsumerRefs(ctx context.Context, page int32, pageSize int32, certLibraryItemId string, localVarOptionals *CertificateLibraryApiQueryCertLibraryItemConsumerRefsOpts) (EntityReferences, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue EntityReferences
 	)
 
@@ -522,19 +519,19 @@ func (a *CertificateLibraryApiService) QueryCertLibraryItemConsumerRefs(ctx cont
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v EntityReferences
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -564,8 +561,8 @@ Get a list of the certificate library items
 */
 
 type CertificateLibraryApiQueryCertificateLibraryOpts struct {
-	Filter optional.String
-	SortAsc optional.String
+	Filter   optional.String
+	SortAsc  optional.String
 	SortDesc optional.String
 }
 
@@ -573,10 +570,10 @@ func (a *CertificateLibraryApiService) QueryCertificateLibrary(ctx context.Conte
 	localVarOptionals *CertificateLibraryApiQueryCertificateLibraryOpts,
 	orgID string) (CertificateLibraryItems, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue CertificateLibraryItems
 	)
 
@@ -661,19 +658,19 @@ func (a *CertificateLibraryApiService) QueryCertificateLibrary(ctx context.Conte
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v CertificateLibraryItems
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -699,10 +696,10 @@ Replaces the existing consumer refs with the consumer references supplied.
 */
 func (a *CertificateLibraryApiService) ReplaceCertLibraryItemConsumerRefs(ctx context.Context, consumerRefs EntityReferences, certLibraryItemId string) (EntityReferences, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Put")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Put")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue EntityReferences
 	)
 
@@ -764,19 +761,19 @@ func (a *CertificateLibraryApiService) ReplaceCertLibraryItemConsumerRefs(ctx co
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v EntityReferences
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -802,10 +799,10 @@ Updates the specified certificate library item. Only the alias and description f
 */
 func (a *CertificateLibraryApiService) UpdateCertificateLibraryItem(ctx context.Context, modifiedCertificatLibraryItem CertificateLibraryItem, id string) (CertificateLibraryItem, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Put")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Put")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue CertificateLibraryItem
 	)
 
@@ -867,19 +864,19 @@ func (a *CertificateLibraryApiService) UpdateCertificateLibraryItem(ctx context.
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v CertificateLibraryItem
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr

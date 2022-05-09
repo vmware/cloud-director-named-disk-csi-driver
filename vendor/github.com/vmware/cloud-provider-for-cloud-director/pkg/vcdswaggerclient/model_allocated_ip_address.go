@@ -10,7 +10,7 @@
 
 package swagger
 
-// Describes an allocated IP address for a network. IP addresses can be allocated to a vApp VM, an edge gateway interface or may be used in a NAT routed environment. If the address is allocated to an edge gateway, the name of the entity will be 'Edge Gateway'. 
+// Describes an allocated IP address for a network. IP addresses can be allocated to a vApp VM, an edge gateway interface or may be used in a NAT routed environment. If the address is allocated to an edge gateway, the name of the entity will be 'Edge Gateway'.
 type AllocatedIpAddress struct {
 	// Unique identifier for record. This is to support UI operations.
 	Id string `json:"id,omitempty"`
@@ -26,8 +26,8 @@ type AllocatedIpAddress struct {
 	Deployed bool `json:"deployed,omitempty"`
 	// The possible allocation types for allocated network address like VSM allocated, VM allocated or NAT routed.
 	AllocationType *AllocatedIpAddressAllocationType `json:"allocationType,omitempty"`
-	// The vApp network or Org vDC network to which this entity is connected. 
+	// The vApp network or Org vDC network to which this entity is connected.
 	NetworkRef *EntityReference `json:"networkRef,omitempty"`
-	// The organization that this entity belongs to. 
+	// The organization that this entity belongs to.
 	OrgRef *EntityReference `json:"orgRef,omitempty"`
 }

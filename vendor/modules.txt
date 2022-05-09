@@ -12,6 +12,11 @@ github.com/araddon/dateparse
 github.com/container-storage-interface/spec/lib/go/csi
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
+# github.com/go-logr/logr v1.2.0
+github.com/go-logr/logr
+# github.com/go-openapi/errors v0.20.2
+## explicit
+github.com/go-openapi/errors
 # github.com/golang/protobuf v1.5.0
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/protoc-gen-go/descriptor
@@ -52,11 +57,10 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220312005953-16cf7f1d567a
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220506230155-58b2f49f052f
 ## explicit
 github.com/vmware/cloud-provider-for-cloud-director/pkg/config
-github.com/vmware/cloud-provider-for-cloud-director/pkg/util
-github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient
+github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient
 # github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 ## explicit
@@ -173,12 +177,12 @@ google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/known/wrapperspb
-# gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15
+# gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
 ## explicit
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit
 gopkg.in/yaml.v2
-# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+# gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c
 gopkg.in/yaml.v3
 # k8s.io/apimachinery v0.22.1 => k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
 k8s.io/apimachinery/pkg/util/runtime
@@ -189,6 +193,13 @@ k8s.io/component-base/logs
 # k8s.io/klog v1.0.0
 ## explicit
 k8s.io/klog
+# k8s.io/klog/v2 v2.60.1
+## explicit
+k8s.io/klog/v2
+k8s.io/klog/v2/internal/buffer
+k8s.io/klog/v2/internal/clock
+k8s.io/klog/v2/internal/serialize
+k8s.io/klog/v2/internal/severity
 # k8s.io/api => k8s.io/api v0.0.0-20190918195907-bd6ac527cfd2
 # k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20190918201827-3de75813f604
 # k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d

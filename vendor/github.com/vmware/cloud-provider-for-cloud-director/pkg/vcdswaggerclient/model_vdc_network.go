@@ -62,8 +62,8 @@ type VdcNetwork struct {
 	TotalIpCount int32 `json:"totalIpCount,omitempty"`
 	// The number of IP address used from the static ip pools.
 	UsedIpCount int32 `json:"usedIpCount,omitempty"`
-	// Whether this network is advertised so that it can be routed out to the external networks. This applies only to network backed by NSX-T. Value will be unset if route advertisement is not applicable. 
+	// Whether this network is advertised so that it can be routed out to the external networks. This applies only to network backed by NSX-T. Value will be unset if route advertisement is not applicable.
 	RouteAdvertised bool `json:"routeAdvertised,omitempty"`
-	// The list of firewall groups of type SECURITY_GROUP/STATIC_MEMBERS that are assigned to the Org VDC Network. These groups can then be used in firewall rules to protect the Org VDC Network and allow/deny traffic. 
+	// The list of firewall groups of type SECURITY_GROUP/STATIC_MEMBERS that are assigned to the Org VDC Network. These groups can then be used in firewall rules to protect the Org VDC Network and allow/deny traffic.
 	SecurityGroups []EntityReference `json:"securityGroups,omitempty"`
 }

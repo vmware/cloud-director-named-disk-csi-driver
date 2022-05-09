@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/akutz/gofsutil v0.1.2
 	github.com/container-storage-interface/spec v1.4.0
+	github.com/go-openapi/errors v0.20.2 // indirect
 	github.com/google/uuid v1.2.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -13,17 +14,18 @@ require (
 	github.com/spf13/pflag v1.0.1
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220312005953-16cf7f1d567a
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220506230155-58b2f49f052f
 	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sys v0.0.0-20210314195730-07df6a141424 // indirect
 	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.26.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/component-base v0.22.1
 	k8s.io/klog v1.0.0
+	k8s.io/klog/v2 v2.60.1 // indirect
 )
 
 replace k8s.io/api => k8s.io/api v0.0.0-20190918195907-bd6ac527cfd2

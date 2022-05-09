@@ -10,7 +10,7 @@
 
 package swagger
 
-// A list of certificate library items. 
+// A list of certificate library items.
 type CertificateLibraryItems struct {
 	// How many results there are in total (i.e., considering all pages).
 	ResultTotal int32 `json:"resultTotal,omitempty"`

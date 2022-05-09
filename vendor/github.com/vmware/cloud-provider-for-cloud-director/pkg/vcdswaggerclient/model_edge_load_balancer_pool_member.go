@@ -20,10 +20,10 @@ type EdgeLoadBalancerPoolMember struct {
 	Ratio int32 `json:"ratio,omitempty"`
 	// Whether the Load Balancer Pool member is enabled or not.
 	Enabled bool `json:"enabled,omitempty"`
-	// The current health status of the pool member. Possible values are: <ul> <li> UP - The member is operational. <li> DOWN - The member is down. <li> DISABLED - The member is disabled <li> UNKNOWN - The state is unknown. </ul> 
+	// The current health status of the pool member. Possible values are: <ul> <li> UP - The member is operational. <li> DOWN - The member is down. <li> DISABLED - The member is disabled <li> UNKNOWN - The state is unknown. </ul>
 	HealthStatus string `json:"healthStatus,omitempty"`
-	// When the member is DOWN, the value gives the names of the health monitors that marked the member as down. If a monitor cannot be determined, the value will be UNKNOWN. 
+	// When the member is DOWN, the value gives the names of the health monitors that marked the member as down. If a monitor cannot be determined, the value will be UNKNOWN.
 	MarkedDownBy []string `json:"markedDownBy,omitempty"`
-	// The non-localized detailed message on the health of the pool member. 
+	// The non-localized detailed message on the health of the pool member.
 	DetailedHealthMessage string `json:"detailedHealthMessage,omitempty"`
 }
