@@ -97,7 +97,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	// get VM nodeID should be the existing VM name
 	nodeID := "capi-cluster-md0-86c84dc7f9-ggt6b"
 
-	vdcManager, err := vcdsdk.NewVDCManager(vcdCsiClient.VCDClient, vcdCsiClient.VCDClient.ClusterOrgName, vcdCsiClient.VCDClient.ClusterOVDCName, vcdCsiClient.VAppName)
+	vdcManager, err := vcdsdk.NewVDCManager(vcdCsiClient.VCDClient, vcdCsiClient.VCDClient.ClusterOrgName, vcdCsiClient.VCDClient.ClusterOVDCName)
 	if err != nil {
 		assert.NoError(t, err, "unable to get vdcManager")
 		//return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
@@ -113,7 +113,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	//	//return nil, fmt.Errorf("unable to get vApp name from vApp: [%v]", err)
 	//}
 	//vdcManager.VAppName = vApp.VApp.Name
-	vm, err := vdcManager.FindVMByName(nodeID)
+	vm, err := vdcManager.FindVMByName(vcdCsiClient.VAppName, nodeID)
 	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)
 	require.NotNil(t, vm, "vm should not be nil")
 
