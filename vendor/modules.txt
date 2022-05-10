@@ -2,22 +2,22 @@
 ## explicit
 github.com/akutz/gofsutil
 # github.com/antihax/optional v1.0.0
+## explicit; go 1.13
 github.com/antihax/optional
 # github.com/apparentlymart/go-cidr v1.1.0
+## explicit
 github.com/apparentlymart/go-cidr/cidr
 # github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
+## explicit
 github.com/araddon/dateparse
 # github.com/container-storage-interface/spec v1.4.0
 ## explicit
 github.com/container-storage-interface/spec/lib/go/csi
 # github.com/davecgh/go-spew v1.1.1
-github.com/davecgh/go-spew/spew
-# github.com/go-logr/logr v1.2.0
-github.com/go-logr/logr
-# github.com/go-openapi/errors v0.20.2
 ## explicit
-github.com/go-openapi/errors
+github.com/davecgh/go-spew/spew
 # github.com/golang/protobuf v1.5.0
+## explicit; go 1.9
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/protoc-gen-go/descriptor
 github.com/golang/protobuf/ptypes
@@ -29,21 +29,25 @@ github.com/golang/protobuf/ptypes/wrappers
 ## explicit
 github.com/google/uuid
 # github.com/hashicorp/go-version v1.2.0
+## explicit
 github.com/hashicorp/go-version
 # github.com/inconshreveable/mousetrap v1.0.0
 ## explicit
 github.com/inconshreveable/mousetrap
 # github.com/kr/pretty v0.2.1
+## explicit; go 1.12
 github.com/kr/pretty
 # github.com/kr/text v0.2.0
 ## explicit
 github.com/kr/text
 # github.com/peterhellberg/link v1.1.0
+## explicit
 github.com/peterhellberg/link
 # github.com/pmezard/go-difflib v1.0.0
+## explicit
 github.com/pmezard/go-difflib/difflib
 # github.com/sirupsen/logrus v1.8.1
-## explicit
+## explicit; go 1.13
 github.com/sirupsen/logrus
 # github.com/spf13/cobra v0.0.0-20180319062004-c439c4fa0937
 ## explicit
@@ -52,23 +56,24 @@ github.com/spf13/cobra
 ## explicit
 github.com/spf13/pflag
 # github.com/stretchr/testify v1.7.0
-## explicit
+## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220509214140-f8848dd39a00
-## explicit
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220312005953-16cf7f1d567a
+## explicit; go 1.16
 github.com/vmware/cloud-provider-for-cloud-director/pkg/config
-github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk
+github.com/vmware/cloud-provider-for-cloud-director/pkg/util
+github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient
 # github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
-## explicit
+## explicit; go 1.16
 github.com/vmware/go-vcloud-director/v2/govcd
 github.com/vmware/go-vcloud-director/v2/types/v56
 github.com/vmware/go-vcloud-director/v2/util
 # golang.org/x/net v0.0.0-20201021035429-f5854403a974
-## explicit
+## explicit; go 1.11
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/http/httpguts
@@ -78,20 +83,22 @@ golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
 # golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
-## explicit
+## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20210314195730-07df6a141424
-## explicit
+## explicit; go 1.12
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 # golang.org/x/text v0.3.3
+## explicit; go 1.11
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 # google.golang.org/appengine v1.6.6
+## explicit; go 1.11
 google.golang.org/appengine/internal
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
@@ -100,9 +107,10 @@ google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
 # google.golang.org/genproto v0.0.0-20200825200019-8632dd797987
+## explicit; go 1.11
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.31.0
-## explicit
+## explicit; go 1.11
 google.golang.org/grpc
 google.golang.org/grpc/attributes
 google.golang.org/grpc/backoff
@@ -145,7 +153,7 @@ google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
 # google.golang.org/protobuf v1.26.0
-## explicit
+## explicit; go 1.9
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt
@@ -177,30 +185,24 @@ google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/known/wrapperspb
-# gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
+# gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15
 ## explicit
 # gopkg.in/yaml.v2 v2.4.0
-## explicit
+## explicit; go 1.15
 gopkg.in/yaml.v2
-# gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c
+# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 ## explicit
 gopkg.in/yaml.v3
 # k8s.io/apimachinery v0.22.1 => k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
+## explicit; go 1.12
 k8s.io/apimachinery/pkg/util/runtime
 k8s.io/apimachinery/pkg/util/wait
 # k8s.io/component-base v0.22.1 => k8s.io/component-base v0.0.0-20190918200425-ed2f0867c778
-## explicit
+## explicit; go 1.12
 k8s.io/component-base/logs
 # k8s.io/klog v1.0.0
-## explicit
+## explicit; go 1.12
 k8s.io/klog
-# k8s.io/klog/v2 v2.60.1
-## explicit
-k8s.io/klog/v2
-k8s.io/klog/v2/internal/buffer
-k8s.io/klog/v2/internal/clock
-k8s.io/klog/v2/internal/serialize
-k8s.io/klog/v2/internal/severity
 # k8s.io/api => k8s.io/api v0.0.0-20190918195907-bd6ac527cfd2
 # k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20190918201827-3de75813f604
 # k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
