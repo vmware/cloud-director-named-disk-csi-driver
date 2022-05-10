@@ -22,10 +22,10 @@ type Client struct {
 	VCDAuthConfig   *VCDAuthConfig // s
 	ClusterOrgName  string
 	ClusterOVDCName string
-	VCDClient *govcd.VCDClient
-	VDC       *govcd.Vdc // TODO: Incrementally remove and test in tests
-	APIClient *swaggerClient.APIClient
-	RWLock sync.RWMutex
+	VCDClient       *govcd.VCDClient
+	VDC             *govcd.Vdc // TODO: Incrementally remove and test in tests
+	APIClient       *swaggerClient.APIClient
+	RWLock          sync.RWMutex
 }
 
 //  TODO: Make sure this function still works properly with no issues after refactor
