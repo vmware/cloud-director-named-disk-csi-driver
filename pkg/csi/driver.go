@@ -107,7 +107,7 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(vcdCSIClient *vcdcsiclient.Client, nodeID string) {
+func (d *VCDDriver) Setup(vcdCSIClient *vcdcsiclient.DiskManager, nodeID string) {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
 	d.cs = NewControllerService(d, vcdCSIClient.VCDClient, vcdCSIClient.ClusterID, vcdCSIClient.VAppName)

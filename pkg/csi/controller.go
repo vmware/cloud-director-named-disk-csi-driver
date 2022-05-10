@@ -48,14 +48,14 @@ var (
 
 type controllerServer struct {
 	Driver       *VCDDriver
-	VCDCSIClient *vcdcsiclient.Client
+	VCDCSIClient *vcdcsiclient.DiskManager
 }
 
 // NewControllerService creates a controllerService
 func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, cluserID string, vAppName string) csi.ControllerServer {
 	return &controllerServer{
 		Driver: driver,
-		VCDCSIClient: &vcdcsiclient.Client{
+		VCDCSIClient: &vcdcsiclient.DiskManager{
 			VCDClient: vcdClient,
 			ClusterID: cluserID,
 			VAppName:  vAppName,

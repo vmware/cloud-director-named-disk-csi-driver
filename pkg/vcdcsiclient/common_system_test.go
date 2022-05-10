@@ -17,6 +17,10 @@ var (
 	gitRoot string = ""
 )
 
+// NOTE: The test util functions in vcdsdk/common_system_test.go are being replicated in this file
+// because it is not possible to import functions or variables declared in _test.go files belonging to
+// a different package
+
 type authorizationDetails struct {
 	Username               string `yaml:"username"`
 	Password               string `yaml:"password"`
