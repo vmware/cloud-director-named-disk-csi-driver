@@ -20,7 +20,7 @@ import (
 	"strings"
 )
 
-type Client struct {
+type DiskManager struct {
 	VCDClient *vcdsdk.Client
 	ClusterID string
 	VAppName  string
@@ -44,7 +44,7 @@ func prettyDisk(disk vcdtypes.Disk) string {
 // Create an independent disk in VDC
 // Reference: vCloud API Programming Guide for Service Providers vCloud API 35.0 PDF Page 107-108,
 // https://vdc-download.vmware.com/vmwb-repository/dcr-public/715b0387-34d7-4568-b2d8-d11454c52d51/944f905e-fa4e-4005-be7d-19c3cea70ffd/vmware_cloud_director_sp_api_guide_35_0.pdf
-func (client *Client) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (govcd.Task, error) {
+func (client *DiskManager) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (govcd.Task, error) {
 	klog.Infof("Create disk, name: %s, size: %dMB \n",
 		diskCreateParams.Disk.Name,
 		diskCreateParams.Disk.SizeMb,
@@ -102,7 +102,7 @@ func (client *Client) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (g
 }
 
 // CreateDisk will create a new independent disk with params specified
-func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, busSubType string,
+func (client *DiskManager) CreateDisk(diskName string, sizeMB int64, busType string, busSubType string,
 	description string, storageProfile string, shareable bool) (*vcdtypes.Disk, error) {
 	client.VCDClient.RWLock.Lock()
 	defer client.VCDClient.RWLock.Unlock()
@@ -188,7 +188,7 @@ func (client *Client) CreateDisk(diskName string, sizeMB int64, busType string, 
 // GetDiskByHref finds a Disk by HREF
 // On success, returns a pointer to the Disk structure and a nil error
 // On failure, returns a nil pointer and an error
-func (client *Client) govcdGetDiskByHref(diskHref string) (*vcdtypes.Disk, error) {
+func (client *DiskManager) govcdGetDiskByHref(diskHref string) (*vcdtypes.Disk, error) {
 	klog.Infof("[TRACE] Get Disk By Href: %s\n", diskHref)
 	disk := &vcdtypes.Disk{}
 
@@ -207,7 +207,7 @@ func (client *Client) govcdGetDiskByHref(diskHref string) (*vcdtypes.Disk, error
 // GetDisksByName finds one or more Disks by Name
 // On success, returns a pointer to the Disk list and a nil error
 // On failure, returns a nil pointer and an error
-func (client *Client) govcdGetDisksByName(diskName string, refresh bool) (*[]vcdtypes.Disk, error) {
+func (client *DiskManager) govcdGetDisksByName(diskName string, refresh bool) (*[]vcdtypes.Disk, error) {
 	klog.Infof("Get Disk By Name: %s\n", diskName)
 	var diskList []vcdtypes.Disk
 	if refresh {
@@ -234,7 +234,7 @@ func (client *Client) govcdGetDisksByName(diskName string, refresh bool) (*[]vcd
 }
 
 // GetDiskByName will get disk by name
-func (client *Client) GetDiskByName(name string) (*vcdtypes.Disk, error) {
+func (client *DiskManager) GetDiskByName(name string) (*vcdtypes.Disk, error) {
 	klog.Infof("Entered GetDiskByName for name [%s]", name)
 
 	if name == "" {
@@ -256,7 +256,7 @@ func (client *Client) GetDiskByName(name string) (*vcdtypes.Disk, error) {
 	return &(*disks)[0], nil
 }
 
-func (client *Client) govcdAttachedVM(disk *vcdtypes.Disk) ([]*types.Reference, error) {
+func (client *DiskManager) govcdAttachedVM(disk *vcdtypes.Disk) ([]*types.Reference, error) {
 	klog.Infof("[TRACE] Disk attached VM, HREF: %s\n", disk.HREF)
 
 	var attachedVMLink *types.Link
@@ -302,7 +302,7 @@ func (client *Client) govcdAttachedVM(disk *vcdtypes.Disk) ([]*types.Reference, 
 // Reference: vCloud API Programming Guide for Service Providers vCloud API 30.0 PDF Page 106 - 107,
 // https://vdc-download.vmware.com/vmwb-repository/dcr-public/1b6cf07d-adb3-4dba-8c47-9c1c92b04857/
 // 241956dd-e128-4fcc-8131-bf66e1edd895/vcloud_sp_api_guide_30_0.pdf
-func (client *Client) govcdDelete(disk *vcdtypes.Disk) (govcd.Task, error) {
+func (client *DiskManager) govcdDelete(disk *vcdtypes.Disk) (govcd.Task, error) {
 	klog.Infof("[TRACE] Delete disk, HREF: %s \n", disk.HREF)
 
 	var err error
@@ -343,7 +343,7 @@ func (client *Client) govcdDelete(disk *vcdtypes.Disk) (govcd.Task, error) {
 }
 
 // DeleteDisk will delete independent disk by its name
-func (client *Client) DeleteDisk(name string) error {
+func (client *DiskManager) DeleteDisk(name string) error {
 	client.VCDClient.RWLock.Lock()
 	defer client.VCDClient.RWLock.Unlock()
 
@@ -389,7 +389,7 @@ func (client *Client) DeleteDisk(name string) error {
 }
 
 // Refresh the disk information by disk href
-func (client *Client) govcdRefresh(disk *vcdtypes.Disk) error {
+func (client *DiskManager) govcdRefresh(disk *vcdtypes.Disk) error {
 	klog.Infof("[TRACE] Disk refresh, HREF: %s\n", disk.HREF)
 
 	if disk == nil || disk.HREF == "" {
@@ -413,7 +413,7 @@ func (client *Client) govcdRefresh(disk *vcdtypes.Disk) error {
 }
 
 // AttachVolume will attach diskName to vm
-func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
+func (client *DiskManager) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
 	client.VCDClient.RWLock.Lock()
 	defer client.VCDClient.RWLock.Unlock()
 
@@ -470,7 +470,7 @@ func (client *Client) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) error {
 }
 
 // DetachVolume will detach diskName from vm
-func (client *Client) DetachVolume(vm *govcd.VM, diskName string) error {
+func (client *DiskManager) DetachVolume(vm *govcd.VM, diskName string) error {
 	client.VCDClient.RWLock.Lock()
 	defer client.VCDClient.RWLock.Unlock()
 
@@ -523,7 +523,7 @@ func (client *Client) DetachVolume(vm *govcd.VM, diskName string) error {
 	return nil
 }
 
-func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClient.DefinedEntity, error) {
+func (client *DiskManager) GetRDEPersistentVolumes() ([]string, string, *swaggerClient.DefinedEntity, error) {
 	defEnt, _, etag, err := client.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
 		client.ClusterID)
 	if err != nil {
@@ -538,7 +538,7 @@ func (client *Client) GetRDEPersistentVolumes() ([]string, string, *swaggerClien
 }
 
 // This function will modify the passed in defEnt
-func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag string,
+func (client *DiskManager) updateRDEPersistentVolumes(updatedPvs []string, etag string,
 	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
 	updatedRDE, err := util.ReplacePVsInRDE(defEnt, updatedPvs)
 	if err != nil {
@@ -557,7 +557,7 @@ func (client *Client) updateRDEPersistentVolumes(updatedPvs []string, etag strin
 	return httpResponse, nil
 }
 
-func (client *Client) addPvToRDE(addPv string) error {
+func (client *DiskManager) addPvToRDE(addPv string) error {
 	for i := 0; i < 10; i++ {
 		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
 		if err != nil {
@@ -590,7 +590,7 @@ func (client *Client) addPvToRDE(addPv string) error {
 	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")
 }
 
-func (client *Client) removePvFromRDE(removePv string) error {
+func (client *DiskManager) removePvFromRDE(removePv string) error {
 	for i := 0; i < 10; i++ {
 		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
 		if err != nil {

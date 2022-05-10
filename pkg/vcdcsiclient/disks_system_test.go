@@ -30,7 +30,7 @@ func foundStringInSlice(find string, slice []string) bool {
 
 func TestDiskCreateAttach(t *testing.T) {
 
-	vcdCsiClient := new(Client)
+	vcdCsiClient := new(DiskManager)
 
 	authFile := filepath.Join(gitRoot, "testdata/auth_test.yaml")
 	authFileContent, err := ioutil.ReadFile(authFile)
@@ -54,7 +54,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	vcdCsiClient.VAppName = cloudConfig.VCD.VAppName
 	vcdCsiClient.ClusterID = cloudConfig.ClusterID
 	assert.NoError(t, err, "Unable to get VCD client")
-	require.NotNil(t, vcdClient, "VCD Client should not be nil")
+	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
 
 	_, err = vcdClient.VDC.FindStorageProfileReference("dev")
 	assert.Errorf(t, err, "unable to find storage profile reference")
@@ -145,7 +145,7 @@ func TestDiskCreateAttach(t *testing.T) {
 
 func TestRdeEtag(t *testing.T) {
 
-	vcdCsiClient := new(Client)
+	vcdCsiClient := new(DiskManager)
 
 	authFile := filepath.Join(gitRoot, "testdata/auth_test.yaml")
 	authFileContent, err := ioutil.ReadFile(authFile)
@@ -164,7 +164,7 @@ func TestRdeEtag(t *testing.T) {
 	})
 	vcdCsiClient.VCDClient = vcdClient
 	assert.NoError(t, err, "Unable to get VCD client")
-	require.NotNil(t, vcdClient, "VCD Client should not be nil")
+	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
 
 	rdePvs1, etag1, defEnt1, err := vcdCsiClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs")

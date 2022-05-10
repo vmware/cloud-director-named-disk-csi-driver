@@ -137,7 +137,7 @@ func runCommand() {
 		panic(fmt.Errorf("unable to initiate vcd client: [%v]", err))
 	}
 
-	d.Setup(&vcdcsiclient.Client{
+	d.Setup(&vcdcsiclient.DiskManager{
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
 		VAppName:  cloudConfig.VCD.VAppName,
