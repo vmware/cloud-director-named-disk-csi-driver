@@ -8,9 +8,9 @@ package vcdsdk
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/config"
 	"k8s.io/klog"
 	"net/http"
+	"strings"
 	"sync"
 
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
@@ -26,6 +26,34 @@ type Client struct {
 	VDC             *govcd.Vdc // TODO: Incrementally remove and test in tests
 	APIClient       *swaggerClient.APIClient
 	RWLock          sync.RWMutex
+}
+
+func GetUserAndOrg(fullUserName string, clusterOrg string, currentUserOrg string) (userOrg string, userName string, err error) {
+	// If the full username is specified as org/user, the scenario is that the user
+	// may belong to an org different from the cluster, but still has the
+	// necessary rights to view the VMs on this org. Else if the username is
+	// specified as just user, the scenario is that the user is in the same org
+	// as the cluster.
+	parts := strings.Split(string(fullUserName), "/")
+	if len(parts) > 2 {
+		return "", "", fmt.Errorf(
+			"invalid username format; expected at most two fields separated by /, obtained [%d]",
+			len(parts))
+	}
+	// Add additional fallback to clusterOrg if current userOrg does not exist, this allows auth to continue properly
+	if len(parts) == 1 {
+		if currentUserOrg == "" {
+			userOrg = clusterOrg
+		} else {
+			userOrg = currentUserOrg
+		}
+		userName = parts[0]
+	} else {
+		userOrg = parts[0]
+		userName = parts[1]
+	}
+
+	return userOrg, userName, nil
 }
 
 //  TODO: Make sure this function still works properly with no issues after refactor
@@ -107,7 +135,7 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string, userOr
 	// but since username is still 'sys/admin', we will return correctly
 
 	// TODO: Remove pkg/config dependency from vcdsdk; currently common_system_test.go depends on pkg/config
-	newUserOrg, newUsername, err := config.GetUserAndOrg(user, orgName, userOrg)
+	newUserOrg, newUsername, err := GetUserAndOrg(user, orgName, userOrg)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing username before authenticating to VCD: [%v]", err)
 	}
