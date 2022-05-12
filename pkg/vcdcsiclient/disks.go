@@ -23,7 +23,6 @@ import (
 type DiskManager struct {
 	VCDClient *vcdsdk.Client
 	ClusterID string
-	VAppName  string
 }
 
 const (
