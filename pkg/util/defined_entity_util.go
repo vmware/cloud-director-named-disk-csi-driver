@@ -2,16 +2,17 @@ package util
 
 import (
 	"fmt"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"strings"
 )
 
 const (
-	EntityTypePrefix        = "urn:vcloud:type"
-	CAPVCDEntityTypeVendor  = "vmware"
-	CAPVCDEntityTypeNss     = "capvcdCluster"
-	CAPVCDEntityTypeVersion = "1.0.0"
-
+	EntityTypePrefix               = "urn:vcloud:type"
+	CAPVCDEntityTypeVendor         = "vmware"
+	CAPVCDEntityTypeNss            = "capvcdCluster"
+	CAPVCDEntityTypeVersion        = "1.0.0"
+	CSIName                        = "cloud-director-named-disk-csi-driver"
 	NativeClusterEntityTypeVendor  = "cse"
 	NativeClusterEntityTypeNss     = "nativeCluster"
 	NativeClusterEntityTypeVersion = "2.0.0"
@@ -95,7 +96,11 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 		csiEntry, ok := statusMap["csi"]
 		if !ok {
 			newCsiMap := make(map[string]interface{})
+			// populate "name", "version", "persistentVolumes" in RDE.CSI.Status
 			newCsiMap["persistentVolumes"] = updatedPvs
+			newCsiMap["name"] = CSIName
+			newCsiMap["version"] = version.Version
+			// Update the RDE status for CSI
 			statusMap["csi"] = newCsiMap
 		}
 		csiMap, ok := csiEntry.(map[string]interface{})

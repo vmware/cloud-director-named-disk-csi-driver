@@ -140,8 +140,7 @@ func runCommand() {
 	d.Setup(&vcdcsiclient.DiskManager{
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
-		VAppName:  cloudConfig.VCD.VAppName,
-	}, nodeID)
+	}, cloudConfig.VCD.VAppName, nodeID)
 
 	// blocking call
 	if err = d.Run(); err != nil {

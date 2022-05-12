@@ -51,7 +51,7 @@ func TestDiskCreateAttach(t *testing.T) {
 		"userOrg":      authDetails.UserOrg,
 	})
 	vcdCsiClient.VCDClient = vcdClient
-	vcdCsiClient.VAppName = cloudConfig.VCD.VAppName
+	vAppName := cloudConfig.VCD.VAppName
 	vcdCsiClient.ClusterID = cloudConfig.ClusterID
 	assert.NoError(t, err, "Unable to get VCD client")
 	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
@@ -103,17 +103,7 @@ func TestDiskCreateAttach(t *testing.T) {
 		//return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
 	}
 	//// Todo find a suitable way to handle cluster
-	//vApp, err := vdcManager.GetOrCreateVApp(vcdCsiClient.VCDClient.ClusterOVDCName)
-	//if err != nil {
-	//	assert.NoError(t, err, "unable to get vApp from ovdcNetwork [%s]", vcdCsiClient.VCDClient.ClusterOVDCName)
-	//	//return nil, fmt.Errorf("unable to get vApp from ovdcNetwork [%s]: [%v]", vcdCsiClient.VCDClient.ClusterOVDCName, err)
-	//}
-	//if vApp.VApp == nil || vApp.VApp.Name == "" {
-	//	assert.NoError(t, err, "unable to get vApp name from vApp")
-	//	//return nil, fmt.Errorf("unable to get vApp name from vApp: [%v]", err)
-	//}
-	//vdcManager.VAppName = vApp.VApp.Name
-	vm, err := vdcManager.FindVMByName(vcdCsiClient.VAppName, nodeID)
+	vm, err := vdcManager.FindVMByName(vAppName, nodeID)
 	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)
 	require.NotNil(t, vm, "vm should not be nil")
 
@@ -163,6 +153,7 @@ func TestRdeEtag(t *testing.T) {
 		"getVdcClient": true,
 	})
 	vcdCsiClient.VCDClient = vcdClient
+	vcdCsiClient.ClusterID = cloudConfig.ClusterID
 	assert.NoError(t, err, "Unable to get VCD client")
 	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
 
