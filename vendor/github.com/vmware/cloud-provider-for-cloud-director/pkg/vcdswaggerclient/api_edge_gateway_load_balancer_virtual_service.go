@@ -1,4 +1,3 @@
-
 /*
  * VMware Cloud Director OpenAPI
  *
@@ -41,7 +40,6 @@ func (a *EdgeGatewayLoadBalancerVirtualServiceApiService) DeleteVirtualService(c
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -98,10 +96,9 @@ func (a *EdgeGatewayLoadBalancerVirtualServiceApiService) DeleteVirtualService(c
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
@@ -121,10 +118,10 @@ Retrieves a specific Virtual Service.
 */
 func (a *EdgeGatewayLoadBalancerVirtualServiceApiService) GetVirtualService(ctx context.Context, virtualServiceId string) (EdgeLoadBalancerVirtualService, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue EdgeLoadBalancerVirtualService
 	)
 
@@ -184,19 +181,19 @@ func (a *EdgeGatewayLoadBalancerVirtualServiceApiService) GetVirtualService(ctx 
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v EdgeLoadBalancerVirtualService
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -226,7 +223,6 @@ func (a *EdgeGatewayLoadBalancerVirtualServiceApiService) UpdateVirtualService(c
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -285,10 +281,9 @@ func (a *EdgeGatewayLoadBalancerVirtualServiceApiService) UpdateVirtualService(c
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
@@ -297,4 +292,3 @@ func (a *EdgeGatewayLoadBalancerVirtualServiceApiService) UpdateVirtualService(c
 
 	return localVarHttpResponse, nil
 }
-

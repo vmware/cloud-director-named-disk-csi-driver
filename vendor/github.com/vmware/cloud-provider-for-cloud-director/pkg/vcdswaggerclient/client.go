@@ -98,7 +98,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.LoadBalancerServiceEngineGroupAssignmentsApi = (*LoadBalancerServiceEngineGroupAssignmentsApiService)(&c.common)
 	c.OrgVdcNetworkApi = (*OrgVdcNetworkApiService)(&c.common)
 	c.OrgVdcNetworksApi = (*OrgVdcNetworksApiService)(&c.common)
-	c.DefinedEntityApi = (*DefinedEntityApiService) (&c.common)
+	c.DefinedEntityApi = (*DefinedEntityApiService)(&c.common)
 
 	return c
 }

@@ -1,4 +1,3 @@
-
 /*
  * VMware Cloud Director OpenAPI
  *
@@ -41,7 +40,6 @@ func (a *LoadBalancerServiceEngineGroupAssignmentsApiService) CreateServiceEngin
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -99,10 +97,9 @@ func (a *LoadBalancerServiceEngineGroupAssignmentsApiService) CreateServiceEngin
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
@@ -127,17 +124,17 @@ Retrieves the service engine group assignments for the Load Balancer Service Eng
 */
 
 type LoadBalancerServiceEngineGroupAssignmentsApiGetServiceEngineGroupAssignmentsOpts struct {
-	Filter optional.String
-	SortAsc optional.String
+	Filter   optional.String
+	SortAsc  optional.String
 	SortDesc optional.String
 }
 
 func (a *LoadBalancerServiceEngineGroupAssignmentsApiService) GetServiceEngineGroupAssignments(ctx context.Context, page int32, pageSize int32, localVarOptionals *LoadBalancerServiceEngineGroupAssignmentsApiGetServiceEngineGroupAssignmentsOpts) (LoadBalancerServiceEngineGroupAssignments, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue LoadBalancerServiceEngineGroupAssignments
 	)
 
@@ -216,19 +213,19 @@ func (a *LoadBalancerServiceEngineGroupAssignmentsApiService) GetServiceEngineGr
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v LoadBalancerServiceEngineGroupAssignments
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -242,4 +239,3 @@ func (a *LoadBalancerServiceEngineGroupAssignmentsApiService) GetServiceEngineGr
 
 	return localVarReturnValue, localVarHttpResponse, nil
 }
-

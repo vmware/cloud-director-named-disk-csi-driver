@@ -10,7 +10,7 @@
 
 package swagger
 
-// List of IpRange 
+// List of IpRange
 type IpRanges struct {
 	Values []IpRange `json:"values,omitempty"`
 }

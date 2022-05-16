@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package csi
@@ -8,9 +8,9 @@ package csi
 import (
 	"context"
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -46,19 +46,21 @@ var (
 	}
 )
 
-
 type controllerServer struct {
 	Driver       *VCDDriver
-	VCDCSIClient *vcdcsiclient.Client
+	VCDCSIClient *vcdcsiclient.DiskManager
+	VAppName     string
 }
 
 // NewControllerService creates a controllerService
-func NewControllerService(driver *VCDDriver, vcdClient *vcdclient.Client) csi.ControllerServer {
+func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, cluserID string, vAppName string) csi.ControllerServer {
 	return &controllerServer{
-		Driver:        driver,
-		VCDCSIClient:  &vcdcsiclient.Client{
+		Driver: driver,
+		VCDCSIClient: &vcdcsiclient.DiskManager{
 			VCDClient: vcdClient,
+			ClusterID: cluserID,
 		},
+		VAppName: vAppName,
 	}
 }
 
@@ -214,7 +216,12 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	}
 
 	klog.Infof("Getting node details for [%s]", nodeID)
-	vm, err := cs.VCDCSIClient.VCDClient.FindVMByName(nodeID)
+	//Todo: handle the err
+	vdcManager, err := vcdsdk.NewVDCManager(cs.VCDCSIClient.VCDClient, cs.VCDCSIClient.VCDClient.ClusterOrgName, cs.VCDCSIClient.VCDClient.ClusterOVDCName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+	}
+	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find VM for node [%s]: [%v]", nodeID, err)
 	}
@@ -270,7 +277,11 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 			"ControllerUnpublishVolume: Volume ID must be provided")
 	}
 
-	vm, err := cs.VCDCSIClient.VCDClient.FindVMByName(nodeID)
+	vdcManager, err := vcdsdk.NewVDCManager(cs.VCDCSIClient.VCDClient, cs.VCDCSIClient.VCDClient.ClusterOrgName, cs.VCDCSIClient.VCDClient.ClusterOVDCName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+	}
+	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound,
 			"Could not find VM with nodeID [%s] from which to detach [%s]", nodeID, volumeID)

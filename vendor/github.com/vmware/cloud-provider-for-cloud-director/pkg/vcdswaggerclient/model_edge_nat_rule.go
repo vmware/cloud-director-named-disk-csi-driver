@@ -15,7 +15,7 @@ type EdgeNatRule struct {
 	// The unique id of the NAT Rule. This must be supplied when updating a given NAT Rule. On creation, an unique id is generated for the NAT Rule.
 	Id string `json:"id,omitempty"`
 	// User friendly name for the NAT Rule. Name must be provided.
-	Name string `json:"name"`
+	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	// A flag indicating whether the individual nat rule is enabled or not. The default is true.
 	Enabled bool `json:"enabled,omitempty"`
@@ -42,6 +42,6 @@ type EdgeNatRule struct {
 	// Determines how the firewall matches the address during NATing if firewall stage is not skipped.  Below are valid values. <ul>   <li> <code> MATCH_INTERNAL_ADDRESS </code> indicates the firewall will be applied to internal address of a NAT rule. For SNAT, the internal address is        the original source address before NAT is done. For DNAT, the internal address is the translated destination address after NAT is done.        For REFLEXIVE, to egress traffic, the internal address is the original source address before NAT is done; to ingress traffic, the internal address is        the translated destination address after NAT is done.   <li> <code> MATCH_EXTERNAL_ADDRESS </code> indicates the firewall will be applied to external address of a NAT rule. For SNAT, the external address is        the translated source address after NAT is done. For DNAT, the external address is the original destination address before NAT is done.        For REFLEXIVE, to egress traffic, the external address is the translated internal address after NAT is done; to ingress traffic, the external address is        the original destination address before NAT is done.   <li> <code> BYPASS </code> firewall stage will be skipped. </ul> The default is MATCH_INTERNAL_ADDRESS.
 	FirewallMatch string `json:"firewallMatch,omitempty"`
 	// If an address has multiple NAT rules, the rule with the highest priority is applied. A lower value means a higher precedence for this rule.
-	Priority int32 `json:"priority,omitempty"`
-	Version *ObjectVersion `json:"version,omitempty"`
+	Priority int32          `json:"priority,omitempty"`
+	Version  *ObjectVersion `json:"version,omitempty"`
 }

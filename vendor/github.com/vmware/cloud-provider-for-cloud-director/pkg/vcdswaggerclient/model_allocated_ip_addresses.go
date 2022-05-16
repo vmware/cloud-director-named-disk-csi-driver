@@ -10,7 +10,7 @@
 
 package swagger
 
-// List of allocated IP addresses. 
+// List of allocated IP addresses.
 type AllocatedIpAddresses struct {
 	// How many results there are in total (i.e., considering all pages).
 	ResultTotal int32 `json:"resultTotal,omitempty"`
@@ -21,6 +21,6 @@ type AllocatedIpAddresses struct {
 	// Result count for page that was fetched.
 	PageSize int32 `json:"pageSize,omitempty"`
 	// Association info for each result.
-	Associations []Association `json:"associations,omitempty"`
-	Values []AllocatedIpAddress `json:"values,omitempty"`
+	Associations []Association        `json:"associations,omitempty"`
+	Values       []AllocatedIpAddress `json:"values,omitempty"`
 }

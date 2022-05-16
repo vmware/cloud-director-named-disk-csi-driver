@@ -9,16 +9,17 @@
  */
 
 package swagger
+
 // GatewayUsedIpAddressCategory : The categories that an IP can be used for.
 type GatewayUsedIpAddressCategory string
 
 // List of GatewayUsedIpAddressCategory
 const (
-	SNAT_GatewayUsedIpAddressCategory GatewayUsedIpAddressCategory = "SNAT"
-	DNAT_GatewayUsedIpAddressCategory GatewayUsedIpAddressCategory = "DNAT"
+	SNAT_GatewayUsedIpAddressCategory          GatewayUsedIpAddressCategory = "SNAT"
+	DNAT_GatewayUsedIpAddressCategory          GatewayUsedIpAddressCategory = "DNAT"
 	LOAD_BALANCER_GatewayUsedIpAddressCategory GatewayUsedIpAddressCategory = "Load_Balancer"
-	I_PSEC_VPN_GatewayUsedIpAddressCategory GatewayUsedIpAddressCategory = "IPsec_VPN"
-	SSL_VPN_GatewayUsedIpAddressCategory GatewayUsedIpAddressCategory = "SSL_VPN"
-	L2_VPN_GatewayUsedIpAddressCategory GatewayUsedIpAddressCategory = "L2_VPN"
-	PRIMARY_IP_GatewayUsedIpAddressCategory GatewayUsedIpAddressCategory = "PRIMARY_IP"
+	I_PSEC_VPN_GatewayUsedIpAddressCategory    GatewayUsedIpAddressCategory = "IPsec_VPN"
+	SSL_VPN_GatewayUsedIpAddressCategory       GatewayUsedIpAddressCategory = "SSL_VPN"
+	L2_VPN_GatewayUsedIpAddressCategory        GatewayUsedIpAddressCategory = "L2_VPN"
+	PRIMARY_IP_GatewayUsedIpAddressCategory    GatewayUsedIpAddressCategory = "PRIMARY_IP"
 )
