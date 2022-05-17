@@ -86,7 +86,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	// Check RDE was updated with PV
 	currRDEPvs, _, _, err := vcdCsiClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs after creating disk")
-	assert.Equal(t, true, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should be found in RDE")
+	assert.Equal(t, true, foundStringInSlice(disk.Name, currRDEPvs), "Disk Id should be found in RDE")
 
 	// try to create same disk with different parameters; should not succeed
 	disk1, err := vcdCsiClient.CreateDisk(diskName, 1000, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
@@ -95,14 +95,14 @@ func TestDiskCreateAttach(t *testing.T) {
 	assert.Nil(t, disk1, "disk should not be created")
 
 	// get VM nodeID should be the existing VM name
-	nodeID := "capi-cluster-md0-86c84dc7f9-ggt6b"
+	nodeID := "capi-cluster-2-md0-85c8585c96-8bqj2"
 
 	vdcManager, err := vcdsdk.NewVDCManager(vcdCsiClient.VCDClient, vcdCsiClient.VCDClient.ClusterOrgName, vcdCsiClient.VCDClient.ClusterOVDCName)
 	if err != nil {
 		assert.NoError(t, err, "unable to get vdcManager")
 		//return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
 	}
-	//// Todo find a suitable way to handle cluster
+	// Todo find a suitable way to handle cluster
 	vm, err := vdcManager.FindVMByName(vAppName, nodeID)
 	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)
 	require.NotNil(t, vm, "vm should not be nil")
@@ -130,7 +130,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	// Check PV was removed from RDE
 	currRDEPvs, _, _, err = vcdCsiClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
-	assert.False(t, foundStringInSlice(disk.Id, currRDEPvs), "Disk Id should not be found in RDE")
+	assert.False(t, foundStringInSlice(disk.Name, currRDEPvs), "Disk Id should not be found in RDE")
 }
 
 func TestRdeEtag(t *testing.T) {
@@ -151,6 +151,9 @@ func TestRdeEtag(t *testing.T) {
 	// get client
 	vcdClient, err := getTestVCDClient(cloudConfig, map[string]interface{}{
 		"getVdcClient": true,
+		"user":         authDetails.Username,
+		"secret":       authDetails.Password,
+		"userOrg":      authDetails.UserOrg,
 	})
 	vcdCsiClient.VCDClient = vcdClient
 	vcdCsiClient.ClusterID = cloudConfig.ClusterID
@@ -166,40 +169,38 @@ func TestRdeEtag(t *testing.T) {
 	copy(origRdePvs, rdePvs1)
 
 	// try updating RDE PVs
-	addPv1 := "pv1"
-	addPv2 := "pv2"
-	updatedRdePvs1 := append(rdePvs1, addPv1)
-	httpResponse1, err := vcdCsiClient.updateRDEPersistentVolumes(updatedRdePvs1, etag1, defEnt1)
+	addPv1Name := "pv1"
+	addPv2Name := "pv2"
+	updatedRdePvs1 := append(rdePvs1, addPv1Name)
+	httpResponse1, err := vcdCsiClient.addRDEPersistentVolumes(updatedRdePvs1, etag1, defEnt1)
 	assert.NoError(t, err, "should have no error when update RDE on first attempt")
 	assert.Equal(t, http.StatusOK, httpResponse1.StatusCode, "first RDE update should have an OK (200) response")
 	rdePvs3, _, _, err := vcdCsiClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs")
-	assert.Equal(t, true, foundStringInSlice(addPv1, rdePvs3), "pv [%s] should be found in rde pvs", addPv1)
+	assert.Equal(t, true, foundStringInSlice(addPv1Name, rdePvs3), "pv [%s] should be found in rde pvs", addPv1Name)
 
 	// try updating RDE PVs with outdated etag
-	updatedRdePvs2 := append(rdePvs2, addPv2)
-	httpResponse2, err := vcdCsiClient.updateRDEPersistentVolumes(updatedRdePvs2, etag2, defEnt2)
+	updatedRdePvs2 := append(rdePvs2, addPv2Name)
+	httpResponse2, err := vcdCsiClient.addRDEPersistentVolumes(updatedRdePvs2, etag2, defEnt2)
 	assert.Error(t, err, "updating RDE with outdated etag should have an error")
 	assert.Equal(t, http.StatusPreconditionFailed, httpResponse2.StatusCode, "updating RDE does not have precondition failed (412) status code")
 	rdePvs3, etag3, defEnt3, err := vcdCsiClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs")
-	assert.False(t, foundStringInSlice(addPv2, rdePvs3), "pv [%s] should not be in rde pvs", addPv2)
+	assert.False(t, foundStringInSlice(addPv2Name, rdePvs3), "pv [%s] should not be in rde pvs", addPv2Name)
 
 	// try updating RDE PVs with current etag
-	updatedRdePvs3 := append(rdePvs3, addPv2)
-	httpResponse3, err := vcdCsiClient.updateRDEPersistentVolumes(updatedRdePvs3, etag3, defEnt3)
+	updatedRdePvs3 := append(rdePvs3, addPv2Name)
+	httpResponse3, err := vcdCsiClient.addRDEPersistentVolumes(updatedRdePvs3, etag3, defEnt3)
 	assert.NoError(t, err, "should have no error updating RDE with current etag")
 	assert.Equal(t, http.StatusOK, httpResponse3.StatusCode, "updating PV had status code [%d] instead of 200 (OK)", httpResponse3.StatusCode)
 	rdePvs4, etag4, defEnt4, err := vcdCsiClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs")
-	assert.Equal(t, true, foundStringInSlice(addPv2, rdePvs4), "pv [%s] should be found in RDE PVs", addPv2)
-
-	// clean up: reset RDE PVs
-	httpResponse5, err := vcdCsiClient.updateRDEPersistentVolumes(origRdePvs, etag4, defEnt4)
+	assert.Equal(t, true, foundStringInSlice(addPv2Name, rdePvs4), "pv [%s] should be found in RDE PVs", addPv2Name)
+	httpResponse5, err := vcdCsiClient.removeRDEPersistentVolumes(origRdePvs, etag4, defEnt4)
 	assert.NoError(t, err, "should have no error updating RDE with current etag")
 	assert.Equal(t, http.StatusOK, httpResponse5.StatusCode, "updating PV had status code 200 (OK)")
 	rdePvs5, _, _, err := vcdCsiClient.GetRDEPersistentVolumes()
 	assert.NoError(t, err, "unable to get RDE PVs")
-	assert.False(t, foundStringInSlice(addPv1, rdePvs5), "pv [%s] should not be found in rde pvs", addPv1)
-	assert.False(t, foundStringInSlice(addPv2, rdePvs5), "pv [%s] should not be found in rde pvs", addPv2)
+	assert.False(t, foundStringInSlice(addPv1Name, rdePvs5), "pv [%s] should not be found in rde pvs", addPv1Name)
+	assert.False(t, foundStringInSlice(addPv2Name, rdePvs5), "pv [%s] should not be found in rde pvs", addPv2Name)
 }

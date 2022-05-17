@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -29,6 +30,10 @@ const (
 	VCDBusTypeSCSI           = "6"
 	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
 	NoRdePrefix              = `NO_RDE_`
+	CSIName                  = "cloud-director-named-disk-csi-driver"
+	MaxNumRetries            = 10
+	ResourcePersistentVolume = "disk"
+	ComponentCSI             = "csi"
 )
 
 // Returns a Disk structure as JSON
@@ -174,9 +179,10 @@ func (client *DiskManager) CreateDisk(diskName string, sizeMB int64, busType str
 	}
 	klog.Infof("Disk created: [%#v]", disk)
 
+	rdeManager := vcdsdk.NewRDEManager(client.VCDClient, client.ClusterID, CSIName, version.Version)
 	// update RDE
 	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
-		if err = client.addPvToRDE(disk.Id); err != nil {
+		if err = client.addPvToRDE(disk.Id, disk.Name, rdeManager); err != nil {
 			return nil, vcdsdk.NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
@@ -377,9 +383,10 @@ func (client *DiskManager) DeleteDisk(name string) error {
 		return fmt.Errorf("failed to wait for deletion task of disk [%s]: [%v]", name, err)
 	}
 
+	rdeManager := vcdsdk.NewRDEManager(client.VCDClient, client.ClusterID, CSIName, version.Version)
 	// update RDE
 	if client.ClusterID != "" && !strings.HasPrefix(client.ClusterID, NoRdePrefix) {
-		if err = client.removePvFromRDE(disk.Id); err != nil {
+		if err = client.removePvFromRDE(disk.Name, rdeManager); err != nil {
 			return vcdsdk.NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is empty or generated", disk.Id))
 		}
 	}
@@ -528,23 +535,22 @@ func (client *DiskManager) GetRDEPersistentVolumes() ([]string, string, *swagger
 	if err != nil {
 		return nil, "", nil, fmt.Errorf("error when getting defined entity: [%v]", err)
 	}
-
-	pvIdStrs, err := util.GetPVsFromRDE(&defEnt)
+	// list of PV-ID -> list of PV-NAME
+	pvNameStrs, err := util.GetPVsFromRDE(&defEnt)
 	if err != nil {
 		return nil, "", nil, fmt.Errorf("failed to retrieve PVs from RDE: [%v]", err)
 	}
-	return pvIdStrs, etag, &defEnt, nil
+	return pvNameStrs, etag, &defEnt, nil
 }
 
-// This function will modify the passed in defEnt
-func (client *DiskManager) updateRDEPersistentVolumes(updatedPvs []string, etag string,
+// This function will modify the passed param in defEnt and only for native cluster
+func (client *DiskManager) addRDEPersistentVolumes(updatedPvs []string, etag string,
 	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
-	updatedRDE, err := util.ReplacePVsInRDE(defEnt, updatedPvs)
+	updatedRDE, err := util.AddPVsInRDE(defEnt, updatedPvs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]",
 			client.ClusterID, err)
 	}
-
 	// can set invokeHooks as optional parameter
 	_, httpResponse, err := client.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
 		client.ClusterID, nil)
@@ -556,67 +562,95 @@ func (client *DiskManager) updateRDEPersistentVolumes(updatedPvs []string, etag 
 	return httpResponse, nil
 }
 
-func (client *DiskManager) addPvToRDE(addPv string) error {
-	for i := 0; i < 10; i++ {
-		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
+func (client *DiskManager) removeRDEPersistentVolumes(updatedPvs []string, etag string,
+	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
+	updatedRDE, err := util.RemovePVInRDE(defEnt, updatedPvs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]",
+			client.ClusterID, err)
+	}
+
+	_, httpResponse, err := client.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
+		client.ClusterID, nil)
+	if err != nil {
+		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
+	}
+	klog.Infof("Successfully updated RDE [%s] with persistentVolumes: [%s]",
+		client.ClusterID, updatedPvs)
+	return httpResponse, nil
+
+}
+
+func (client *DiskManager) addPvToRDE(addPvId string, addPvName string, rdeManager *vcdsdk.RDEManager) error {
+	for i := 0; i < MaxNumRetries; i++ {
+		currPvNames, etag, defEnt, err := client.GetRDEPersistentVolumes()
 		if err != nil {
 			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
 		}
-
-		// check if need to update RDE
-		foundAddPv := false
-		for _, pv := range currPvs {
-			if pv == addPv {
-				foundAddPv = true
-				break
+		if vcdsdk.IsNativeClusterEntityType(defEnt.EntityType) {
+			foundAddPv := false
+			for _, pv := range currPvNames {
+				if pv == addPvName {
+					foundAddPv = true
+					break
+				}
 			}
-		}
-		if foundAddPv {
-			return nil // no need to update RDE
-		}
-
-		updatedPvs := append(currPvs, addPv)
-		httpResponse, err := client.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
-		if err != nil {
-			if httpResponse.StatusCode == http.StatusPreconditionFailed {
-				continue
+			if foundAddPv {
+				return nil // no need to update RDE
 			}
-			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]",
-				addPv, client.ClusterID, err)
+			updatedPvNAMEs := append(currPvNames, addPvName)
+			httpResponse, err := client.addRDEPersistentVolumes(updatedPvNAMEs, etag, defEnt)
+			if err != nil {
+				if httpResponse.StatusCode == http.StatusPreconditionFailed {
+					continue
+				}
+				return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]",
+					addPvName, client.ClusterID, err)
+			}
+			return nil
+		}
+		rdeError := rdeManager.AddToVCDResourceSet(context.Background(), ComponentCSI, ResourcePersistentVolume, addPvName, addPvId, nil)
+		if rdeError != nil {
+			return fmt.Errorf("failed to add persistent volume [%s] to VCDResourceSet of RDE [%s]", addPvName, rdeManager.ClusterID)
 		}
 		return nil
 	}
-	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")
+	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", MaxNumRetries)
 }
 
-func (client *DiskManager) removePvFromRDE(removePv string) error {
-	for i := 0; i < 10; i++ {
+func (client *DiskManager) removePvFromRDE(removePvName string, rdeManager *vcdsdk.RDEManager) error {
+	for i := 0; i < MaxNumRetries; i++ {
 		currPvs, etag, defEnt, err := client.GetRDEPersistentVolumes()
 		if err != nil {
 			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
 		}
-
-		// form updated virtual pv list
-		foundIdx := -1
-		for idx, pv := range currPvs {
-			if pv == removePv {
-				foundIdx = idx
-				break
+		if vcdsdk.IsNativeClusterEntityType(defEnt.EntityType) {
+			// form updated virtual pv list
+			foundIdx := -1
+			for idx, pv := range currPvs {
+				if pv == removePvName {
+					foundIdx = idx
+					break
+				}
+			}
+			if foundIdx == -1 {
+				return nil // no need to update RDE
+			}
+			updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx+1:]...)
+			httpResponse, err := client.removeRDEPersistentVolumes(updatedPvs, etag, defEnt)
+			if err == nil {
+				return nil
+			}
+			if httpResponse.StatusCode != http.StatusPreconditionFailed {
+				return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]",
+					removePvName, client.ClusterID, err)
 			}
 		}
-		if foundIdx == -1 {
-			return nil // no need to update RDE
+		rdeError := rdeManager.RemoveFromVCDResourceSet(context.Background(), ComponentCSI, ResourcePersistentVolume, removePvName)
+		if rdeError != nil {
+			return fmt.Errorf("failed to remove persistent volume [%s] from VCDResourceSet of RDE [%s]", removePvName, rdeManager.ClusterID)
 		}
-		updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx+1:]...)
-
-		httpResponse, err := client.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
-		if err == nil {
-			return nil
-		}
-		if httpResponse.StatusCode != http.StatusPreconditionFailed {
-			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]",
-				removePv, client.ClusterID, err)
-		}
+		return nil
 	}
-	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")
+	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", MaxNumRetries)
 }

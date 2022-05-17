@@ -1,18 +1,20 @@
 package util
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"strings"
 )
 
 const (
-	EntityTypePrefix               = "urn:vcloud:type"
-	CAPVCDEntityTypeVendor         = "vmware"
-	CAPVCDEntityTypeNss            = "capvcdCluster"
-	CAPVCDEntityTypeVersion        = "1.0.0"
-	CSIName                        = "cloud-director-named-disk-csi-driver"
+	ComponentCSI            = "csi"
+	EntityTypePrefix        = "urn:vcloud:type"
+	CAPVCDEntityTypeVendor  = "vmware"
+	CAPVCDEntityTypeNss     = "capvcdCluster"
+	CAPVCDEntityTypeVersion = "1.0.0"
+
 	NativeClusterEntityTypeVendor  = "cse"
 	NativeClusterEntityTypeNss     = "nativeCluster"
 	NativeClusterEntityTypeVersion = "2.0.0"
@@ -36,6 +38,21 @@ func isNativeClusterEntityType(entityTypeID string) bool {
 	return entityTypeIDSplit[3] == NativeClusterEntityTypeVendor && entityTypeIDSplit[4] == NativeClusterEntityTypeNss
 }
 
+func convertMapToComponentStatus(componentStatusMap map[string]interface{}) (*vcdsdk.ComponentStatus, error) {
+	componentStatusBytes, err := json.Marshal(componentStatusMap)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert componentStatusMap to byte array: [%v]", err)
+	}
+
+	var cs vcdsdk.ComponentStatus
+	err = json.Unmarshal(componentStatusBytes, &cs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read bytes from componentStatus [%#v] to ComponentStatus object: [%v]", componentStatusMap, err)
+	}
+
+	return &cs, nil
+}
+
 func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	statusEntry, ok := rde.Entity["status"]
 	if !ok {
@@ -49,15 +66,21 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	var pvInterfaces interface{}
 	switch {
 	case isCAPVCDEntityType(rde.EntityType):
-		csiEntry, ok := statusMap["csi"]
+		csiEntry, ok := statusMap[ComponentCSI]
 		if !ok {
-			return nil, fmt.Errorf("could not find 'csi' entry in defined entity")
+			//return nil, fmt.Errorf("could not find 'csi' entry in defined entity")
+			return make([]string, 0), nil
 		}
 		csiMap, ok := csiEntry.(map[string]interface{})
 		if !ok {
 			return nil, fmt.Errorf("unable to convert [%T] to map[string]interface{}", csiEntry)
 		}
-		pvInterfaces = csiMap["persistentVolumes"]
+		componentStatus, _ := convertMapToComponentStatus(csiMap)
+		pvNameArray := make([]string, len(componentStatus.VCDResourceSet))
+		for idx, rs := range componentStatus.VCDResourceSet {
+			pvNameArray[idx] = rs.Name
+		}
+		return pvNameArray, nil
 	case isNativeClusterEntityType(rde.EntityType):
 		pvInterfaces = statusMap["persistentVolumes"]
 	default:
@@ -71,18 +94,20 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	if !ok {
 		return nil, fmt.Errorf("unable to convert [%T] to slice of interface", pvInterfaces)
 	}
-	pvIdStrs := make([]string, len(pvInterfacesSlice))
+	//change list of PV-ID to list of PV-NAME
+	pvNameStrs := make([]string, len(pvInterfacesSlice))
 	for idx, pvInterface := range pvInterfacesSlice {
 		currPv, ok := pvInterface.(string)
 		if !ok {
 			return nil, fmt.Errorf("unable to convert [%T] to string", pvInterface)
 		}
-		pvIdStrs[idx] = currPv
+		pvNameStrs[idx] = currPv
 	}
-	return pvIdStrs, nil
+	return pvNameStrs, nil
 }
 
-func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swaggerClient.DefinedEntity, error) {
+// AddPVsInRDE function only used for Native Cluster
+func AddPVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swaggerClient.DefinedEntity, error) {
 	statusEntry, ok := rde.Entity["status"]
 	if !ok {
 		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
@@ -91,28 +116,27 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 	if !ok {
 		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
 	}
-	switch {
-	case isCAPVCDEntityType(rde.EntityType):
-		csiEntry, ok := statusMap["csi"]
-		if !ok {
-			newCsiMap := make(map[string]interface{})
-			// populate "name", "version", "persistentVolumes" in RDE.CSI.Status
-			newCsiMap["persistentVolumes"] = updatedPvs
-			newCsiMap["name"] = CSIName
-			newCsiMap["version"] = version.Version
-			// Update the RDE status for CSI
-			statusMap["csi"] = newCsiMap
-		}
-		csiMap, ok := csiEntry.(map[string]interface{})
-		if !ok {
-			return nil, fmt.Errorf("unable to convert [%T] to map[string]interface{}", csiEntry)
-		}
-		csiMap["persistentVolumes"] = updatedPvs
-	case isNativeClusterEntityType(rde.EntityType):
-		statusMap["persistentVolumes"] = updatedPvs
-	default:
+	if !vcdsdk.IsNativeClusterEntityType(rde.EntityType) {
 		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
 	}
+	statusMap["persistentVolumes"] = updatedPvs
 	return rde, nil
+}
 
+// RemovePVInRDE function only used for Native Cluster
+func RemovePVInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swaggerClient.DefinedEntity, error) {
+	statusEntry, ok := rde.Entity["status"]
+	if !ok {
+		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
+	}
+	statusMap, ok := statusEntry.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
+	}
+
+	if !vcdsdk.IsNativeClusterEntityType(rde.EntityType) {
+		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
+	}
+	statusMap["persistentVolumes"] = updatedPvs
+	return rde, nil
 }
