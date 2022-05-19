@@ -216,7 +216,6 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	}
 
 	klog.Infof("Getting node details for [%s]", nodeID)
-	//Todo: handle the err
 	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)

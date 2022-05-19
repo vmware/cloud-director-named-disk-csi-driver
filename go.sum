@@ -240,6 +240,8 @@ github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220509232037-80d06d
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220509232037-80d06df0f4c5/go.mod h1:g5TL7oqwfhqM0ZfZdITnfMNpJlVllVdVZdpCBn6XhQ0=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220511213210-e9a28630f36d h1:lDkKDZXExFWBAbEF/UNtngMv2uWBPitor3Xl5FQ5wSc=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220511213210-e9a28630f36d/go.mod h1:g5TL7oqwfhqM0ZfZdITnfMNpJlVllVdVZdpCBn6XhQ0=
+github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220512004547-85c8e8de804b h1:wmaiMwB0eOqnpNuTCZ6orrCiewpAN9N/aKtRgMZmI6E=
+github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220512004547-85c8e8de804b/go.mod h1:g5TL7oqwfhqM0ZfZdITnfMNpJlVllVdVZdpCBn6XhQ0=
 github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3 h1:VJolXzgomaRPrgzSr0EduuUtJIJEf5RdoLbktZFQqIc=
 github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3/go.mod h1:2BS1yw61VN34WI0/nUYoInFvBc3Zcuf84d4ESiAAl68=
 github.com/xiang90/probing v0.0.0-20160813154853-07dd2e8dfe18/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
