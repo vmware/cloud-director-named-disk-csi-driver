@@ -525,17 +525,12 @@ func (diskManager *DiskManager) DetachVolume(vm *govcd.VM, diskName string) erro
 	return nil
 }
 
-func (diskManager *DiskManager) GetRDEPersistentVolumes() ([]string, string, *swaggerClient.DefinedEntity, error) {
-	defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+func (diskManager *DiskManager) GetRDEPersistentVolumes(rde *swaggerClient.DefinedEntity) ([]string, error) {
+	pvStrs, err := util.GetPVsFromRDE(rde)
 	if err != nil {
-		return nil, "", nil, fmt.Errorf("error when getting defined entity: [%v]", err)
+		return nil, fmt.Errorf("failed to retrieve PVs from RDE: [%v]", err)
 	}
-	pvStrs, err := util.GetPVsFromRDE(&defEnt)
-	if err != nil {
-		return nil, "", nil, fmt.Errorf("failed to retrieve PVs from RDE: [%v]", err)
-	}
-	return pvStrs, etag, &defEnt, nil
+	return pvStrs, nil
 }
 
 // This function will modify the passed param in defEnt and only for native cluster
@@ -578,11 +573,16 @@ func (diskManager *DiskManager) removeRDEPersistentVolumes(updatedPvs []string, 
 
 func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rdeManager *vcdsdk.RDEManager) error {
 	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
-		currPvs, etag, defEnt, err := diskManager.GetRDEPersistentVolumes()
+		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+			diskManager.ClusterID)
 		if err != nil {
-			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+			return fmt.Errorf("error when getting defined entity: [%v]", err)
 		}
 		if vcdsdk.IsNativeClusterEntityType(defEnt.EntityType) {
+			currPvs, err := diskManager.GetRDEPersistentVolumes(&defEnt)
+			if err != nil {
+				return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+			}
 			foundAddPv := false
 			for _, pv := range currPvs {
 				if pv == addPvName {
@@ -594,7 +594,7 @@ func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rde
 				return nil // no need to update RDE
 			}
 			updatedPvIDs := append(currPvs, addPvId)
-			httpResponse, err := diskManager.addRDEPersistentVolumes(updatedPvIDs, etag, defEnt)
+			httpResponse, err := diskManager.addRDEPersistentVolumes(updatedPvIDs, etag, &defEnt)
 			if err != nil {
 				if httpResponse.StatusCode == http.StatusPreconditionFailed {
 					continue
@@ -617,11 +617,16 @@ func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rde
 
 func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName string, rdeManager *vcdsdk.RDEManager) error {
 	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
-		currPvs, etag, defEnt, err := diskManager.GetRDEPersistentVolumes()
+		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+			diskManager.ClusterID)
 		if err != nil {
-			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+			return fmt.Errorf("error when getting defined entity: [%v]", err)
 		}
 		if vcdsdk.IsNativeClusterEntityType(defEnt.EntityType) {
+			currPvs, err := diskManager.GetRDEPersistentVolumes(&defEnt)
+			if err != nil {
+				return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+			}
 			foundIdx := -1
 			for idx, pv := range currPvs {
 				if pv == removePvId {
@@ -633,7 +638,7 @@ func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName 
 				return nil // no need to update RDE
 			}
 			updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx+1:]...)
-			httpResponse, err := diskManager.removeRDEPersistentVolumes(updatedPvs, etag, defEnt)
+			httpResponse, err := diskManager.removeRDEPersistentVolumes(updatedPvs, etag, &defEnt)
 			if err == nil {
 				return nil
 			}
