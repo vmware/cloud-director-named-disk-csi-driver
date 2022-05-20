@@ -1,4 +1,3 @@
-
 /*
  * VMware Cloud Director OpenAPI
  *
@@ -40,7 +39,6 @@ func (a *OrgVdcNetworksApiService) CreateNetwork(ctx context.Context, vdcNetwork
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -98,16 +96,15 @@ func (a *OrgVdcNetworksApiService) CreateNetwork(ctx context.Context, vdcNetwork
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 400 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHttpResponse, newErr
@@ -137,17 +134,17 @@ Get all Org vDC networks. If \&quot;ownerRef\&quot; property is not specified in
 */
 
 type OrgVdcNetworksApiGetAllVdcNetworksOpts struct {
-	Filter optional.String
-	SortAsc optional.String
+	Filter   optional.String
+	SortAsc  optional.String
 	SortDesc optional.String
 }
 
 func (a *OrgVdcNetworksApiService) GetAllVdcNetworks(ctx context.Context, page int32, pageSize int32, localVarOptionals *OrgVdcNetworksApiGetAllVdcNetworksOpts) (VdcNetworks, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue VdcNetworks
 	)
 
@@ -226,19 +223,19 @@ func (a *OrgVdcNetworksApiService) GetAllVdcNetworks(ctx context.Context, page i
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v VdcNetworks
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -252,4 +249,3 @@ func (a *OrgVdcNetworksApiService) GetAllVdcNetworks(ctx context.Context, page i
 
 	return localVarReturnValue, localVarHttpResponse, nil
 }
-

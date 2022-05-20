@@ -10,7 +10,7 @@
 
 package swagger
 
-// List of Subnets of an edge gateway 
+// List of Subnets of an edge gateway
 type EdgeGatewaySubnets struct {
 	Values []EdgeGatewaySubnet `json:"values,omitempty"`
 }

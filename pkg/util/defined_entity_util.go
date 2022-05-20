@@ -1,39 +1,14 @@
 package util
 
 import (
-	 "fmt"
+	"fmt"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
-	"strings"
 )
 
 const (
-	EntityTypePrefix = "urn:vcloud:type"
-	CAPVCDEntityTypeVendor = "vmware"
-	CAPVCDEntityTypeNss = "capvcdCluster"
-	CAPVCDEntityTypeVersion = "1.0.0"
-
-	NativeClusterEntityTypeVendor = "cse"
-	NativeClusterEntityTypeNss = "nativeCluster"
-	NativeClusterEntityTypeVersion = "2.0.0"
+	ResourcePersistentVolume = "named-disk"
 )
-
-func isCAPVCDEntityType(entityTypeID string) bool {
-	entityTypeIDSplit := strings.Split(entityTypeID, ":")
-	// format is urn:vcloud:type:<vendor>:<nss>:<version>
-	if len(entityTypeIDSplit) != 6 {
-		return false
-	}
-	return entityTypeIDSplit[3] == CAPVCDEntityTypeVendor && entityTypeIDSplit[4] == CAPVCDEntityTypeNss
-}
-
-func isNativeClusterEntityType(entityTypeID string) bool {
-	entityTypeIDSplit := strings.Split(entityTypeID, ":")
-	// format is urn:vcloud:type:<vendor>:<nss>:<version>
-	if len(entityTypeIDSplit) != 6 {
-		return false
-	}
-	return entityTypeIDSplit[3] == NativeClusterEntityTypeVendor && entityTypeIDSplit[4] == NativeClusterEntityTypeNss
-}
 
 func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	statusEntry, ok := rde.Entity["status"]
@@ -46,12 +21,11 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	}
 
 	var pvInterfaces interface{}
-	if isCAPVCDEntityType(rde.EntityType) {
+	switch {
+	case vcdsdk.IsNativeClusterEntityType(rde.EntityType):
 		pvInterfaces = statusMap["persistentVolumes"]
-	} else if isNativeClusterEntityType(rde.EntityType) {
-		pvInterfaces = statusMap["persistentVolumes"]
-	} else {
-		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
+	default:
+		return nil, fmt.Errorf("only native cluster is supported here, entity type %s not supported", rde.EntityType)
 	}
 	if pvInterfaces == nil {
 		return make([]string, 0), nil
@@ -72,7 +46,11 @@ func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	return pvIdStrs, nil
 }
 
-func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swaggerClient.DefinedEntity, error) {
+// AddPVsInRDE function only used for Native Cluster
+func AddPVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swaggerClient.DefinedEntity, error) {
+	if !vcdsdk.IsNativeClusterEntityType(rde.EntityType) {
+		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
+	}
 	statusEntry, ok := rde.Entity["status"]
 	if !ok {
 		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
@@ -81,13 +59,23 @@ func ReplacePVsInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*sw
 	if !ok {
 		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
 	}
+	statusMap["persistentVolumes"] = updatedPvs
+	return rde, nil
+}
 
-	if isCAPVCDEntityType(rde.EntityType) {
-		statusMap["persistentVolumes"] = updatedPvs
-	} else if isNativeClusterEntityType(rde.EntityType) {
-		statusMap["persistentVolumes"] = updatedPvs
-	} else {
+// RemovePVInRDE function only used for Native Cluster
+func RemovePVInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swaggerClient.DefinedEntity, error) {
+	if !vcdsdk.IsNativeClusterEntityType(rde.EntityType) {
 		return nil, fmt.Errorf("entity type %s not supported by CSI", rde.EntityType)
 	}
+	statusEntry, ok := rde.Entity["status"]
+	if !ok {
+		return nil, fmt.Errorf("could not find 'status' entry in defined entity")
+	}
+	statusMap, ok := statusEntry.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
+	}
+	statusMap["persistentVolumes"] = updatedPvs
 	return rde, nil
 }

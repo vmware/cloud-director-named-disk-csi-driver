@@ -9,15 +9,16 @@
  */
 
 package swagger
+
 // BackingNetworkType : The backing network type.
 type BackingNetworkType string
 
 // List of BackingNetworkType
 const (
-	DV_PORTGROUP_BackingNetworkType BackingNetworkType = "DV_PORTGROUP"
-	VIRTUAL_WIRE_BackingNetworkType BackingNetworkType = "VIRTUAL_WIRE"
+	DV_PORTGROUP_BackingNetworkType              BackingNetworkType = "DV_PORTGROUP"
+	VIRTUAL_WIRE_BackingNetworkType              BackingNetworkType = "VIRTUAL_WIRE"
 	IMPORTED_T_LOGICAL_SWITCH_BackingNetworkType BackingNetworkType = "IMPORTED_T_LOGICAL_SWITCH"
-	OPAQUE_NETWORK_BackingNetworkType BackingNetworkType = "OPAQUE_NETWORK"
-	NSXT_FIXED_SEGMENT_BackingNetworkType BackingNetworkType = "NSXT_FIXED_SEGMENT"
-	NSXT_FLEXIBLE_SEGMENT_BackingNetworkType BackingNetworkType = "NSXT_FLEXIBLE_SEGMENT"
+	OPAQUE_NETWORK_BackingNetworkType            BackingNetworkType = "OPAQUE_NETWORK"
+	NSXT_FIXED_SEGMENT_BackingNetworkType        BackingNetworkType = "NSXT_FIXED_SEGMENT"
+	NSXT_FLEXIBLE_SEGMENT_BackingNetworkType     BackingNetworkType = "NSXT_FLEXIBLE_SEGMENT"
 )

@@ -10,7 +10,7 @@
 
 package swagger
 
-// List of IP addresses used by an edge gateway. 
+// List of IP addresses used by an edge gateway.
 type GatewayUsedIpAddresses struct {
 	// How many results there are in total (i.e., considering all pages).
 	ResultTotal int32 `json:"resultTotal,omitempty"`
@@ -21,6 +21,6 @@ type GatewayUsedIpAddresses struct {
 	// Result count for page that was fetched.
 	PageSize int32 `json:"pageSize,omitempty"`
 	// Association info for each result.
-	Associations []Association `json:"associations,omitempty"`
-	Values []GatewayUsedIpAddress `json:"values,omitempty"`
+	Associations []Association          `json:"associations,omitempty"`
+	Values       []GatewayUsedIpAddress `json:"values,omitempty"`
 }

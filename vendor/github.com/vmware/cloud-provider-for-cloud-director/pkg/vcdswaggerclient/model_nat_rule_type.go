@@ -9,13 +9,14 @@
  */
 
 package swagger
+
 // NatRuleType : The Nat Rule Type for a given NAT rule.
 type NatRuleType string
 
 // List of NatRuleType
 const (
-	DNAT_NatRuleType NatRuleType = "DNAT"
-	SNAT_NatRuleType NatRuleType = "SNAT"
+	DNAT_NatRuleType    NatRuleType = "DNAT"
+	SNAT_NatRuleType    NatRuleType = "SNAT"
 	NO_DNAT_NatRuleType NatRuleType = "NO_DNAT"
 	NO_SNAT_NatRuleType NatRuleType = "NO_SNAT"
 )

@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package main
@@ -8,11 +8,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/config"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"os"
 	"time"
 
@@ -122,32 +122,25 @@ func runCommand() {
 		time.Sleep(waitTime)
 	}
 
-	vcdClient, err := vcdclient.NewVCDClientFromSecrets(
+	vcdClient, err := vcdsdk.NewVCDClientFromSecrets(
 		cloudConfig.VCD.Host,
 		cloudConfig.VCD.Org,
 		cloudConfig.VCD.VDC,
-		cloudConfig.VCD.VAppName,
-		"",
-		"",
 		cloudConfig.VCD.UserOrg,
 		cloudConfig.VCD.User,
 		cloudConfig.VCD.Secret,
 		cloudConfig.VCD.RefreshToken,
 		true,
-		cloudConfig.ClusterID,
-		nil,
-		0,
-		0,
-		"",
 		true,
 	)
 	if err != nil {
-		panic (fmt.Errorf("unable to initiate vcd client: [%v]", err))
+		panic(fmt.Errorf("unable to initiate vcd client: [%v]", err))
 	}
 
-	d.Setup(&vcdcsiclient.Client{
+	d.Setup(&vcdcsiclient.DiskManager{
 		VCDClient: vcdClient,
-	}, nodeID)
+		ClusterID: cloudConfig.ClusterID,
+	}, cloudConfig.VCD.VAppName, nodeID)
 
 	// blocking call
 	if err = d.Run(); err != nil {

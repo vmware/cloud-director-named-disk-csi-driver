@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package csi
@@ -77,7 +77,7 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 	d.nodeServiceCapabilities = make([]*csi.NodeServiceCapability, len(nodeServiceCapabilityList))
 	for idx, nodeServiceCapability := range nodeServiceCapabilityList {
 		klog.Infof("Enabling node service capability: %v", nodeServiceCapability.String())
-		d.nodeServiceCapabilities[idx] = &csi.NodeServiceCapability {
+		d.nodeServiceCapabilities[idx] = &csi.NodeServiceCapability{
 			Type: &csi.NodeServiceCapability_Rpc{
 				Rpc: &csi.NodeServiceCapability_RPC{
 					Type: nodeServiceCapability,
@@ -107,10 +107,10 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(vcdCSIClient *vcdcsiclient.Client, nodeID string) {
+func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string) {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
-	d.cs = NewControllerService(d, vcdCSIClient.VCDClient)
+	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
 }
 

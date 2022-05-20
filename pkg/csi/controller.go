@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package csi
@@ -8,9 +8,9 @@ package csi
 import (
 	"context"
 	"fmt"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdclient"
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -46,19 +46,21 @@ var (
 	}
 )
 
-
 type controllerServer struct {
-	Driver       *VCDDriver
-	VCDCSIClient *vcdcsiclient.Client
+	Driver      *VCDDriver
+	DiskManager *vcdcsiclient.DiskManager
+	VAppName    string
 }
 
 // NewControllerService creates a controllerService
-func NewControllerService(driver *VCDDriver, vcdClient *vcdclient.Client) csi.ControllerServer {
+func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, clusterID string, vAppName string) csi.ControllerServer {
 	return &controllerServer{
-		Driver:        driver,
-		VCDCSIClient:  &vcdcsiclient.Client{
+		Driver: driver,
+		DiskManager: &vcdcsiclient.DiskManager{
 			VCDClient: vcdClient,
+			ClusterID: clusterID,
 		},
+		VAppName: vAppName,
 	}
 }
 
@@ -84,7 +86,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 
 	klog.Infof("CreateVolume: called with req [%#v]", *req)
 
-	if err := cs.VCDCSIClient.VCDClient.RefreshBearerToken(); err != nil {
+	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
@@ -119,7 +121,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 
 	storageProfile, _ := req.Parameters[StorageProfileParameter]
 
-	disk, err := cs.VCDCSIClient.CreateDisk(diskName, sizeMB, busType,
+	disk, err := cs.DiskManager.CreateDisk(diskName, sizeMB, busType,
 		busSubType, "", storageProfile, shareable)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create disk [%s] with sise [%d]MB: [%v]",
@@ -159,11 +161,11 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	klog.Infof("DeleteVolume: called with req [%#v]", *req)
 	volumeID := req.GetVolumeId()
 
-	if err := cs.VCDCSIClient.VCDClient.RefreshBearerToken(); err != nil {
+	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
-	err := cs.VCDCSIClient.DeleteDisk(volumeID)
+	err := cs.DiskManager.DeleteDisk(volumeID)
 	if err != nil {
 		if err == govcd.ErrorEntityNotFound {
 			klog.Infof("Volume [%s] is already deleted.", volumeID)
@@ -186,7 +188,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	}
 	klog.Infof("ControllerPublishVolume: called with req [%#v]", *req)
 
-	if err := cs.VCDCSIClient.VCDClient.RefreshBearerToken(); err != nil {
+	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
@@ -214,20 +216,24 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	}
 
 	klog.Infof("Getting node details for [%s]", nodeID)
-	vm, err := cs.VCDCSIClient.VCDClient.FindVMByName(nodeID)
+	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+	}
+	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find VM for node [%s]: [%v]", nodeID, err)
 	}
 
 	klog.Infof("Getting disk details for [%s]", diskName)
-	disk, err := cs.VCDCSIClient.GetDiskByName(diskName)
+	disk, err := cs.DiskManager.GetDiskByName(diskName)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find disk [%s]: [%v]", diskName, err)
 	}
 	klog.Infof("Obtained disk: [%#v]\n", disk)
 
 	klog.Infof("Attaching volume [%s] to node [%s]", diskName, nodeID)
-	err = cs.VCDCSIClient.AttachVolume(vm, disk)
+	err = cs.DiskManager.AttachVolume(vm, disk)
 	if err != nil {
 		if err == govcd.ErrorEntityNotFound {
 			return nil, status.Errorf(codes.NotFound, "could not provision disk [%s] in vcd", diskName)
@@ -254,7 +260,7 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 	}
 	klog.Infof("ControllerUnpublishVolume: called with req [%#v]", *req)
 
-	if err := cs.VCDCSIClient.VCDClient.RefreshBearerToken(); err != nil {
+	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
@@ -270,13 +276,17 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 			"ControllerUnpublishVolume: Volume ID must be provided")
 	}
 
-	vm, err := cs.VCDCSIClient.VCDClient.FindVMByName(nodeID)
+	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+	}
+	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound,
 			"Could not find VM with nodeID [%s] from which to detach [%s]", nodeID, volumeID)
 	}
 
-	err = cs.VCDCSIClient.DetachVolume(vm, volumeID)
+	err = cs.DiskManager.DetachVolume(vm, volumeID)
 	if err != nil {
 		if err == govcd.ErrorEntityNotFound {
 			return nil, status.Errorf(codes.NotFound, "Volume [%s] does not exist", volumeID)

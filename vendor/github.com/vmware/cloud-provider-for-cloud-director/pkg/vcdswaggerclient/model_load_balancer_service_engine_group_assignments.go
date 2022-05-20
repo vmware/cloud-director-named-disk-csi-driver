@@ -10,7 +10,7 @@
 
 package swagger
 
-// List of Load Balancer Service Engine Group Assignments. 
+// List of Load Balancer Service Engine Group Assignments.
 type LoadBalancerServiceEngineGroupAssignments struct {
 	// How many results there are in total (i.e., considering all pages).
 	ResultTotal int32 `json:"resultTotal,omitempty"`
@@ -21,6 +21,6 @@ type LoadBalancerServiceEngineGroupAssignments struct {
 	// Result count for page that was fetched.
 	PageSize int32 `json:"pageSize,omitempty"`
 	// Association info for each result.
-	Associations []Association `json:"associations,omitempty"`
-	Values []LoadBalancerServiceEngineGroupAssignment `json:"values,omitempty"`
+	Associations []Association                              `json:"associations,omitempty"`
+	Values       []LoadBalancerServiceEngineGroupAssignment `json:"values,omitempty"`
 }

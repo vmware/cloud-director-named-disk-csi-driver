@@ -10,7 +10,7 @@
 
 package swagger
 
-// An IpRange 
+// An IpRange
 type IpRange struct {
 	// Starting IP address in the range.
 	StartAddress string `json:"startAddress,omitempty"`

@@ -1,8 +1,8 @@
-package vcdclient
+package vcdsdk
 
 import (
-    "fmt"
-    "runtime/debug"
+	"fmt"
+	"runtime/debug"
 )
 
 type VirtualServicePendingError struct {
@@ -19,6 +19,14 @@ type LoadBalancerPoolBusyError struct {
 
 type GatewayBusyError struct {
 	GatewayName string
+}
+
+type NonCAPVCDEntityError struct {
+	EntityTypeID string
+}
+
+func (e NonCAPVCDEntityError) Error() string {
+	return fmt.Sprintf("Non CAPVCD entity type found: [%s]", e.EntityTypeID)
 }
 
 func (vsError *VirtualServicePendingError) Error() string {

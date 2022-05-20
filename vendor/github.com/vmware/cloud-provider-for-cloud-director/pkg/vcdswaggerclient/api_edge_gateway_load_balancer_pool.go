@@ -1,4 +1,3 @@
-
 /*
  * VMware Cloud Director OpenAPI
  *
@@ -40,7 +39,6 @@ func (a *EdgeGatewayLoadBalancerPoolApiService) DeleteLoadBalancerPool(ctx conte
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -97,16 +95,15 @@ func (a *EdgeGatewayLoadBalancerPoolApiService) DeleteLoadBalancerPool(ctx conte
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 404 {
 			var v ModelError
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHttpResponse, newErr
@@ -130,10 +127,10 @@ EdgeGatewayLoadBalancerPoolApiService Retrieves a specific Load Balancer Pool.
 */
 func (a *EdgeGatewayLoadBalancerPoolApiService) GetLoadBalancerPool(ctx context.Context, poolId string) (EdgeLoadBalancerPool, *http.Response, error) {
 	var (
-		localVarHttpMethod = strings.ToUpper("Get")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
 		localVarReturnValue EdgeLoadBalancerPool
 	)
 
@@ -193,19 +190,19 @@ func (a *EdgeGatewayLoadBalancerPoolApiService) GetLoadBalancerPool(ctx context.
 
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v EdgeLoadBalancerPool
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHttpResponse, newErr
@@ -234,7 +231,6 @@ func (a *EdgeGatewayLoadBalancerPoolApiService) UpdateLoadBalancerPool(ctx conte
 		localVarPostBody   interface{}
 		localVarFileName   string
 		localVarFileBytes  []byte
-
 	)
 
 	// create path and map variables
@@ -293,10 +289,9 @@ func (a *EdgeGatewayLoadBalancerPoolApiService) UpdateLoadBalancerPool(ctx conte
 		return localVarHttpResponse, err
 	}
 
-
 	if localVarHttpResponse.StatusCode >= 300 {
 		newErr := GenericSwaggerError{
-			body: localVarBody,
+			body:  localVarBody,
 			error: localVarHttpResponse.Status,
 		}
 
@@ -305,4 +300,3 @@ func (a *EdgeGatewayLoadBalancerPoolApiService) UpdateLoadBalancerPool(ctx conte
 
 	return localVarHttpResponse, nil
 }
-
