@@ -26,6 +26,7 @@ var (
 	endpointFlag    string
 	nodeIDFlag      string
 	cloudConfigFlag string
+	upgradeRDEFlag  string
 )
 
 func init() {
@@ -70,6 +71,8 @@ func main() {
 	cmd.Flags().AddGoFlagSet(flag.CommandLine)
 
 	cmd.PersistentFlags().StringVar(&nodeIDFlag, "nodeid", "", "node id")
+
+	cmd.PersistentFlags().StringVar(&upgradeRDEFlag, "upgrade-rde", "", "CSI upgrade rde")
 
 	cmd.PersistentFlags().StringVar(&endpointFlag, "endpoint", "", "CSI endpoint")
 	cmd.MarkPersistentFlagRequired("endpoint")
@@ -140,7 +143,7 @@ func runCommand() {
 	d.Setup(&vcdcsiclient.DiskManager{
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
-	}, cloudConfig.VCD.VAppName, nodeID)
+	}, cloudConfig.VCD.VAppName, nodeID, upgradeRDEFlag)
 
 	// blocking call
 	if err = d.Run(); err != nil {

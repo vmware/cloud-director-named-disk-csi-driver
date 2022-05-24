@@ -145,6 +145,7 @@ spec:
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
             - --cloud-config=/etc/kubernetes/vcloud/vcloud-csi-config.yaml
             - --endpoint=$(CSI_ENDPOINT)
+            - --upgrade-rde=$(UPGRADE_RDE)
             - --v=5
           env:
             - name: NODE_ID
@@ -153,6 +154,8 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
+            - name: UPGRADE_RDE
+              value: "true"
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy/

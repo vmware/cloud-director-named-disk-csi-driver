@@ -205,6 +205,28 @@ func (diskManager *DiskManager) govcdGetDiskByHref(diskHref string) (*vcdtypes.D
 	return disk, nil
 }
 
+func (diskManager *DiskManager) govcdGetDiskById(diskId string, refresh bool) (*vcdtypes.Disk, error) {
+	klog.Infof("Entered GetDiskByName for id [%s]", diskId)
+	if refresh {
+		err := diskManager.VCDClient.VDC.Refresh()
+		if err != nil {
+			return nil, fmt.Errorf("disk name should not be empty")
+		}
+	}
+	for _, resourceEntities := range diskManager.VCDClient.VDC.Vdc.ResourceEntities {
+		for _, resourceEntity := range resourceEntities.ResourceEntity {
+			if resourceEntity.ID == diskId && resourceEntity.Type == "application/vnd.vmware.vcloud.disk+xml" {
+				disk, err := diskManager.govcdGetDiskByHref(resourceEntity.HREF)
+				if err != nil {
+					return nil, err
+				}
+				return disk, nil
+			}
+		}
+	}
+	return nil, govcd.ErrorEntityNotFound
+}
+
 // GetDisksByName finds one or more Disks by Name
 // On success, returns a pointer to the Disk list and a nil error
 // On failure, returns a nil pointer and an error
@@ -571,6 +593,24 @@ func (diskManager *DiskManager) removeRDEPersistentVolumes(updatedPvs []string, 
 
 }
 
+func (diskManager *DiskManager) upgradeRDEPersistentVolumes(etag string,
+	defEnt *swaggerClient.DefinedEntity) ([]string, *http.Response, error) {
+	updatedRDE, oldPvs, err := util.GetOldPVsFromRDE(defEnt)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to remove persistentVolumes section for RDE with ID [%s]: [%v]",
+			diskManager.ClusterID, err)
+	}
+	// can set invokeHooks as optional parameter
+	_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
+		diskManager.ClusterID, nil)
+	if err != nil {
+		return oldPvs, httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
+	}
+	klog.Infof("Successfully removed persistentVolumes from old RDE [%s]: [%s]",
+		diskManager.ClusterID, oldPvs)
+	return oldPvs, httpResponse, nil
+}
+
 func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rdeManager *vcdsdk.RDEManager) error {
 	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
 		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
@@ -655,5 +695,43 @@ func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName 
 		}
 
 	}
+	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
+}
+
+func (diskManager *DiskManager) UpdatePvRDE() error {
+	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+			diskManager.ClusterID)
+		if err != nil {
+			return fmt.Errorf("error when getting defined entity: [%v]", err)
+		}
+		oldPvs, httpResponse, err := diskManager.upgradeRDEPersistentVolumes(etag, &defEnt)
+		if err == nil {
+			rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, CSIName, version.Version)
+			for _, oldPVId := range oldPvs {
+				diskName, diskId := "", oldPVId
+				disk, err := diskManager.govcdGetDiskById(oldPVId, true)
+				if err != nil {
+					// Todo: update csi.errors => disk query failed
+					klog.Infof("error when conducting disk query with id [%s]", oldPVId)
+				} else {
+					diskName = disk.Name
+					diskId = disk.Id
+				}
+				rdeError := rdeManager.AddToVCDResourceSet(context.Background(), vcdsdk.ComponentCSI, util.ResourcePersistentVolume, diskName, diskId, nil)
+				if rdeError != nil {
+					// Todo: update csi.errors => add to resourceSet failed
+					klog.Infof("error when adding disk [%s] to resource Set", oldPVId)
+				}
+				klog.Infof("No error found when adding disk info [%s], [%s] to resource Set.", disk.Name, disk.Id)
+			}
+			return nil
+		}
+		if httpResponse == nil || httpResponse.StatusCode != http.StatusPreconditionFailed {
+			return fmt.Errorf("error when removing old pv from RDE [%s]: [%v]",
+				diskManager.ClusterID, err)
+		}
+	}
+	// Todo: update csi.errors => incorrect etag
 	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
 }

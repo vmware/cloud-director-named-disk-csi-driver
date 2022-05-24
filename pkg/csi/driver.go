@@ -107,11 +107,19 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string) {
+func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde string) {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
 	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
+	if upgradeRde == "true" {
+		if util.IsValidEntityId(diskManager.ClusterID) {
+			err := diskManager.UpdatePvRDE()
+			if err != nil {
+				klog.Infof(err.Error())
+			}
+		}
+	}
 }
 
 // Run will start driver gRPC server to communicated with Kubernetes
