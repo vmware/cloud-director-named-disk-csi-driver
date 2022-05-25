@@ -113,7 +113,7 @@ func GetOldPVsFromRDE(statusMap map[string]interface{}, rdeId string) ([]string,
 	pvInterfaces, ok := statusMap[OldPersistentVolumeKey]
 
 	if !ok {
-		return make([]string, 0), fmt.Errorf("no entity [%s] found in RDE [%s]", OldPersistentVolumeKey, rdeId)
+		return make([]string, 0), fmt.Errorf("key [%s] found in the status section of RDE [%s]", OldPersistentVolumeKey, rdeId)
 	}
 	if pvInterfaces == nil {
 		return make([]string, 0), nil

@@ -690,7 +690,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		}
 		statusEntry, ok := rde.Entity["status"]
 		if !ok {
-			return fmt.Errorf("could not find 'status' Key in defined entity")
+			return fmt.Errorf("key 'status' found in the status section of RDE: [%s]", diskManager.ClusterID)
 		}
 		statusMap, ok := statusEntry.(map[string]interface{})
 		if !ok {
@@ -716,7 +716,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 			}
 			updatedMap, err = util.UpgradePVResourceToRDE(statusMap, PVDetailList, diskManager.ClusterID)
 			if err != nil {
-				return fmt.Errorf("error occurred when updating VCDResource set of CPI status in RDE [%s]: [%v]", diskManager.ClusterID, err)
+				return fmt.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]", diskManager.ClusterID, err)
 			}
 		}
 		delete(updatedMap, util.OldPersistentVolumeKey)
