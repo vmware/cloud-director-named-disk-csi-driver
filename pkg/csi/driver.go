@@ -112,13 +112,17 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 	d.ns = NewNodeService(d, nodeID)
 	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
-	if upgradeRde == "true" {
-		if util.IsValidEntityId(diskManager.ClusterID) {
-			err := diskManager.UpdatePvRDE()
-			if err != nil {
-				klog.Infof(err.Error())
-			}
-		}
+	if upgradeRde != "true" {
+		klog.Infof("upgradeRde flag is not valid: [%s]", upgradeRde)
+		return
+	}
+	if !util.IsValidEntityId(diskManager.ClusterID) {
+		klog.Infof("upgrade RDE is skipped as invalid RDE: [%s]", diskManager.ClusterID)
+		return
+	}
+	err := diskManager.UpgradeRDEPersistentVolumes()
+	if err != nil {
+		klog.Infof(err.Error())
 	}
 }
 

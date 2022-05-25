@@ -72,7 +72,7 @@ func TestUpdateRDE(t *testing.T) {
 	diskManager.ClusterID = cloudConfig.ClusterID
 	assert.NoError(t, err, "Unable to get VCD client")
 	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
-	diskManager.UpdatePvRDE()
+	diskManager.UpgradeRDEPersistentVolumes()
 }
 func TestDiskCreateAttach(t *testing.T) {
 

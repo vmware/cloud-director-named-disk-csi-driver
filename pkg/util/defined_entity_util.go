@@ -1,7 +1,9 @@
 package util
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"strings"
@@ -9,14 +11,13 @@ import (
 
 const (
 	ResourcePersistentVolume = "named-disk"
+	CSIName                  = "cloud-director-named-disk-csi-driver"
 	OldPersistentVolumeKey   = "persistentVolumes"
+	PVDetailsNum             = 2
 )
 
 func IsValidEntityId(rdeId string) bool {
-	if rdeId == "" || strings.HasPrefix(rdeId, vcdsdk.NoRdePrefix) {
-		return false
-	}
-	return true
+	return rdeId != "" && !strings.HasPrefix(rdeId, vcdsdk.NoRdePrefix)
 }
 func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	statusEntry, ok := rde.Entity["status"]
@@ -88,40 +89,98 @@ func RemovePVInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swag
 	return rde, nil
 }
 
-func GetOldPVsFromRDE(rde *swaggerClient.DefinedEntity) (*swaggerClient.DefinedEntity, []string, error) {
-	statusEntry, ok := rde.Entity["status"]
-	if !ok {
-		return nil, nil, fmt.Errorf("could not find 'status' entry in defined entity")
+func UpgradePVResourceToRDE(statusMap map[string]interface{}, pvDetailList [][]string, rdeId string) (map[string]interface{}, error) {
+	if pvDetailList == nil || len(pvDetailList) == 0 || len(pvDetailList[0]) != PVDetailsNum {
+		return nil, fmt.Errorf("error occurred when validating pv details list in RDE [%s]", rdeId)
 	}
-	statusMap, ok := statusEntry.(map[string]interface{})
-	if !ok {
-		return nil, nil, fmt.Errorf("unable to convert [%T] to map", statusEntry)
+	vcdResourceSet := make([]vcdsdk.VCDResource, len(pvDetailList))
+	for idx := range vcdResourceSet {
+		vcdResourceSet[idx] = vcdsdk.VCDResource{
+			Type:              ResourcePersistentVolume,
+			ID:                pvDetailList[idx][1],
+			Name:              pvDetailList[idx][0],
+			AdditionalDetails: nil,
+		}
 	}
+	updatedStatusMap, err := addToVCDResourceSet(vcdsdk.ComponentCSI, CSIName, version.Version, statusMap, vcdResourceSet)
+	if err != nil {
+		return nil, fmt.Errorf("error occurred when updating VCDResource set of %s status in RDE [%s]: [%v]", vcdsdk.ComponentCSI, rdeId, err)
+	}
+	return updatedStatusMap, nil
+}
 
+func GetOldPVsFromRDE(statusMap map[string]interface{}, rdeId string) ([]string, error) {
 	pvInterfaces, ok := statusMap[OldPersistentVolumeKey]
 
 	if !ok {
-		return nil, make([]string, 0), fmt.Errorf("no entity [%s] found", OldPersistentVolumeKey)
+		return make([]string, 0), fmt.Errorf("no entity [%s] found in RDE [%s]", OldPersistentVolumeKey, rdeId)
 	}
 	if pvInterfaces == nil {
-		return nil, make([]string, 0), nil
+		return make([]string, 0), nil
 	}
 
 	pvInterfacesSlice, ok := pvInterfaces.([]interface{})
 	if !ok {
-		return nil, nil, fmt.Errorf("unable to convert [%T] to slice of interface", pvInterfaces)
+		return nil, fmt.Errorf("unable to convert [%T] to []interface{} in RDE [%s]", pvInterfaces, rdeId)
 	}
 	pvIdStrs := make([]string, len(pvInterfacesSlice))
 	for idx, pvInterface := range pvInterfacesSlice {
 		currPv, ok := pvInterface.(string)
 		if !ok {
-			return nil, nil, fmt.Errorf("unable to convert [%T] to string", pvInterface)
+			return nil, fmt.Errorf("unable to convert [%T] to string in RDE [%s]", pvInterface, rdeId)
 		}
 		pvIdStrs[idx] = currPv
 	}
+	return pvIdStrs, nil
+}
 
-	delete(statusMap, OldPersistentVolumeKey)
+func convertMapToComponentStatus(componentStatusMap map[string]interface{}) (*vcdsdk.ComponentStatus, error) {
+	componentStatusBytes, err := json.Marshal(componentStatusMap)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert componentStatusMap to byte array: [%v]", err)
+	}
 
-	return rde, pvIdStrs, nil
+	var cs vcdsdk.ComponentStatus
+	err = json.Unmarshal(componentStatusBytes, &cs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read bytes from componentStatus [%#v] to ComponentStatus object: [%v]", componentStatusMap, err)
+	}
 
+	return &cs, nil
+}
+
+func addToVCDResourceSet(component string, componentName string, componentVersion string, statusMap map[string]interface{}, vcdResourceSet []vcdsdk.VCDResource) (map[string]interface{}, error) {
+	// get the component info from the status
+	componentIf, ok := statusMap[component]
+	if !ok {
+		// component map not found
+		statusMap[component] = map[string]interface{}{
+			"name":           componentName,
+			"version":        componentVersion,
+			"vcdResourceSet": vcdResourceSet,
+		}
+		//klog.Infof("created component map [%#v] since the component was not found in the status map", statusMap[component])
+		return statusMap, nil
+	}
+
+	componentMap, ok := componentIf.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("failed to convert the status belonging to component [%s] to map[string]interface{}", component)
+	}
+
+	componentStatus, err := convertMapToComponentStatus(componentMap)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert component status map to ")
+	}
+
+	if componentStatus.VCDResourceSet == nil || len(componentStatus.VCDResourceSet) == 0 {
+		// create an array with a single element - vcdResource
+		componentMap[vcdsdk.ComponentStatusFieldVCDResourceSet] = vcdResourceSet
+		return statusMap, nil
+	}
+	componentStatus.VCDResourceSet = append(componentStatus.VCDResourceSet, vcdResourceSet...)
+
+	componentMap[vcdsdk.ComponentStatusFieldVCDResourceSet] = componentStatus.VCDResourceSet
+
+	return statusMap, nil
 }
