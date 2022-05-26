@@ -26,7 +26,7 @@ var (
 	endpointFlag    string
 	nodeIDFlag      string
 	cloudConfigFlag string
-	upgradeRDEFlag  string
+	upgradeRDEFlag  bool
 )
 
 func init() {
@@ -72,7 +72,8 @@ func main() {
 
 	cmd.PersistentFlags().StringVar(&nodeIDFlag, "nodeid", "", "node id")
 
-	cmd.PersistentFlags().StringVar(&upgradeRDEFlag, "upgrade-rde", "", "CSI upgrade rde")
+	// add this flag to distinguish between node plugin and csi controller. Ensure RDE upgrade only happens in csi controller
+	cmd.PersistentFlags().BoolVar(&upgradeRDEFlag, "upgrade-rde", false, "CSI upgrade rde")
 
 	cmd.PersistentFlags().StringVar(&endpointFlag, "endpoint", "", "CSI endpoint")
 	cmd.MarkPersistentFlagRequired("endpoint")

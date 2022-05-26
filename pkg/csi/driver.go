@@ -11,6 +11,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"net"
 	"os"
 
@@ -107,23 +108,31 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde string) {
+func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde bool) {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
 	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
-	if upgradeRde != "true" {
-		klog.Infof("upgradeRde flag is not valid: [%s]", upgradeRde)
+	if !upgradeRde {
+		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is invalid")
 		return
 	}
 	if !util.IsValidEntityId(diskManager.ClusterID) {
-		klog.Infof("upgrade RDE is skipped as invalid RDE: [%s]", diskManager.ClusterID)
+		klog.Infof("Skipping RDE CSI section upgrade as invalid RDE: [%s]", diskManager.ClusterID)
 		return
 	}
-	err := diskManager.UpgradeRDEPersistentVolumes()
-	if err != nil {
-		klog.Infof(err.Error())
+	if vcdsdk.IsNativeClusterEntityType(diskManager.ClusterID) {
+		klog.Infof("Skipping RDE CSI section upgrade as native cluster: [%s]", diskManager.ClusterID)
+		return
 	}
+	if vcdsdk.IsCAPVCDEntityType(diskManager.ClusterID) {
+		err := diskManager.UpgradeRDEPersistentVolumes()
+		if err != nil {
+			//Todo add csi.errors: hard failure
+			klog.Infof(err.Error())
+		}
+	}
+
 }
 
 // Run will start driver gRPC server to communicated with Kubernetes

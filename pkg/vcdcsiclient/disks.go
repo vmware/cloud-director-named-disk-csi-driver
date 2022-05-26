@@ -123,7 +123,7 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 			disk.BusSubType != busSubType ||
 			(storageProfile != "") && (disk.StorageProfile.Name != storageProfile) ||
 			disk.Shareable != shareable {
-			return nil, fmt.Errorf("Disk [%s] already exists but with different properties: [%v]",
+			return nil, fmt.Errorf("disk [%s] already exists but with different properties: [%v]",
 				diskName, disk)
 		}
 
@@ -681,6 +681,7 @@ func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName 
 	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
 }
 
+// UpgradeRDEPersistentVolumes This function will only upgrade RDE CSI section for CAPVCD cluster
 func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
 		rde, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
