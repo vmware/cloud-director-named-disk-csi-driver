@@ -141,10 +141,12 @@ func runCommand() {
 		panic(fmt.Errorf("unable to initiate vcd client: [%v]", err))
 	}
 
-	d.Setup(&vcdcsiclient.DiskManager{
+	if err = d.Setup(&vcdcsiclient.DiskManager{
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
-	}, cloudConfig.VCD.VAppName, nodeID, upgradeRDEFlag)
+	}, cloudConfig.VCD.VAppName, nodeID, upgradeRDEFlag); err != nil {
+		panic(fmt.Errorf("error while running driver: [%v]", err))
+	}
 
 	// blocking call
 	if err = d.Run(); err != nil {

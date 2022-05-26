@@ -108,31 +108,31 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde bool) {
+func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde bool) error {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
 	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
 	if !upgradeRde {
 		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is invalid")
-		return
+		return nil
 	}
 	if !util.IsValidEntityId(diskManager.ClusterID) {
 		klog.Infof("Skipping RDE CSI section upgrade as invalid RDE: [%s]", diskManager.ClusterID)
-		return
+		return nil
 	}
 	if vcdsdk.IsNativeClusterEntityType(diskManager.ClusterID) {
 		klog.Infof("Skipping RDE CSI section upgrade as native cluster: [%s]", diskManager.ClusterID)
-		return
+		return nil
 	}
 	if vcdsdk.IsCAPVCDEntityType(diskManager.ClusterID) {
 		err := diskManager.UpgradeRDEPersistentVolumes()
 		if err != nil {
 			//Todo add csi.errors: hard failure
-			klog.Infof(err.Error())
+			return err
 		}
 	}
-
+	return nil
 }
 
 // Run will start driver gRPC server to communicated with Kubernetes
