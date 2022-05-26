@@ -145,7 +145,7 @@ func runCommand() {
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
 	}, cloudConfig.VCD.VAppName, nodeID, upgradeRDEFlag); err != nil {
-		panic(fmt.Errorf("error while running driver: [%v]", err))
+		panic(fmt.Errorf("error while setting up driver: [%v]", err))
 	}
 
 	// blocking call

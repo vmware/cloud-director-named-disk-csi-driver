@@ -117,7 +117,7 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is invalid")
 		return nil
 	}
-	if !util.IsValidEntityId(diskManager.ClusterID) {
+	if !vcdsdk.IsValidEntityId(diskManager.ClusterID) {
 		klog.Infof("Skipping RDE CSI section upgrade as invalid RDE: [%s]", diskManager.ClusterID)
 		return nil
 	}
@@ -128,8 +128,8 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 	if vcdsdk.IsCAPVCDEntityType(diskManager.ClusterID) {
 		err := diskManager.UpgradeRDEPersistentVolumes()
 		if err != nil {
-			//Todo add csi.errors: hard failure
-			return err
+			//Todo update csi.errors
+			return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
 		}
 	}
 	return nil

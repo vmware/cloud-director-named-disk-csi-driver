@@ -6,7 +6,6 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
-	"strings"
 )
 
 const (
@@ -16,9 +15,6 @@ const (
 	PVDetailsNum             = 2
 )
 
-func IsValidEntityId(rdeId string) bool {
-	return rdeId != "" && !strings.HasPrefix(rdeId, vcdsdk.NoRdePrefix)
-}
 func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
 	statusEntry, ok := rde.Entity["status"]
 	if !ok {
