@@ -691,12 +691,14 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		}
 		statusEntry, ok := rde.Entity["status"]
 		if !ok {
-			return fmt.Errorf("key 'status' found in the status section of RDE: [%s]", diskManager.ClusterID)
+			klog.Infof("key 'Status' is missing in the RDE [%s]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID)
+			return nil
 		}
 		statusMap, ok := statusEntry.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unable to convert [%T] to map", statusEntry)
 		}
+		// a. get list of PV
 		oldPvs, err := util.GetOldPVsFromRDE(statusMap, diskManager.ClusterID)
 		if err != nil {
 			return fmt.Errorf("failed to remove persistentVolumes section for RDE with ID [%s]: [%v]",
@@ -704,24 +706,34 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		}
 		updatedMap := statusMap
 		if len(oldPvs) > 0 {
-			PVDetailList := make([][]string, len(oldPvs))
+			PVDetailList := make([]vcdsdk.VCDResource, len(oldPvs))
 			for idx, oldPVId := range oldPvs {
-				PVDetailList[idx] = []string{"", oldPVId}
+				diskName, diskId := "", oldPVId
 				disk, err := diskManager.govcdGetDiskById(oldPVId, true)
 				if err != nil {
 					// Todo: update csi.errors => disk query failed
-					klog.Infof("error when conducting disk query with id [%s]", oldPVId)
+					klog.Errorf("error when conducting disk query with id [%s]: %v", oldPVId, err)
 				} else {
-					PVDetailList[idx] = []string{disk.Name, disk.Id}
+					diskName, diskId = disk.Name, disk.Id
+				}
+				//b. get PV details
+				PVDetailList[idx] = vcdsdk.VCDResource{
+					Type:              util.ResourcePersistentVolume,
+					ID:                diskId,
+					Name:              diskName,
+					AdditionalDetails: nil,
 				}
 			}
-			updatedMap, err = util.UpgradePVResourceToRDE(statusMap, PVDetailList, diskManager.ClusterID)
+			//c.1 update local RDE data structure where we add newPVs to resourceSet
+			updatedMap, err = util.UpgradeStatusMapOfRdeToLatestFormat(statusMap, PVDetailList, diskManager.ClusterID)
 			if err != nil {
 				return fmt.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]", diskManager.ClusterID, err)
 			}
 		}
+		//c.2 update local RDE data structure where we remove persistentVolumes section
 		delete(updatedMap, util.OldPersistentVolumeKey)
 		rde.Entity["status"] = updatedMap
+		//d. update RDE in VCD with PV details
 		_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.Background(), rde, etag, diskManager.ClusterID, nil)
 		if httpResponse != nil {
 			if httpResponse.StatusCode == http.StatusPreconditionFailed {

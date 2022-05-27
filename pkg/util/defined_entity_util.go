@@ -6,6 +6,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
+	"k8s.io/klog"
 )
 
 const (
@@ -85,20 +86,13 @@ func RemovePVInRDE(rde *swaggerClient.DefinedEntity, updatedPvs []string) (*swag
 	return rde, nil
 }
 
-func UpgradePVResourceToRDE(statusMap map[string]interface{}, pvDetailList [][]string, rdeId string) (map[string]interface{}, error) {
-	if pvDetailList == nil || len(pvDetailList) == 0 || len(pvDetailList[0]) != PVDetailsNum {
-		return nil, fmt.Errorf("error occurred when validating pv details list in RDE [%s]", rdeId)
+// UpgradeStatusMapOfRdeToLatestFormat takes a list of pvs (name and id) and adds them to the newer format of the local (in-memory) status map
+func UpgradeStatusMapOfRdeToLatestFormat(statusMap map[string]interface{}, pvResourceList []vcdsdk.VCDResource, rdeId string) (map[string]interface{}, error) {
+	if pvResourceList == nil || len(pvResourceList) == 0 {
+		return nil, nil
 	}
-	vcdResourceSet := make([]vcdsdk.VCDResource, len(pvDetailList))
-	for idx := range vcdResourceSet {
-		vcdResourceSet[idx] = vcdsdk.VCDResource{
-			Type:              ResourcePersistentVolume,
-			ID:                pvDetailList[idx][1],
-			Name:              pvDetailList[idx][0],
-			AdditionalDetails: nil,
-		}
-	}
-	updatedStatusMap, err := addToVCDResourceSet(vcdsdk.ComponentCSI, CSIName, version.Version, statusMap, vcdResourceSet)
+
+	updatedStatusMap, err := addToVCDResourceSet(vcdsdk.ComponentCSI, CSIName, version.Version, statusMap, pvResourceList)
 	if err != nil {
 		return nil, fmt.Errorf("error occurred when updating VCDResource set of %s status in RDE [%s]: [%v]", vcdsdk.ComponentCSI, rdeId, err)
 	}
@@ -109,7 +103,8 @@ func GetOldPVsFromRDE(statusMap map[string]interface{}, rdeId string) ([]string,
 	pvInterfaces, ok := statusMap[OldPersistentVolumeKey]
 
 	if !ok {
-		return make([]string, 0), fmt.Errorf("key [%s] found in the status section of RDE [%s]", OldPersistentVolumeKey, rdeId)
+		klog.Info("key [%s] found in the status section of RDE [%s]", OldPersistentVolumeKey, rdeId)
+		return make([]string, 0), nil
 	}
 	if pvInterfaces == nil {
 		return make([]string, 0), nil
@@ -155,7 +150,6 @@ func addToVCDResourceSet(component string, componentName string, componentVersio
 			"version":        componentVersion,
 			"vcdResourceSet": vcdResourceSet,
 		}
-		//klog.Infof("created component map [%#v] since the component was not found in the status map", statusMap[component])
 		return statusMap, nil
 	}
 
@@ -163,7 +157,9 @@ func addToVCDResourceSet(component string, componentName string, componentVersio
 	if !ok {
 		return nil, fmt.Errorf("failed to convert the status belonging to component [%s] to map[string]interface{}", component)
 	}
-
+	// update name && version to component
+	componentMap["name"] = componentName
+	componentMap["version"] = componentVersion
 	componentStatus, err := convertMapToComponentStatus(componentMap)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert component status map to ")

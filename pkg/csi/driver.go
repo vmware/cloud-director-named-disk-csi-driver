@@ -114,15 +114,11 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
 	if !upgradeRde {
-		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is invalid")
+		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is false")
 		return nil
 	}
 	if !vcdsdk.IsValidEntityId(diskManager.ClusterID) {
 		klog.Infof("Skipping RDE CSI section upgrade as invalid RDE: [%s]", diskManager.ClusterID)
-		return nil
-	}
-	if vcdsdk.IsNativeClusterEntityType(diskManager.ClusterID) {
-		klog.Infof("Skipping RDE CSI section upgrade as native cluster: [%s]", diskManager.ClusterID)
 		return nil
 	}
 	if vcdsdk.IsCAPVCDEntityType(diskManager.ClusterID) {
