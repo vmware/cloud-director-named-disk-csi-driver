@@ -687,7 +687,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		rde, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
 			diskManager.ClusterID)
 		if err != nil {
-			return fmt.Errorf("error when getting defined entity: [%v]", err)
+			return fmt.Errorf("error when getting defined entity from VCD: [%v]", err)
 		}
 		statusEntry, ok := rde.Entity["status"]
 		if !ok {
@@ -696,13 +696,17 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		}
 		statusMap, ok := statusEntry.(map[string]interface{})
 		if !ok {
-			return fmt.Errorf("unable to convert [%T] to map", statusEntry)
+			// todo: update CSI.errors
+			klog.Errorf("content under section ['status'] has incorrect format in the RDE [%s]: skipping upgrade of CSI section in RDE status",
+				diskManager.ClusterID)
+			return nil
 		}
 		// a. get list of PV
 		oldPvs, err := util.GetOldPVsFromRDE(statusMap, diskManager.ClusterID)
 		if err != nil {
-			return fmt.Errorf("failed to remove persistentVolumes section for RDE with ID [%s]: [%v]",
+			klog.Errorf("failed to continue RDE upgrade for RDE with ID [%s]: [%v]",
 				diskManager.ClusterID, err)
+			return nil
 		}
 		updatedMap := statusMap
 		if len(oldPvs) > 0 {
@@ -727,7 +731,8 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 			//c.1 update local RDE data structure where we add newPVs to resourceSet
 			updatedMap, err = util.UpgradeStatusMapOfRdeToLatestFormat(statusMap, PVDetailList, diskManager.ClusterID)
 			if err != nil {
-				return fmt.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]", diskManager.ClusterID, err)
+				klog.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID, err)
+				return nil
 			}
 		}
 		//c.2 update local RDE data structure where we remove persistentVolumes section
@@ -755,7 +760,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		} else if err != nil {
 			return fmt.Errorf("error while updating the RDE [%s]: [%v]", diskManager.ClusterID, err)
 		} else {
-			return fmt.Errorf("invalid response obtained when updating VCDResoruceSet of CPI in RDE [%s]", diskManager.ClusterID)
+			return fmt.Errorf("invalid response obtained when updating VCDResoruceSet of CSI in RDE [%s]", diskManager.ClusterID)
 		}
 	}
 	// Todo: update csi.errors => incorrect etag

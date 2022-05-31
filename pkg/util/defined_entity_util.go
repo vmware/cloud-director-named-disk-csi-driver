@@ -103,7 +103,7 @@ func GetOldPVsFromRDE(statusMap map[string]interface{}, rdeId string) ([]string,
 	pvInterfaces, ok := statusMap[OldPersistentVolumeKey]
 
 	if !ok {
-		klog.Info("key [%s] found in the status section of RDE [%s]", OldPersistentVolumeKey, rdeId)
+		klog.Info("key [%s] not found in the status section of RDE [%s]", OldPersistentVolumeKey, rdeId)
 		return make([]string, 0), nil
 	}
 	if pvInterfaces == nil {
@@ -112,12 +112,14 @@ func GetOldPVsFromRDE(statusMap map[string]interface{}, rdeId string) ([]string,
 
 	pvInterfacesSlice, ok := pvInterfaces.([]interface{})
 	if !ok {
+		//todo: update CSI.errors => OldPersistentVolumeKey
 		return nil, fmt.Errorf("unable to convert [%T] to []interface{} in RDE [%s]", pvInterfaces, rdeId)
 	}
 	pvIdStrs := make([]string, len(pvInterfacesSlice))
 	for idx, pvInterface := range pvInterfacesSlice {
 		currPv, ok := pvInterface.(string)
 		if !ok {
+			//todo: update CSI.errors => OldPersistentVolumeKey
 			return nil, fmt.Errorf("unable to convert [%T] to string in RDE [%s]", pvInterface, rdeId)
 		}
 		pvIdStrs[idx] = currPv
@@ -155,6 +157,7 @@ func addToVCDResourceSet(component string, componentName string, componentVersio
 
 	componentMap, ok := componentIf.(map[string]interface{})
 	if !ok {
+		// todo: update CSI.errors:IncorrectFormatError
 		return nil, fmt.Errorf("failed to convert the status belonging to component [%s] to map[string]interface{}", component)
 	}
 	// update name && version to component
@@ -162,6 +165,7 @@ func addToVCDResourceSet(component string, componentName string, componentVersio
 	componentMap["version"] = componentVersion
 	componentStatus, err := convertMapToComponentStatus(componentMap)
 	if err != nil {
+		// todo: update CSI.errors:IncorrectFormatError
 		return nil, fmt.Errorf("failed to convert component status map to ")
 	}
 
