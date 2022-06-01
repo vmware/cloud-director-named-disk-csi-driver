@@ -26,6 +26,7 @@ var (
 	endpointFlag    string
 	nodeIDFlag      string
 	cloudConfigFlag string
+	upgradeRDEFlag  bool
 )
 
 func init() {
@@ -70,6 +71,9 @@ func main() {
 	cmd.Flags().AddGoFlagSet(flag.CommandLine)
 
 	cmd.PersistentFlags().StringVar(&nodeIDFlag, "nodeid", "", "node id")
+
+	// add this flag to distinguish between node plugin and csi controller. Ensure RDE upgrade only happens in csi controller
+	cmd.PersistentFlags().BoolVar(&upgradeRDEFlag, "upgrade-rde", false, "CSI upgrade rde")
 
 	cmd.PersistentFlags().StringVar(&endpointFlag, "endpoint", "", "CSI endpoint")
 	cmd.MarkPersistentFlagRequired("endpoint")
@@ -137,10 +141,12 @@ func runCommand() {
 		panic(fmt.Errorf("unable to initiate vcd client: [%v]", err))
 	}
 
-	d.Setup(&vcdcsiclient.DiskManager{
+	if err = d.Setup(&vcdcsiclient.DiskManager{
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
-	}, cloudConfig.VCD.VAppName, nodeID)
+	}, cloudConfig.VCD.VAppName, nodeID, upgradeRDEFlag); err != nil {
+		panic(fmt.Errorf("error while setting up driver: [%v]", err))
+	}
 
 	// blocking call
 	if err = d.Run(); err != nil {

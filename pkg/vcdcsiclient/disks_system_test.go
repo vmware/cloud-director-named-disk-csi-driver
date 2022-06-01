@@ -47,6 +47,33 @@ func convertMapToComponentStatus(componentStatusMap map[string]interface{}) (*vc
 	return &cs, nil
 }
 
+func TestUpdateRDE(t *testing.T) {
+	diskManager := new(DiskManager)
+
+	authFile := filepath.Join(gitRoot, "testdata/auth_test.yaml")
+	authFileContent, err := ioutil.ReadFile(authFile)
+	assert.NoError(t, err, "There should be no error reading the auth file contents.")
+
+	var authDetails authorizationDetails
+	err = yaml.Unmarshal(authFileContent, &authDetails)
+	assert.NoError(t, err, "There should be no error parsing auth file content.")
+
+	cloudConfig, err := getTestConfig()
+	assert.NoError(t, err, "There should be no error opening and parsing cloud config file contents.")
+
+	// get client
+	vcdClient, err := getTestVCDClient(cloudConfig, map[string]interface{}{
+		"getVdcClient": true,
+		"user":         authDetails.Username,
+		"secret":       authDetails.Password,
+		"userOrg":      authDetails.UserOrg,
+	})
+	diskManager.VCDClient = vcdClient
+	diskManager.ClusterID = cloudConfig.ClusterID
+	assert.NoError(t, err, "Unable to get VCD client")
+	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
+	diskManager.UpgradeRDEPersistentVolumes()
+}
 func TestDiskCreateAttach(t *testing.T) {
 
 	diskManager := new(DiskManager)

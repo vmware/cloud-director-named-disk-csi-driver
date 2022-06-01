@@ -57,7 +57,7 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220512004547-85c8e8de804b
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20220526203309-a9ee8bd5f3e3
 ## explicit
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient

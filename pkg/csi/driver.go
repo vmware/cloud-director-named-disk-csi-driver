@@ -11,6 +11,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"net"
 	"os"
 
@@ -107,11 +108,27 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string) {
+func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde bool) error {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
 	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
+	if !upgradeRde {
+		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is false")
+		return nil
+	}
+	if !vcdsdk.IsValidEntityId(diskManager.ClusterID) {
+		klog.Infof("Skipping RDE CSI section upgrade as invalid RDE: [%s]", diskManager.ClusterID)
+		return nil
+	}
+	if vcdsdk.IsCAPVCDEntityType(diskManager.ClusterID) {
+		err := diskManager.UpgradeRDEPersistentVolumes()
+		if err != nil {
+			//Todo update csi.errors
+			return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
+		}
+	}
+	return nil
 }
 
 // Run will start driver gRPC server to communicated with Kubernetes

@@ -30,7 +30,8 @@ const (
 	VCDBusTypeSCSI           = "6"
 	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
 	NoRdePrefix              = `NO_RDE_`
-	CSIName                  = "cloud-director-named-disk-csi-driver"
+	//CSIName                  = "cloud-director-named-disk-csi-driver"
+
 )
 
 // Returns a Disk structure as JSON
@@ -122,7 +123,7 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 			disk.BusSubType != busSubType ||
 			(storageProfile != "") && (disk.StorageProfile.Name != storageProfile) ||
 			disk.Shareable != shareable {
-			return nil, fmt.Errorf("Disk [%s] already exists but with different properties: [%v]",
+			return nil, fmt.Errorf("disk [%s] already exists but with different properties: [%v]",
 				diskName, disk)
 		}
 
@@ -176,7 +177,7 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 	}
 	klog.Infof("Disk created: [%#v]", disk)
 
-	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, CSIName, version.Version)
+	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	if diskManager.ClusterID != "" && !strings.HasPrefix(diskManager.ClusterID, NoRdePrefix) {
 		if err = diskManager.addPvToRDE(disk.Id, disk.Name, rdeManager); err != nil {
 			return nil, vcdsdk.NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is generated", disk.Id))
@@ -203,6 +204,28 @@ func (diskManager *DiskManager) govcdGetDiskByHref(diskHref string) (*vcdtypes.D
 		return nil, err
 	}
 	return disk, nil
+}
+
+func (diskManager *DiskManager) govcdGetDiskById(diskId string, refresh bool) (*vcdtypes.Disk, error) {
+	klog.Infof("Get Disk By Id: %s\n", diskId)
+	if refresh {
+		err := diskManager.VCDClient.VDC.Refresh()
+		if err != nil {
+			return nil, fmt.Errorf("error when refreshing by disk id %s, [%v]", diskId, err)
+		}
+	}
+	for _, resourceEntities := range diskManager.VCDClient.VDC.Vdc.ResourceEntities {
+		for _, resourceEntity := range resourceEntities.ResourceEntity {
+			if resourceEntity.ID == diskId && resourceEntity.Type == "application/vnd.vmware.vcloud.disk+xml" {
+				disk, err := diskManager.govcdGetDiskByHref(resourceEntity.HREF)
+				if err != nil {
+					return nil, err
+				}
+				return disk, nil
+			}
+		}
+	}
+	return nil, govcd.ErrorEntityNotFound
 }
 
 // GetDisksByName finds one or more Disks by Name
@@ -379,7 +402,7 @@ func (diskManager *DiskManager) DeleteDisk(name string) error {
 		return fmt.Errorf("failed to wait for deletion task of disk [%s]: [%v]", name, err)
 	}
 
-	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, CSIName, version.Version)
+	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	// update RDE
 	if diskManager.ClusterID != "" && !strings.HasPrefix(diskManager.ClusterID, NoRdePrefix) {
 		if err = diskManager.removePvFromRDE(disk.Id, disk.Name, rdeManager); err != nil {
@@ -655,5 +678,91 @@ func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName 
 		}
 
 	}
+	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
+}
+
+// UpgradeRDEPersistentVolumes This function will only upgrade RDE CSI section for CAPVCD cluster
+func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
+	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+		rde, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+			diskManager.ClusterID)
+		if err != nil {
+			return fmt.Errorf("error when getting defined entity from VCD: [%v]", err)
+		}
+		statusEntry, ok := rde.Entity["status"]
+		if !ok {
+			klog.Infof("key 'Status' is missing in the RDE [%s]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID)
+			return nil
+		}
+		statusMap, ok := statusEntry.(map[string]interface{})
+		if !ok {
+			// todo: update CSI.errors
+			klog.Errorf("content under section ['status'] has incorrect format in the RDE [%s]: skipping upgrade of CSI section in RDE status",
+				diskManager.ClusterID)
+			return nil
+		}
+		// a. get list of PV
+		oldPvs, err := util.GetOldPVsFromRDE(statusMap, diskManager.ClusterID)
+		if err != nil {
+			klog.Errorf("failed to continue RDE upgrade for RDE with ID [%s]: [%v]",
+				diskManager.ClusterID, err)
+			return nil
+		}
+		updatedMap := statusMap
+		if len(oldPvs) > 0 {
+			PVDetailList := make([]vcdsdk.VCDResource, len(oldPvs))
+			for idx, oldPVId := range oldPvs {
+				diskName, diskId := "", oldPVId
+				disk, err := diskManager.govcdGetDiskById(oldPVId, true)
+				if err != nil {
+					// Todo: update csi.errors => disk query failed
+					klog.Errorf("error when conducting disk query with id [%s]: %v", oldPVId, err)
+				} else {
+					diskName, diskId = disk.Name, disk.Id
+				}
+				//b. get PV details
+				PVDetailList[idx] = vcdsdk.VCDResource{
+					Type:              util.ResourcePersistentVolume,
+					ID:                diskId,
+					Name:              diskName,
+					AdditionalDetails: nil,
+				}
+			}
+			//c.1 update local RDE data structure where we add newPVs to resourceSet
+			updatedMap, err = util.UpgradeStatusMapOfRdeToLatestFormat(statusMap, PVDetailList, diskManager.ClusterID)
+			if err != nil {
+				klog.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID, err)
+				return nil
+			}
+		}
+		//c.2 update local RDE data structure where we remove persistentVolumes section
+		delete(updatedMap, util.OldPersistentVolumeKey)
+		rde.Entity["status"] = updatedMap
+		//d. update RDE in VCD with PV details
+		_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.Background(), rde, etag, diskManager.ClusterID, nil)
+		if httpResponse != nil {
+			if httpResponse.StatusCode == http.StatusPreconditionFailed {
+				klog.Errorf("wrong etag while adding [%s] to VCDResourceSet in RDE [%s]. Retry attempts remaining: [%d]", util.OldPersistentVolumeKey, diskManager.ClusterID, i-1)
+				continue
+			} else if httpResponse.StatusCode != http.StatusOK {
+				var responseMessageBytes []byte
+				if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
+					responseMessageBytes = gsErr.Body()
+				}
+				return fmt.Errorf(
+					"failed to add resource [%s] to VCDResourseSet of %s in RDE [%s]; expected http response [%v], obtained [%v]: resp: [%#v]: [%v]",
+					util.OldPersistentVolumeKey, vcdsdk.ComponentCSI, diskManager.ClusterID, http.StatusOK, httpResponse.StatusCode, string(responseMessageBytes), err)
+			}
+			// resp.StatusCode is http.StatusOK
+			klog.Infof("successfully updated VCDResourceSet of [%s] in RDE [%s]",
+				vcdsdk.ComponentCSI, diskManager.ClusterID)
+			return nil
+		} else if err != nil {
+			return fmt.Errorf("error while updating the RDE [%s]: [%v]", diskManager.ClusterID, err)
+		} else {
+			return fmt.Errorf("invalid response obtained when updating VCDResoruceSet of CSI in RDE [%s]", diskManager.ClusterID)
+		}
+	}
+	// Todo: update csi.errors => incorrect etag
 	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
 }
