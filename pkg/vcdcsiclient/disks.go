@@ -115,9 +115,9 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 
 	disk, err := diskManager.GetDiskByName(diskName)
 	if err != nil && err != govcd.ErrorEntityNotFound {
-		if rdeErr := diskManager.AddToErrorSet("DiskQueryError", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
+		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
 			diskName, err)}); rdeErr != nil {
-			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "DiskQueryError", diskManager.ClusterID, rdeErr)
+			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, diskManager.ClusterID, rdeErr)
 		}
 		return nil, fmt.Errorf("unable to check if disk [%s] already exists: [%v]",
 			diskName, err)
@@ -707,13 +707,13 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		statusMap, ok := statusEntry.(map[string]interface{})
 		if !ok {
 			rdeIncorrectFormatError := vcdsdk.BackendError{
-				Name:              "RdeIncorrectFormatError",
+				Name:              util.RdeIncorrectFormatError,
 				OccurredAt:        time.Now(),
 				VcdResourceId:     "",
 				AdditionalDetails: nil,
 			}
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
-				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "RdeIncorrectFormatError", diskManager.ClusterID, rdeErr)
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeIncorrectFormatError, diskManager.ClusterID, rdeErr)
 			}
 			klog.Errorf("content under section ['status'] has incorrect format in the RDE [%s]: skipping upgrade of CSI section in RDE status",
 				diskManager.ClusterID)
@@ -723,13 +723,13 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		oldPvs, err := util.GetOldPVsFromRDE(statusMap, diskManager.ClusterID)
 		if err != nil {
 			rdeIncorrectFormatError := vcdsdk.BackendError{
-				Name:              "RdeIncorrectFormatError",
+				Name:              util.RdeIncorrectFormatError,
 				OccurredAt:        time.Now(),
 				VcdResourceId:     "",
 				AdditionalDetails: map[string]interface{}{"Detailed Error": err.Error()},
 			}
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
-				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "RdeIncorrectFormatError", diskManager.ClusterID, rdeErr)
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeIncorrectFormatError, diskManager.ClusterID, rdeErr)
 			}
 			klog.Errorf("failed to continue RDE upgrade for RDE with ID [%s]: [%v]",
 				diskManager.ClusterID, err)
@@ -766,13 +766,13 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 			updatedMap, err = util.UpgradeStatusMapOfRdeToLatestFormat(statusMap, PVDetailList, diskManager.ClusterID)
 			if err != nil {
 				rdeIncorrectFormatError := vcdsdk.BackendError{
-					Name:              "RdeIncorrectFormatError",
+					Name:              util.RdeIncorrectFormatError,
 					OccurredAt:        time.Now(),
 					VcdResourceId:     "",
 					AdditionalDetails: nil,
 				}
 				if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
-					klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "RdeIncorrectFormatError", diskManager.ClusterID, rdeErr)
+					klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeIncorrectFormatError, diskManager.ClusterID, rdeErr)
 				}
 				klog.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID, err)
 				return nil
