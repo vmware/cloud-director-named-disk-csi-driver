@@ -115,14 +115,14 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 
 	disk, err := diskManager.GetDiskByName(diskName)
 	if err != nil && err != govcd.ErrorEntityNotFound {
-		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
+		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, "", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
 			diskName, err)}); rdeErr != nil {
 			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, diskManager.ClusterID, rdeErr)
 		}
 		return nil, fmt.Errorf("unable to check if disk [%s] already exists: [%v]",
 			diskName, err)
 	}
-	if removeErrorRdeErr := diskManager.RemoveFromErrorSet("DiskQueryError", diskName); removeErrorRdeErr != nil {
+	if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.DiskQueryError, "", diskName); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", "DiskCreateError", diskManager.ClusterID)
 	}
 
@@ -710,6 +710,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 				Name:              util.RdeIncorrectFormatError,
 				OccurredAt:        time.Now(),
 				VcdResourceId:     "",
+				VcdResourceName:   "",
 				AdditionalDetails: nil,
 			}
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
@@ -726,6 +727,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 				Name:              util.RdeIncorrectFormatError,
 				OccurredAt:        time.Now(),
 				VcdResourceId:     "",
+				VcdResourceName:   "",
 				AdditionalDetails: map[string]interface{}{"Detailed Error": err.Error()},
 			}
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
@@ -749,6 +751,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 						Name:              "DiskQueryError",
 						OccurredAt:        time.Now(),
 						VcdResourceId:     oldPVId,
+						VcdResourceName:   "",
 						AdditionalDetails: map[string]interface{}{"Detailed Error": fmt.Sprintf("fail to execute query using disk id: [%s], %s", oldPVId, err.Error())},
 					})
 					klog.Errorf("error when conducting disk query with id [%s]: %v", oldPVId, err)
@@ -769,6 +772,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 					Name:              util.RdeIncorrectFormatError,
 					OccurredAt:        time.Now(),
 					VcdResourceId:     "",
+					VcdResourceName:   "",
 					AdditionalDetails: nil,
 				}
 				if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
@@ -815,28 +819,30 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
 }
 
-func (diskManager *DiskManager) AddToErrorSet(errorType string, vcdResourceId string, detailMap map[string]interface{}) error {
+func (diskManager *DiskManager) AddToErrorSet(errorType string, vcdResourceId string, vcdResourceName string, detailMap map[string]interface{}) error {
 	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	newError := vcdsdk.BackendError{
 		Name:              errorType,
 		OccurredAt:        time.Now(),
 		VcdResourceId:     vcdResourceId,
+		VcdResourceName:   vcdResourceName,
 		AdditionalDetails: detailMap,
 	}
 	return rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, newError, util.DefaultWindowSize)
 }
 
-func (diskManager *DiskManager) RemoveFromErrorSet(errorType string, vcdResourceId string) error {
+func (diskManager *DiskManager) RemoveFromErrorSet(errorType string, vcdResourceId string, vcdResourceName string) error {
 	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
-	return rdeManager.RemoveErrorByNameOrIdFromErrorSet(context.Background(), vcdsdk.ComponentCSI, errorType, vcdResourceId)
+	return rdeManager.RemoveErrorByNameOrIdFromErrorSet(context.Background(), vcdsdk.ComponentCSI, errorType, vcdResourceId, vcdResourceName)
 }
 
-func (diskManager *DiskManager) AddToEventSet(eventType string, vcdResourceId string, detailMap map[string]interface{}) error {
+func (diskManager *DiskManager) AddToEventSet(eventType string, vcdResourceId string, vcdResourceName string, detailMap map[string]interface{}) error {
 	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	newEvent := vcdsdk.BackendEvent{
 		Name:              eventType,
 		OccurredAt:        time.Now(),
 		VcdResourceId:     vcdResourceId,
+		VcdResourceName:   vcdResourceName,
 		AdditionalDetails: detailMap,
 	}
 	return rdeManager.AddToEventSet(context.Background(), vcdsdk.ComponentCSI, newEvent, util.DefaultWindowSize)

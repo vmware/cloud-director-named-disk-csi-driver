@@ -48,6 +48,7 @@ type BackendError struct {
 	Name              string                 `json:"name,omitempty"`
 	OccurredAt        time.Time              `json:"occurredAt, omitempty"`
 	VcdResourceId     string                 `json:"vcdResourceId, omitempty"`
+	VcdResourceName   string                 `json:"vcdResourceName, omitempty"`
 	AdditionalDetails map[string]interface{} `json:"additionalDetails,omitempty"`
 }
 
@@ -55,6 +56,7 @@ type BackendEvent struct {
 	Name              string                 `json:"name,omitempty"`
 	OccurredAt        time.Time              `json:"occurredAt,omitempty"`
 	VcdResourceId     string                 `json:"vcdResourceId,omitempty"`
+	VcdResourceName   string                 `json:"vcdResourceName, omitempty"`
 	AdditionalDetails map[string]interface{} `json:"additionalDetails,omitempty"`
 }
 
@@ -271,7 +273,7 @@ RDE.entity
           <controlPlaneError>
           <cloudInitError>
 */
-func (rdeManager *RDEManager) RemoveErrorByNameOrIdFromErrorSet(ctx context.Context, componentSectionName string, errorName string, vcdResourceId string) error {
+func (rdeManager *RDEManager) RemoveErrorByNameOrIdFromErrorSet(ctx context.Context, componentSectionName string, errorName string, vcdResourceId string, vcdResourceName string) error {
 	if rdeManager.ClusterID == "" || strings.HasPrefix(rdeManager.ClusterID, NoRdePrefix) {
 		// Indicates that the RDE ID is either empty or it was auto-generated.
 		klog.Infof("ClusterID [%s] is empty or generated, hence cannot remove any errors of name [%s] from RDE",
@@ -312,7 +314,7 @@ func (rdeManager *RDEManager) RemoveErrorByNameOrIdFromErrorSet(ctx context.Cont
 		}
 
 		// update the statusMap (in memory) with the new Error in the specified componentSection
-		updatedStatusMap, matchingErrorsRemoved, err := rdeManager.removeErrorsfromComponentMap(componentSectionName, statusMap, errorName, vcdResourceId)
+		updatedStatusMap, matchingErrorsRemoved, err := rdeManager.removeErrorsfromComponentMap(componentSectionName, statusMap, errorName, vcdResourceId, vcdResourceName)
 		if err != nil {
 			return fmt.Errorf("error occurred when removing error [%s] from the error set of [%s] status in RDE [%s]: [%v]", errorName, componentSectionName, rdeManager.ClusterID, err)
 		}
@@ -717,7 +719,7 @@ func (rdeManager *RDEManager) RemoveFromVCDResourceSet(ctx context.Context, comp
 function removeErrorsfromComponentMap updates the local (in memory) rde status map with the specified error(s) removed.
 This function does NOT persist the data into VCD.
 */
-func (rdeManager *RDEManager) removeErrorsfromComponentMap(componentRdeSectionName string, statusMap map[string]interface{}, errorName string, vcdResourceId string) (map[string]interface{}, bool, error) {
+func (rdeManager *RDEManager) removeErrorsfromComponentMap(componentRdeSectionName string, statusMap map[string]interface{}, errorName string, vcdResourceId string, vcdResourceName string) (map[string]interface{}, bool, error) {
 	// get the component info from the status
 	componentIf, ok := statusMap[componentRdeSectionName]
 	if !ok {
@@ -738,7 +740,8 @@ func (rdeManager *RDEManager) removeErrorsfromComponentMap(componentRdeSectionNa
 	// errorName and vcdResourceId
 	matchingErrorsRemoved := false
 	for i := 0; i < len(componentStatus.ErrorSet); i++ {
-		if (vcdResourceId == "" && componentStatus.ErrorSet[i].Name == errorName) ||
+		// If vcdResourceId is present, it takes the precedence, else match the entry against vcdResourceName as well.
+		if (vcdResourceId == "" && componentStatus.ErrorSet[i].Name == errorName && (vcdResourceName != "" && componentStatus.ErrorSet[i].VcdResourceName == vcdResourceName)) ||
 			(vcdResourceId != "" && componentStatus.ErrorSet[i].Name == errorName && componentStatus.ErrorSet[i].VcdResourceId == vcdResourceId) {
 			componentStatus.ErrorSet = append(componentStatus.ErrorSet[:i], componentStatus.ErrorSet[i+1:]...)
 			i--
