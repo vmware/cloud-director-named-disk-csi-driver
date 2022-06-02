@@ -117,13 +117,13 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 	if err != nil && err != govcd.ErrorEntityNotFound {
 		if rdeErr := diskManager.AddToErrorSet("DiskQueryError", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
 			diskName, err)}); rdeErr != nil {
-			klog.Errorf("unable to unable to add error into [CSI.Errors] in RDE [%s], %v", diskManager.ClusterID, rdeErr)
+			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "DiskQueryError", diskManager.ClusterID, rdeErr)
 		}
 		return nil, fmt.Errorf("unable to check if disk [%s] already exists: [%v]",
 			diskName, err)
 	}
 	if removeErrorRdeErr := diskManager.RemoveFromErrorSet("DiskQueryError", diskName); removeErrorRdeErr != nil {
-		klog.Infof("unable to remove error %s from [CSI.Errors] in RDE [%s]", "DiskCreateError", diskManager.ClusterID)
+		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", "DiskCreateError", diskManager.ClusterID)
 	}
 
 	if disk != nil {
@@ -713,7 +713,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 				AdditionalDetails: nil,
 			}
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
-				klog.Infof("unable to add error into [CSI.Errors] in RDE [%s], %v", diskManager.ClusterID, rdeErr)
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "RdeIncorrectFormatError", diskManager.ClusterID, rdeErr)
 			}
 			klog.Errorf("content under section ['status'] has incorrect format in the RDE [%s]: skipping upgrade of CSI section in RDE status",
 				diskManager.ClusterID)
@@ -729,7 +729,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 				AdditionalDetails: map[string]interface{}{"Detailed Error": err.Error()},
 			}
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
-				klog.Infof("unable to add error into [CSI.Errors] in RDE [%s], %v", diskManager.ClusterID, rdeErr)
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "RdeIncorrectFormatError", diskManager.ClusterID, rdeErr)
 			}
 			klog.Errorf("failed to continue RDE upgrade for RDE with ID [%s]: [%v]",
 				diskManager.ClusterID, err)
@@ -772,7 +772,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 					AdditionalDetails: nil,
 				}
 				if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
-					klog.Infof("unable to add error into [CSI.Errors] in RDE [%s], %v", diskManager.ClusterID, rdeErr)
+					klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "RdeIncorrectFormatError", diskManager.ClusterID, rdeErr)
 				}
 				klog.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID, err)
 				return nil
@@ -786,7 +786,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 
 		for _, diskQueryError := range diskQueryErrorList {
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, diskQueryError, util.DefaultWindowSize); rdeErr != nil {
-				klog.Infof("unable to add error into [CSI.Errors] in RDE [%s], %v", diskManager.ClusterID, rdeErr)
+				klog.Errorf("unable to add error [%s]into [CSI.Errors] in RDE [%s], %v", diskQueryError.Name, diskManager.ClusterID, rdeErr)
 			}
 		}
 		if httpResponse != nil {

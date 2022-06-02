@@ -125,11 +125,16 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 		err := diskManager.UpgradeRDEPersistentVolumes()
 		if err != nil {
 			if rdeErr := diskManager.AddToErrorSet("RdeUpgradeError", "", map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
-				klog.Infof("unable to add error into [CSI.Errors] in RDE [%s], %v", diskManager.ClusterID, rdeErr)
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", "RdeUpgradeError", diskManager.ClusterID, rdeErr)
 			}
 			return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
 		}
-		diskManager.AddToEventSet("RdeUpgradeEvent", "", nil)
+		if addEventRdeErr := diskManager.AddToEventSet("RdeUpgradeEvent", "", nil); addEventRdeErr != nil {
+			klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", "RdeUpgradeEvent", diskManager.ClusterID)
+		}
+		if removeErrorRdeErr := diskManager.RemoveFromErrorSet("RdeUpgradeError", ""); removeErrorRdeErr != nil {
+			klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", "RdeUpgradeError", diskManager.ClusterID)
+		}
 	}
 	return nil
 }
