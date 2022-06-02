@@ -124,9 +124,12 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 	if vcdsdk.IsCAPVCDEntityType(diskManager.ClusterID) {
 		err := diskManager.UpgradeRDEPersistentVolumes()
 		if err != nil {
-			//Todo update csi.errors
+			if rdeErr := diskManager.AddToErrorSet("RdeUpgradeError", "", map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
+				klog.Infof("unable to add error into [CSI.Errors] in RDE [%s], %v", diskManager.ClusterID, rdeErr)
+			}
 			return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
 		}
+		diskManager.AddToEventSet("RdeUpgradeEvent", "", nil)
 	}
 	return nil
 }

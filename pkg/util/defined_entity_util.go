@@ -13,7 +13,7 @@ const (
 	ResourcePersistentVolume = "named-disk"
 	CSIName                  = "cloud-director-named-disk-csi-driver"
 	OldPersistentVolumeKey   = "persistentVolumes"
-	PVDetailsNum             = 2
+	DefaultWindowSize        = 10
 )
 
 func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
