@@ -31,8 +31,6 @@ const (
 	VCDBusTypeSCSI           = "6"
 	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
 	NoRdePrefix              = `NO_RDE_`
-	//CSIName                  = "cloud-director-named-disk-csi-driver"
-
 )
 
 // Returns a Disk structure as JSON
@@ -115,9 +113,9 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 
 	disk, err := diskManager.GetDiskByName(diskName)
 	if err != nil && err != govcd.ErrorEntityNotFound {
-		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, "", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
+		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, "", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable to query disk [%s]: [%v]",
 			diskName, err)}); rdeErr != nil {
-			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, diskManager.ClusterID, rdeErr)
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, diskManager.ClusterID, rdeErr)
 		}
 		return nil, fmt.Errorf("unable to check if disk [%s] already exists: [%v]",
 			diskName, err)
@@ -787,7 +785,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		rde.Entity["status"] = updatedMap
 		//d. update RDE in VCD with PV details
 		_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.Background(), rde, etag, diskManager.ClusterID, nil)
-
+		// TODO: Optimize the diskQuery process, try to make those happen in one time upgrade operation. Also might do extra sorting
 		for _, diskQueryError := range diskQueryErrorList {
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, diskQueryError, util.DefaultWindowSize); rdeErr != nil {
 				klog.Errorf("unable to add error [%s]into [CSI.Errors] in RDE [%s], %v", diskQueryError.Name, diskManager.ClusterID, rdeErr)
