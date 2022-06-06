@@ -13,7 +13,23 @@ const (
 	ResourcePersistentVolume = "named-disk"
 	CSIName                  = "cloud-director-named-disk-csi-driver"
 	OldPersistentVolumeKey   = "persistentVolumes"
-	PVDetailsNum             = 2
+	DefaultWindowSize        = 10
+
+	// Errors
+	RdeUpgradeError         = "RdeUpgradeError"
+	RdeIncorrectFormatError = "RdeIncorrectFormatError"
+	DiskQueryError          = "DiskQueryError"
+	DiskCreateError         = "DiskCreateError"
+	DiskDeleteError         = "DiskDeleteError"
+	DiskAttachError         = "DiskAttachError"
+	DiskDetachError         = "DiskDetachError"
+
+	// Events
+	RdeUpgradeEvent = "RdeUpgradeEvent"
+	DiskCreateEvent = "DiskCreateEvent"
+	DiskDeleteEvent = "DiskDeleteEvent"
+	DiskAttachEvent = "DiskAttachEvent"
+	DiskDetachEvent = "DiskDetachEvent"
 )
 
 func GetPVsFromRDE(rde *swaggerClient.DefinedEntity) ([]string, error) {
