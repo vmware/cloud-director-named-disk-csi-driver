@@ -17,8 +17,8 @@ RUN ["make", "build-within-docker"]
 FROM photonos-docker-local.artifactory.eng.vmware.com/photon4:4.0-GA
 
 # udev is to get scsi_id, e2fsprogs is for mkfs.ext4
-RUN tdnf install -y e2fsprogs
-RUN tdnf install -y udev
+RUN tdnf install -y e2fsprogs && \
+    tdnf install -y udev
 
 WORKDIR /opt/vcloud/bin
 
