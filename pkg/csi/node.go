@@ -15,6 +15,7 @@ import (
 
 	"github.com/akutz/gofsutil"
 	"github.com/container-storage-interface/spec/lib/go/csi"
+	"golang.org/x/sys/unix"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"k8s.io/klog"
@@ -341,11 +342,6 @@ func (ns *nodeService) NodeUnpublishVolume(ctx context.Context,
 	return &csi.NodeUnpublishVolumeResponse{}, nil
 }
 
-func (ns *nodeService) NodeGetVolumeStats(context.Context,
-	*csi.NodeGetVolumeStatsRequest) (*csi.NodeGetVolumeStatsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "not implemented...yet")
-}
-
 func (ns *nodeService) NodeExpandVolume(context.Context, *csi.NodeExpandVolumeRequest) (*csi.NodeExpandVolumeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "not implemented...yet")
 }
@@ -365,6 +361,41 @@ func (ns *nodeService) NodeGetInfo(ctx context.Context, req *csi.NodeGetInfoRequ
 		MaxVolumesPerNode:  maxVolumesPerNode,
 	}, nil
 
+}
+
+func (ns *nodeService) NodeGetVolumeStats(ctx context.Context,
+	req *csi.NodeGetVolumeStatsRequest) (*csi.NodeGetVolumeStatsResponse, error) {
+
+	klog.Infof("NodeGetVolumeStats called with req: %#v", req)
+
+	volumePath := req.GetVolumePath()
+	if volumePath == "" {
+		klog.Errorf("unable to get volume path from request")
+		return nil, fmt.Errorf("unable to get volume path from request")
+	}
+
+	var statFS unix.Statfs_t
+	if err := unix.Statfs(volumePath, &statFS); err != nil {
+		klog.Errorf("unable to get stats of volume [%s]: [%v]", volumePath, err)
+		return nil, fmt.Errorf("unable to get stats of volume [%s]: [%v]", volumePath, err)
+	}
+
+	return &csi.NodeGetVolumeStatsResponse{
+		Usage: []*csi.VolumeUsage{
+			{
+				Available: int64(statFS.Bavail) * int64(statFS.Bsize),
+				Total: int64(statFS.Blocks) * int64(statFS.Bsize),
+				Used: (int64(statFS.Blocks) - int64(statFS.Bavail)) * int64(statFS.Bsize),
+				Unit: csi.VolumeUsage_BYTES,
+			},
+			{
+				Available: int64(statFS.Ffree),
+				Total: int64(statFS.Files),
+				Used: int64(statFS.Files) - int64(statFS.Ffree),
+				Unit: csi.VolumeUsage_INODES,
+			},
+		},
+	}, nil
 }
 
 // getDiskPath looks for a device corresponding to vmName:diskName as stored in vSphere. It
