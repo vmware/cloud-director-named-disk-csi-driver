@@ -18,7 +18,10 @@ require (
 	k8s.io/klog v1.0.0
 )
 
-require gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+require (
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+)
 
 require (
 	github.com/antihax/optional v1.0.0 // indirect
@@ -37,12 +40,10 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
-	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	k8s.io/apimachinery v0.22.1 // indirect
 	k8s.io/klog/v2 v2.9.0 // indirect
 )

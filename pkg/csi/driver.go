@@ -73,10 +73,11 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 
 	nodeServiceCapabilityList := []csi.NodeServiceCapability_RPC_Type{
 		csi.NodeServiceCapability_RPC_STAGE_UNSTAGE_VOLUME,
+		csi.NodeServiceCapability_RPC_GET_VOLUME_STATS,
 	}
 	d.nodeServiceCapabilities = make([]*csi.NodeServiceCapability, len(nodeServiceCapabilityList))
 	for idx, nodeServiceCapability := range nodeServiceCapabilityList {
-		klog.Infof("Enabling node service capability: %v", nodeServiceCapability.String())
+		klog.Infof("Enabling node service capability: [%s]", nodeServiceCapability.String())
 		d.nodeServiceCapabilities[idx] = &csi.NodeServiceCapability{
 			Type: &csi.NodeServiceCapability_Rpc{
 				Rpc: &csi.NodeServiceCapability_RPC{
