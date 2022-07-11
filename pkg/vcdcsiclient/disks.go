@@ -182,6 +182,9 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 	if err != nil {
 		return nil, fmt.Errorf("unable to find disk with href [%s]: [%v]", diskHref, err)
 	}
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskCreateEvent, "", diskName, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully created disk [%s] of size [%d]MB", diskName, sizeMB)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskCreateEvent, diskManager.ClusterID)
+	}
 	klog.Infof("Disk created: [%#v]", disk)
 
 	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
@@ -409,6 +412,9 @@ func (diskManager *DiskManager) DeleteDisk(name string) error {
 		return fmt.Errorf("failed to wait for deletion task of disk [%s]: [%v]", name, err)
 	}
 
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskDeleteEvent, "", disk.Name, map[string]interface{}{"Detailed Info": fmt.Sprintf("Volume %s deleted successfully", name)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskDeleteEvent, diskManager.ClusterID)
+	}
 	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	// update RDE
 	if diskManager.ClusterID != "" && !strings.HasPrefix(diskManager.ClusterID, NoRdePrefix) {
@@ -497,6 +503,9 @@ func (diskManager *DiskManager) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) 
 	if err = diskManager.govcdRefresh(disk); err != nil {
 		return fmt.Errorf("unable to refresh disk [%s] for verification: [%v]", disk.Name, err)
 	}
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskAttachEvent, "", disk.Name, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully attached volume %s to node %s ", disk.Name, vm.VM.Name)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskAttachEvent, diskManager.ClusterID)
+	}
 
 	return nil
 }
@@ -549,6 +558,9 @@ func (diskManager *DiskManager) DetachVolume(vm *govcd.VM, diskName string) erro
 	if err != nil {
 		return fmt.Errorf("error while waiting for detach task for disk [%s] from VM [%s]",
 			diskName, vm.VM.Name)
+	}
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskDetachEvent, "", disk.Name, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully detached volume %s from node %s ", disk.Name, vm.VM.Name)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskDetachEvent, diskManager.ClusterID)
 	}
 	klog.Infof("Successfully detached disk [%s] from VM [%s]", disk.Name, vm.VM.Name)
 

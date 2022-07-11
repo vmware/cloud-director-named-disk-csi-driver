@@ -131,9 +131,6 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 		return nil, fmt.Errorf("unable to create disk [%s] with sise [%d]MB: [%v]",
 			diskName, sizeMB, err)
 	}
-	if addEventRdeErr := cs.DiskManager.AddToEventSet(util.DiskCreateEvent, "", diskName, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully created disk [%s] of size [%d]MB", diskName, sizeMB)}); addEventRdeErr != nil {
-		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskCreateEvent, cs.DiskManager.ClusterID)
-	}
 	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskCreateError, "", diskName); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskCreateError, cs.DiskManager.ClusterID)
 	}
@@ -185,10 +182,6 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskDeleteError, cs.DiskManager.ClusterID, rdeErr)
 		}
 		return nil, status.Errorf(codes.Internal, "DeleteVolume failed: [%v]", err)
-	}
-
-	if addEventRdeErr := cs.DiskManager.AddToEventSet(util.DiskDeleteEvent, "", volumeID, map[string]interface{}{"Detailed Info": fmt.Sprintf("Volume %s deleted successfully", req.VolumeId)}); addEventRdeErr != nil {
-		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskDeleteEvent, cs.DiskManager.ClusterID)
 	}
 	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskDeleteError, "", volumeID); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskDeleteError, cs.DiskManager.ClusterID)
@@ -268,9 +261,6 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		}
 		return nil, err
 	}
-	if addEventRdeErr := cs.DiskManager.AddToEventSet(util.DiskAttachEvent, "", diskName, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully attached volume %s to node %s ", diskName, nodeID)}); addEventRdeErr != nil {
-		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskAttachEvent, cs.DiskManager.ClusterID)
-	}
 	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskAttachError, "", diskName); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskAttachError, cs.DiskManager.ClusterID)
 	}
@@ -330,9 +320,6 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 		}
 
 		return nil, err
-	}
-	if addEventRdeErr := cs.DiskManager.AddToEventSet(util.DiskDetachEvent, "", volumeID, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully detached volume %s from node %s ", volumeID, nodeID)}); addEventRdeErr != nil {
-		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskDetachEvent, cs.DiskManager.ClusterID)
 	}
 	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskDetachError, "", volumeID); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskDetachError, cs.DiskManager.ClusterID)
