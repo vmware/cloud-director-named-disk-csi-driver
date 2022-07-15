@@ -125,6 +125,7 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - --csi-address=$(ADDRESS)
+            - --default-fstype=ext4
             - --timeout=300s
             - --v=5
           env:
