@@ -12,10 +12,10 @@ build-within-docker:
 	go build -ldflags "-X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(version)" -o /build/vcloud/cloud-director-named-disk-csi-driver cmd/csi/main.go
 
 csi: $(GO_CODE)
-	docker build -f Dockerfile . -t cloud-director-named-disk-csi-driver:$(version).latest
-	docker tag cloud-director-named-disk-csi-driver:$(version).latest $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).latest
-	# docker tag cloud-director-named-disk-csi-driver:$(version).latest $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$$(docker images cloud-director-named-disk-csi-driver:$(version).latest -q)
-	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).latest
+	docker build -f Dockerfile . -t cloud-director-named-disk-csi-driver:$(version)
+	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
+	# docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$$(docker images cloud-director-named-disk-csi-driver:$(version) -q)
+	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
 	touch out/$@
 
 all: csi

@@ -22,10 +22,10 @@ type Client struct {
 	VCDAuthConfig   *VCDAuthConfig // s
 	ClusterOrgName  string
 	ClusterOVDCName string
-	VCDClient *govcd.VCDClient
-	VDC       *govcd.Vdc // TODO: Incrementally remove and test in tests
-	APIClient *swaggerClient.APIClient
-	RWLock sync.RWMutex
+	VCDClient       *govcd.VCDClient
+	VDC             *govcd.Vdc // TODO: Incrementally remove and test in tests
+	APIClient       *swaggerClient.APIClient
+	RWLock          sync.RWMutex
 }
 
 func GetUserAndOrg(fullUserName string, clusterOrg string, currentUserOrg string) (userOrg string, userName string, err error) {
@@ -55,7 +55,6 @@ func GetUserAndOrg(fullUserName string, clusterOrg string, currentUserOrg string
 
 	return userOrg, userName, nil
 }
-
 
 //  TODO: Make sure this function still works properly with no issues after refactor
 func (client *Client) RefreshBearerToken() error {
@@ -146,6 +145,20 @@ func NewVCDClientFromSecrets(host string, orgName string, vdcName string, userOr
 	vcdClient, apiClient, err := vcdAuthConfig.GetSwaggerClientFromSecrets()
 	if err != nil {
 		return nil, fmt.Errorf("unable to get swagger client from secrets: [%v]", err)
+	}
+
+	// We want to verify that user/pass is correct by getting the auth response. Unfortunately, govcd does not provide
+	// the appropriate errors correlating to the http status codes, so we have to do this in this manner. However, if
+	// the refresh token is set then we don't want to do this. There is no analogous method for testing auth response
+	// with the token right now, so we'll have to do without for the time being.
+	if refreshToken == "" {
+		resp, err := vcdClient.GetAuthResponse(newUsername, password, newUserOrg)
+		if err != nil {
+			return nil, fmt.Errorf("error getting auth response from VCD with username [%s] and org [%s]: [%v]", newUsername, newUserOrg, err)
+		}
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("failed to authenticate with VCD with username [%s] and org [%s]: [%s]", newUsername, newUserOrg, resp.Status)
+		}
 	}
 
 	client := &Client{

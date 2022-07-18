@@ -11,6 +11,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"net"
 	"os"
 
@@ -107,11 +108,35 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, nodeID string, vAppName string) {
+func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde bool) error {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
-	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, vAppName)
+	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
 	d.ids = NewIdentityServer(d)
+	if !upgradeRde {
+		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is false")
+		return nil
+	}
+	if !vcdsdk.IsValidEntityId(diskManager.ClusterID) {
+		klog.Infof("Skipping RDE CSI section upgrade as invalid RDE: [%s]", diskManager.ClusterID)
+		return nil
+	}
+	if vcdsdk.IsCAPVCDEntityType(diskManager.ClusterID) {
+		err := diskManager.UpgradeRDEPersistentVolumes()
+		if err != nil {
+			if rdeErr := diskManager.AddToErrorSet(util.RdeUpgradeError, "", "", map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeUpgradeError, diskManager.ClusterID, rdeErr)
+			}
+			return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
+		}
+		if addEventRdeErr := diskManager.AddToEventSet(util.RdeUpgradeEvent, "", "", nil); addEventRdeErr != nil {
+			klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.RdeUpgradeEvent, diskManager.ClusterID)
+		}
+		if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.RdeUpgradeError, "", ""); removeErrorRdeErr != nil {
+			klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.RdeUpgradeError, diskManager.ClusterID)
+		}
+	}
+	return nil
 }
 
 // Run will start driver gRPC server to communicated with Kubernetes

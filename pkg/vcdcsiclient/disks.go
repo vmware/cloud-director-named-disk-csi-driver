@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -18,6 +19,7 @@ import (
 	"k8s.io/klog"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type DiskManager struct {
@@ -111,16 +113,24 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 
 	disk, err := diskManager.GetDiskByName(diskName)
 	if err != nil && err != govcd.ErrorEntityNotFound {
+		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, "", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable to query disk [%s]: [%v]",
+			diskName, err)}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, diskManager.ClusterID, rdeErr)
+		}
 		return nil, fmt.Errorf("unable to check if disk [%s] already exists: [%v]",
 			diskName, err)
 	}
+	if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.DiskQueryError, "", diskName); removeErrorRdeErr != nil {
+		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", "DiskCreateError", diskManager.ClusterID)
+	}
+
 	if disk != nil {
 		if disk.SizeMb != sizeMB ||
 			disk.BusType != busType ||
 			disk.BusSubType != busSubType ||
 			(storageProfile != "") && (disk.StorageProfile.Name != storageProfile) ||
 			disk.Shareable != shareable {
-			return nil, fmt.Errorf("Disk [%s] already exists but with different properties: [%v]",
+			return nil, fmt.Errorf("disk [%s] already exists but with different properties: [%v]",
 				diskName, disk)
 		}
 
@@ -172,12 +182,15 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 	if err != nil {
 		return nil, fmt.Errorf("unable to find disk with href [%s]: [%v]", diskHref, err)
 	}
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskCreateEvent, "", diskName, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully created disk [%s] of size [%d]MB", diskName, sizeMB)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskCreateEvent, diskManager.ClusterID)
+	}
 	klog.Infof("Disk created: [%#v]", disk)
 
-	// update RDE
+	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	if diskManager.ClusterID != "" && !strings.HasPrefix(diskManager.ClusterID, NoRdePrefix) {
-		if err = diskManager.addPvToRDE(disk.Id); err != nil {
-			return nil, vcdsdk.NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is empty or generated", disk.Id))
+		if err = diskManager.addPvToRDE(disk.Id, disk.Name, rdeManager); err != nil {
+			return nil, vcdsdk.NewNoRDEError(fmt.Sprintf("Unable to add PV Id [%s] to RDE; RDE ID is generated", disk.Id))
 		}
 	}
 
@@ -201,6 +214,28 @@ func (diskManager *DiskManager) govcdGetDiskByHref(diskHref string) (*vcdtypes.D
 		return nil, err
 	}
 	return disk, nil
+}
+
+func (diskManager *DiskManager) govcdGetDiskById(diskId string, refresh bool) (*vcdtypes.Disk, error) {
+	klog.Infof("Get Disk By Id: %s\n", diskId)
+	if refresh {
+		err := diskManager.VCDClient.VDC.Refresh()
+		if err != nil {
+			return nil, fmt.Errorf("error when refreshing by disk id %s, [%v]", diskId, err)
+		}
+	}
+	for _, resourceEntities := range diskManager.VCDClient.VDC.Vdc.ResourceEntities {
+		for _, resourceEntity := range resourceEntities.ResourceEntity {
+			if resourceEntity.ID == diskId && resourceEntity.Type == "application/vnd.vmware.vcloud.disk+xml" {
+				disk, err := diskManager.govcdGetDiskByHref(resourceEntity.HREF)
+				if err != nil {
+					return nil, err
+				}
+				return disk, nil
+			}
+		}
+	}
+	return nil, govcd.ErrorEntityNotFound
 }
 
 // GetDisksByName finds one or more Disks by Name
@@ -377,10 +412,14 @@ func (diskManager *DiskManager) DeleteDisk(name string) error {
 		return fmt.Errorf("failed to wait for deletion task of disk [%s]: [%v]", name, err)
 	}
 
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskDeleteEvent, "", disk.Name, map[string]interface{}{"Detailed Info": fmt.Sprintf("Volume %s deleted successfully", name)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskDeleteEvent, diskManager.ClusterID)
+	}
+	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	// update RDE
 	if diskManager.ClusterID != "" && !strings.HasPrefix(diskManager.ClusterID, NoRdePrefix) {
-		if err = diskManager.removePvFromRDE(disk.Id); err != nil {
-			return vcdsdk.NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is empty or generated", disk.Id))
+		if err = diskManager.removePvFromRDE(disk.Id, disk.Name, rdeManager); err != nil {
+			return vcdsdk.NewNoRDEError(fmt.Sprintf("unable to remove PV Id [%s] from RDE; RDE ID is generated", disk.Id))
 		}
 	}
 
@@ -464,6 +503,9 @@ func (diskManager *DiskManager) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) 
 	if err = diskManager.govcdRefresh(disk); err != nil {
 		return fmt.Errorf("unable to refresh disk [%s] for verification: [%v]", disk.Name, err)
 	}
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskAttachEvent, "", disk.Name, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully attached volume %s to node %s ", disk.Name, vm.VM.Name)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskAttachEvent, diskManager.ClusterID)
+	}
 
 	return nil
 }
@@ -517,34 +559,30 @@ func (diskManager *DiskManager) DetachVolume(vm *govcd.VM, diskName string) erro
 		return fmt.Errorf("error while waiting for detach task for disk [%s] from VM [%s]",
 			diskName, vm.VM.Name)
 	}
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskDetachEvent, "", disk.Name, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully detached volume %s from node %s ", disk.Name, vm.VM.Name)}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskDetachEvent, diskManager.ClusterID)
+	}
 	klog.Infof("Successfully detached disk [%s] from VM [%s]", disk.Name, vm.VM.Name)
 
 	return nil
 }
 
-func (diskManager *DiskManager) GetRDEPersistentVolumes() ([]string, string, *swaggerClient.DefinedEntity, error) {
-	defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+func (diskManager *DiskManager) GetRDEPersistentVolumes(rde *swaggerClient.DefinedEntity) ([]string, error) {
+	pvStrs, err := util.GetPVsFromRDE(rde)
 	if err != nil {
-		return nil, "", nil, fmt.Errorf("error when getting defined entity: [%v]", err)
+		return nil, fmt.Errorf("failed to retrieve PVs from RDE: [%v]", err)
 	}
-
-	pvIdStrs, err := util.GetPVsFromRDE(&defEnt)
-	if err != nil {
-		return nil, "", nil, fmt.Errorf("failed to retrieve PVs from RDE: [%v]", err)
-	}
-	return pvIdStrs, etag, &defEnt, nil
+	return pvStrs, nil
 }
 
-// This function will modify the passed in defEnt
-func (diskManager *DiskManager) updateRDEPersistentVolumes(updatedPvs []string, etag string,
+// This function will modify the passed param in defEnt and only for native cluster
+func (diskManager *DiskManager) addRDEPersistentVolumes(updatedPvs []string, etag string,
 	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
-	updatedRDE, err := util.ReplacePVsInRDE(defEnt, updatedPvs)
+	updatedRDE, err := util.AddPVsInRDE(defEnt, updatedPvs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]",
 			diskManager.ClusterID, err)
 	}
-
 	// can set invokeHooks as optional parameter
 	_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
 		diskManager.ClusterID, nil)
@@ -556,67 +594,266 @@ func (diskManager *DiskManager) updateRDEPersistentVolumes(updatedPvs []string, 
 	return httpResponse, nil
 }
 
-func (diskManager *DiskManager) addPvToRDE(addPv string) error {
-	for i := 0; i < 10; i++ {
-		currPvs, etag, defEnt, err := diskManager.GetRDEPersistentVolumes()
-		if err != nil {
-			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
-		}
-
-		// check if need to update RDE
-		foundAddPv := false
-		for _, pv := range currPvs {
-			if pv == addPv {
-				foundAddPv = true
-				break
-			}
-		}
-		if foundAddPv {
-			return nil // no need to update RDE
-		}
-
-		updatedPvs := append(currPvs, addPv)
-		httpResponse, err := diskManager.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
-		if err != nil {
-			if httpResponse.StatusCode == http.StatusPreconditionFailed {
-				continue
-			}
-			return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]",
-				addPv, diskManager.ClusterID, err)
-		}
-		return nil
+func (diskManager *DiskManager) removeRDEPersistentVolumes(updatedPvs []string, etag string,
+	defEnt *swaggerClient.DefinedEntity) (*http.Response, error) {
+	updatedRDE, err := util.RemovePVInRDE(defEnt, updatedPvs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to replace persistentVolumes section for RDE with ID [%s]: [%v]",
+			diskManager.ClusterID, err)
 	}
-	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")
+
+	_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
+		diskManager.ClusterID, nil)
+	if err != nil {
+		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
+	}
+	klog.Infof("Successfully updated RDE [%s] with persistentVolumes: [%s]",
+		diskManager.ClusterID, updatedPvs)
+	return httpResponse, nil
+
 }
 
-func (diskManager *DiskManager) removePvFromRDE(removePv string) error {
-	for i := 0; i < 10; i++ {
-		currPvs, etag, defEnt, err := diskManager.GetRDEPersistentVolumes()
+func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rdeManager *vcdsdk.RDEManager) error {
+	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+			diskManager.ClusterID)
 		if err != nil {
-			return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+			return fmt.Errorf("error when getting defined entity: [%v]", err)
 		}
-
-		// form updated virtual pv list
-		foundIdx := -1
-		for idx, pv := range currPvs {
-			if pv == removePv {
-				foundIdx = idx
-				break
+		if vcdsdk.IsNativeClusterEntityType(defEnt.EntityType) {
+			currPvs, err := diskManager.GetRDEPersistentVolumes(&defEnt)
+			if err != nil {
+				return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
 			}
-		}
-		if foundIdx == -1 {
-			return nil // no need to update RDE
-		}
-		updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx+1:]...)
-
-		httpResponse, err := diskManager.updateRDEPersistentVolumes(updatedPvs, etag, defEnt)
-		if err == nil {
+			foundAddPv := false
+			for _, pv := range currPvs {
+				if pv == addPvName {
+					foundAddPv = true
+					break
+				}
+			}
+			if foundAddPv {
+				return nil // no need to update RDE
+			}
+			updatedPvIDs := append(currPvs, addPvId)
+			httpResponse, err := diskManager.addRDEPersistentVolumes(updatedPvIDs, etag, &defEnt)
+			if err != nil {
+				if httpResponse.StatusCode == http.StatusPreconditionFailed {
+					continue
+				}
+				return fmt.Errorf("error when adding pv [%s] to RDE [%s]: [%v]",
+					addPvName, diskManager.ClusterID, err)
+			}
+			return nil
+		} else if vcdsdk.IsCAPVCDEntityType(defEnt.EntityType) {
+			rdeError := rdeManager.AddToVCDResourceSet(context.Background(), vcdsdk.ComponentCSI, util.ResourcePersistentVolume, addPvName, addPvId, nil)
+			if rdeError != nil {
+				return fmt.Errorf("failed to add persistent volume [%s] to VCDResourceSet of RDE [%s]", addPvName, rdeManager.ClusterID)
+			}
 			return nil
 		}
-		if httpResponse.StatusCode != http.StatusPreconditionFailed {
-			return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]",
-				removePv, diskManager.ClusterID, err)
+		return fmt.Errorf("entity type %s not supported by CSI", defEnt.EntityType)
+	}
+	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
+}
+
+func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName string, rdeManager *vcdsdk.RDEManager) error {
+	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+			diskManager.ClusterID)
+		if err != nil {
+			return fmt.Errorf("error when getting defined entity: [%v]", err)
+		}
+		if vcdsdk.IsNativeClusterEntityType(defEnt.EntityType) {
+			currPvs, err := diskManager.GetRDEPersistentVolumes(&defEnt)
+			if err != nil {
+				return fmt.Errorf("error for getting current RDE PVs: [%v]", err)
+			}
+			foundIdx := -1
+			for idx, pv := range currPvs {
+				if pv == removePvId {
+					foundIdx = idx
+					break
+				}
+			}
+			if foundIdx == -1 {
+				return nil // no need to update RDE
+			}
+			updatedPvs := append(currPvs[:foundIdx], currPvs[foundIdx+1:]...)
+			httpResponse, err := diskManager.removeRDEPersistentVolumes(updatedPvs, etag, &defEnt)
+			if err == nil {
+				return nil
+			}
+			if httpResponse.StatusCode != http.StatusPreconditionFailed {
+				return fmt.Errorf("error when removing pv [%s] from RDE [%s]: [%v]",
+					removePvId, diskManager.ClusterID, err)
+			}
+		} else if vcdsdk.IsCAPVCDEntityType(defEnt.EntityType) {
+			rdeError := rdeManager.RemoveFromVCDResourceSet(context.Background(), vcdsdk.ComponentCSI, util.ResourcePersistentVolume, removePvName)
+			if rdeError != nil {
+				return fmt.Errorf("failed to remove persistent volume [%s] from VCDResourceSet of RDE [%s]", removePvName, rdeManager.ClusterID)
+			}
+			return nil
+		}
+
+	}
+	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
+}
+
+// UpgradeRDEPersistentVolumes This function will only upgrade RDE CSI section for CAPVCD cluster
+func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
+	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+		rde, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+			diskManager.ClusterID)
+		if err != nil {
+			return fmt.Errorf("error when getting defined entity from VCD: [%v]", err)
+		}
+		rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
+		statusEntry, ok := rde.Entity["status"]
+		if !ok {
+			klog.Infof("key 'Status' is missing in the RDE [%s]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID)
+			return nil
+		}
+		statusMap, ok := statusEntry.(map[string]interface{})
+		if !ok {
+			rdeIncorrectFormatError := vcdsdk.BackendError{
+				Name:              util.RdeIncorrectFormatError,
+				OccurredAt:        time.Now(),
+				VcdResourceId:     "",
+				VcdResourceName:   "",
+				AdditionalDetails: nil,
+			}
+			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeIncorrectFormatError, diskManager.ClusterID, rdeErr)
+			}
+			klog.Errorf("content under section ['status'] has incorrect format in the RDE [%s]: skipping upgrade of CSI section in RDE status",
+				diskManager.ClusterID)
+			return nil
+		}
+		// a. get list of PV
+		oldPvs, err := util.GetOldPVsFromRDE(statusMap, diskManager.ClusterID)
+		if err != nil {
+			rdeIncorrectFormatError := vcdsdk.BackendError{
+				Name:              util.RdeIncorrectFormatError,
+				OccurredAt:        time.Now(),
+				VcdResourceId:     "",
+				VcdResourceName:   "",
+				AdditionalDetails: map[string]interface{}{"Detailed Error": err.Error()},
+			}
+			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
+				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeIncorrectFormatError, diskManager.ClusterID, rdeErr)
+			}
+			klog.Errorf("failed to continue RDE upgrade for RDE with ID [%s]: [%v]",
+				diskManager.ClusterID, err)
+			return nil
+		}
+		updatedMap := statusMap
+		var diskQueryErrorList []vcdsdk.BackendError
+		if len(oldPvs) > 0 {
+			//b. get PV details
+			PVDetailList := make([]vcdsdk.VCDResource, len(oldPvs))
+			for idx, oldPVId := range oldPvs {
+				diskName, diskId := "", oldPVId
+				disk, err := diskManager.govcdGetDiskById(oldPVId, true)
+				if err != nil {
+					// We hold the diskQuery and choose not to update RDE here. Because we don't want etag outdated
+					diskQueryErrorList = append(diskQueryErrorList, vcdsdk.BackendError{
+						Name:              "DiskQueryError",
+						OccurredAt:        time.Now(),
+						VcdResourceId:     oldPVId,
+						VcdResourceName:   "",
+						AdditionalDetails: map[string]interface{}{"Detailed Error": fmt.Sprintf("fail to execute query using disk id: [%s], %s", oldPVId, err.Error())},
+					})
+					klog.Errorf("error when conducting disk query with id [%s]: %v", oldPVId, err)
+				} else {
+					diskName, diskId = disk.Name, disk.Id
+				}
+				PVDetailList[idx] = vcdsdk.VCDResource{
+					Type:              util.ResourcePersistentVolume,
+					ID:                diskId,
+					Name:              diskName,
+					AdditionalDetails: nil,
+				}
+			}
+			//c.1 update local RDE data structure where we add newPVs to resourceSet
+			updatedMap, err = util.UpgradeStatusMapOfRdeToLatestFormat(statusMap, PVDetailList, diskManager.ClusterID)
+			if err != nil {
+				rdeIncorrectFormatError := vcdsdk.BackendError{
+					Name:              util.RdeIncorrectFormatError,
+					OccurredAt:        time.Now(),
+					VcdResourceId:     "",
+					VcdResourceName:   "",
+					AdditionalDetails: nil,
+				}
+				if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, rdeIncorrectFormatError, util.DefaultWindowSize); rdeErr != nil {
+					klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeIncorrectFormatError, diskManager.ClusterID, rdeErr)
+				}
+				klog.Errorf("error occurred when updating VCDResource set of CSI status in RDE [%s]: [%v]; skipping upgrade of CSI section in RDE status", diskManager.ClusterID, err)
+				return nil
+			}
+		}
+		//c.2 update local RDE data structure where we remove persistentVolumes section
+		delete(updatedMap, util.OldPersistentVolumeKey)
+		rde.Entity["status"] = updatedMap
+		//d. update RDE in VCD with PV details
+		_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.Background(), rde, etag, diskManager.ClusterID, nil)
+		// TODO: Optimize the diskQuery process, try to make those happen in one time upgrade operation. Also might do extra sorting
+		for _, diskQueryError := range diskQueryErrorList {
+			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, diskQueryError, util.DefaultWindowSize); rdeErr != nil {
+				klog.Errorf("unable to add error [%s]into [CSI.Errors] in RDE [%s], %v", diskQueryError.Name, diskManager.ClusterID, rdeErr)
+			}
+		}
+		if httpResponse != nil {
+			if httpResponse.StatusCode == http.StatusPreconditionFailed {
+				klog.Errorf("wrong etag while adding [%s] to VCDResourceSet in RDE [%s]. Retry attempts remaining: [%d]", util.OldPersistentVolumeKey, diskManager.ClusterID, i-1)
+				continue
+			} else if httpResponse.StatusCode != http.StatusOK {
+				var responseMessageBytes []byte
+				if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
+					responseMessageBytes = gsErr.Body()
+				}
+				return fmt.Errorf(
+					"failed to add resource [%s] to VCDResourseSet of %s in RDE [%s]; expected http response [%v], obtained [%v]: resp: [%#v]: [%v]",
+					util.OldPersistentVolumeKey, vcdsdk.ComponentCSI, diskManager.ClusterID, http.StatusOK, httpResponse.StatusCode, string(responseMessageBytes), err)
+			}
+			// resp.StatusCode is http.StatusOK
+			klog.Infof("successfully updated VCDResourceSet of [%s] in RDE [%s]",
+				vcdsdk.ComponentCSI, diskManager.ClusterID)
+			return nil
+		} else if err != nil {
+			return fmt.Errorf("error while updating the RDE [%s]: [%v]", diskManager.ClusterID, err)
+		} else {
+			return fmt.Errorf("invalid response obtained when updating VCDResoruceSet of CSI in RDE [%s]", diskManager.ClusterID)
 		}
 	}
-	return fmt.Errorf("unable to update rde due to incorrect etag after 10 tries")
+	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
+}
+
+func (diskManager *DiskManager) AddToErrorSet(errorType string, vcdResourceId string, vcdResourceName string, detailMap map[string]interface{}) error {
+	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
+	newError := vcdsdk.BackendError{
+		Name:              errorType,
+		OccurredAt:        time.Now(),
+		VcdResourceId:     vcdResourceId,
+		VcdResourceName:   vcdResourceName,
+		AdditionalDetails: detailMap,
+	}
+	return rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, newError, util.DefaultWindowSize)
+}
+
+func (diskManager *DiskManager) RemoveFromErrorSet(errorType string, vcdResourceId string, vcdResourceName string) error {
+	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
+	return rdeManager.RemoveErrorByNameOrIdFromErrorSet(context.Background(), vcdsdk.ComponentCSI, errorType, vcdResourceId, vcdResourceName)
+}
+
+func (diskManager *DiskManager) AddToEventSet(eventType string, vcdResourceId string, vcdResourceName string, detailMap map[string]interface{}) error {
+	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
+	newEvent := vcdsdk.BackendEvent{
+		Name:              eventType,
+		OccurredAt:        time.Now(),
+		VcdResourceId:     vcdResourceId,
+		VcdResourceName:   vcdResourceName,
+		AdditionalDetails: detailMap,
+	}
+	return rdeManager.AddToEventSet(context.Background(), vcdsdk.ComponentCSI, newEvent, util.DefaultWindowSize)
 }
