@@ -15,7 +15,7 @@ require (
 	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
-	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0
