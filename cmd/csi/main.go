@@ -141,6 +141,11 @@ func runCommand() {
 		panic(fmt.Errorf("unable to initiate vcd client: [%v]", err))
 	}
 
+	if cloudConfig.ClusterID == "" {
+		cloudConfig.ClusterID = os.Getenv("CLUSTER_ID")
+		klog.Infof("Using ClusterID [%s] from env since config has an empty string", cloudConfig.ClusterID)
+	}
+
 	if err = d.Setup(&vcdcsiclient.DiskManager{
 		VCDClient: vcdClient,
 		ClusterID: cloudConfig.ClusterID,
