@@ -47,7 +47,7 @@ kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"templat
 | :---------: | :----------------------- |
 | Storage Type | Independent Shareable Named Disks of VCD |
 |Provisioning|<ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>|
-|Access Modes|<ul><li>ReadOnlyMany</li><li>ReadWriteOnly</li></ul>|
+|Access Modes|<ul><li>ReadOnlyMany</li><li>ReadWriteOnce</li></ul>|
 |Volume|Block|
 |VolumeMode|<ul><li>FileSystem</li></ul>|
 |Topology|<ul><li>Static Provisioning: reuses VCD topology capabilities</li><li>Dynamic Provisioning: places disk in the OVDC of the `ClusterAdminUser` based on the StorageProfile specified.</li></ul>|
