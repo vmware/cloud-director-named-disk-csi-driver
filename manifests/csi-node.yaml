@@ -92,6 +92,10 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix://csi/csi.sock
+            - name: GOVCD_LOG
+              value: "true"
+            - name: GOVCD_LOG_FILE
+              value: "/opt/vcloud/logs/cpi-wire-log.txt"
           volumeMounts:
             - name: socket-dir
               mountPath: /csi

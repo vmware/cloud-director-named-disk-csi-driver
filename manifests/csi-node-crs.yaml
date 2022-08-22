@@ -97,6 +97,10 @@ spec:
                 secretKeyRef:
                   name: vcloud-clusterid-secret
                   key: clusterid
+            - name: GOVCD_LOG
+              value: "true"
+            - name: GOVCD_LOG_FILE
+              value: "/opt/vcloud/logs/cpi-wire-log.txt"
           volumeMounts:
             - name: socket-dir
               mountPath: /csi

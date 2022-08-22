@@ -160,6 +160,10 @@ spec:
                 secretKeyRef:
                   name: vcloud-clusterid-secret
                   key: clusterid
+            - name: GOVCD_LOG
+              value: "true"
+            - name: GOVCD_LOG_FILE
+              value: "/opt/vcloud/logs/csi-wire-log.txt"
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy/

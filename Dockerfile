@@ -28,6 +28,9 @@ COPY --from=builder /go/src/github.com/vmware/cloud-director-named-disk-csi-driv
 COPY --from=builder /build/vcloud/cloud-director-named-disk-csi-driver .
 
 RUN chmod +x /opt/vcloud/bin/cloud-director-named-disk-csi-driver
+RUN mkdir /opt/vcloud/logs
+RUN touch /opt/vcloud/logs/csi-wire-log.txt
+RUN chmod 666 /opt/vcloud/logs/csi-wire-log.txt
 
 # USER nobody
 ENTRYPOINT ["/bin/bash", "-l", "-c"]
