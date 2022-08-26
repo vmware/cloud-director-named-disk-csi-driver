@@ -50,7 +50,7 @@ Execute the following command to log HTTP requests to VCD and HTTP responses fro
 kubectl set env -n kube-system StatefulSet/csi-vcd-controllerplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN=true -oyaml
 kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN=true -oyaml
 ```
-Once the above command is executed, CPI will start logging the HTTP requests and HTTP responses made via go-vcloud-director SDK.
+Once the above command is executed, CSI containers will start logging the HTTP requests and HTTP responses made via go-vcloud-director SDK.
 The container logs can be obtained using the command `kubectl logs -n kube-system <CSI pod name>`
 
 To stop logging the HTTP requests and responses from VCD, the following command can be executed -
