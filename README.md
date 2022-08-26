@@ -42,6 +42,23 @@ To upgrade CSI to the latest version (v1.2.0), please execute the following comm
 kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.2.0.latest"}]}}}}'
 kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.2.0.latest"}]}}}}'
 ```
+
+## Troubleshooting
+### Log VCD requests and responses
+Execute the following command to log HTTP requests to VCD and HTTP responses from VCD -
+```shell
+kubectl set env -n kube-system StatefulSet/csi-vcd-controllerplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN=true -oyaml
+kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN=true -oyaml
+```
+Once the above command is executed, CPI will start logging the HTTP requests and HTTP responses made via go-vcloud-director SDK.
+The container logs can be obtained using the command `kubectl logs -n kube-system <CSI pod name>`
+
+To stop logging the HTTP requests and responses from VCD, the following command can be executed -
+```shell
+kubectl set env -n kube-system StatefulSet/csi-vcd-controllerplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
+kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
+```
+
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
