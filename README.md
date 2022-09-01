@@ -59,6 +59,7 @@ kubectl set env -n kube-system StatefulSet/csi-vcd-controllerplugin -c vcd-csi-p
 kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
 ```
 
+NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller StatefulSet and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
