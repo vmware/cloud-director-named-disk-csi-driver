@@ -702,7 +702,7 @@ func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName 
 
 // UpgradeRDEPersistentVolumes This function will only upgrade RDE CSI section for CAPVCD cluster
 func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
-	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+	for retries := 0; retries < vcdsdk.MaxRDEUpdateRetries; retries++ {
 		rde, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
 			diskManager.ClusterID)
 		if err != nil {
@@ -803,30 +803,22 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 				klog.Errorf("unable to add error [%s]into [CSI.Errors] in RDE [%s], %v", diskQueryError.Name, diskManager.ClusterID, rdeErr)
 			}
 		}
-		if httpResponse != nil {
-			if httpResponse.StatusCode == http.StatusPreconditionFailed {
-				klog.Errorf("wrong etag while adding [%s] to VCDResourceSet in RDE [%s]. Retry attempts remaining: [%d]", util.OldPersistentVolumeKey, diskManager.ClusterID, i-1)
-				continue
-			} else if httpResponse.StatusCode != http.StatusOK {
-				var responseMessageBytes []byte
-				if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
-					responseMessageBytes = gsErr.Body()
-				}
-				return fmt.Errorf(
-					"failed to add resource [%s] to VCDResourseSet of %s in RDE [%s]; expected http response [%v], obtained [%v]: resp: [%#v]: [%v]",
-					util.OldPersistentVolumeKey, vcdsdk.ComponentCSI, diskManager.ClusterID, http.StatusOK, httpResponse.StatusCode, string(responseMessageBytes), err)
+		if httpResponse != nil && httpResponse.StatusCode != http.StatusOK {
+			var responseMessageBytes []byte
+			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
+				responseMessageBytes = gsErr.Body()
 			}
-			// resp.StatusCode is http.StatusOK
-			klog.Infof("successfully updated VCDResourceSet of [%s] in RDE [%s]",
-				vcdsdk.ComponentCSI, diskManager.ClusterID)
-			return nil
+			klog.Errorf(
+				"failed to upgrade CSI Persistent Volumes section for RDE [%s]; expected http response [%v], obtained [%v]: resp: [%#v]: [%v]. Remaining retry attempts: [%d]",
+				diskManager.ClusterID, http.StatusOK, httpResponse.StatusCode, string(responseMessageBytes), err, vcdsdk.MaxRDEUpdateRetries-retries+1)
+			continue
 		} else if err != nil {
-			return fmt.Errorf("error while updating the RDE [%s]: [%v]", diskManager.ClusterID, err)
-		} else {
-			return fmt.Errorf("invalid response obtained when updating VCDResoruceSet of CSI in RDE [%s]", diskManager.ClusterID)
+			klog.Errorf("error while getting the RDE [%s]: [%v]. Remaining retry attempts: [%d]", diskManager.ClusterID, err, vcdsdk.MaxRDEUpdateRetries-retries+1)
 		}
+		klog.Infof("successfully upgraded CSI Persistent Volumes section of the RDE [%s]", diskManager.ClusterID)
+		return nil
 	}
-	return fmt.Errorf("unable to update rde due to incorrect etag after %d tries", vcdsdk.MaxRDEUpdateRetries)
+	return fmt.Errorf("failed to upgrade CSI Persistent Volumes section of the RDE [%s] after [%d] retries", diskManager.ClusterID, vcdsdk.MaxRDEUpdateRetries)
 }
 
 func (diskManager *DiskManager) AddToErrorSet(errorType string, vcdResourceId string, vcdResourceName string, detailMap map[string]interface{}) error {
