@@ -808,9 +808,9 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
 				responseMessageBytes = gsErr.Body()
 			}
-			klog.Errorf(
-				"failed to upgrade CSI Persistent Volumes section for RDE [%s]; expected http response [%v], obtained [%v]: resp: [%#v]: [%v]. Remaining retry attempts: [%d]",
-				diskManager.ClusterID, http.StatusOK, httpResponse.StatusCode, string(responseMessageBytes), err, vcdsdk.MaxRDEUpdateRetries-retries+1)
+			klog.Warningf(
+				"failed to upgrade CSI Persistent Volumes section for RDE [%s];expected http response [%v], obtained [%v]: resp: [%#v]: [%v]; Record Etag: [%s]. Remaining retry attempts: [%d]",
+				diskManager.ClusterID, http.StatusOK, httpResponse.StatusCode, string(responseMessageBytes), err, etag, vcdsdk.MaxRDEUpdateRetries-retries+1)
 			continue
 		} else if err != nil {
 			klog.Errorf("error while getting the RDE [%s]: [%v]. Remaining retry attempts: [%d]", diskManager.ClusterID, err, vcdsdk.MaxRDEUpdateRetries-retries+1)
