@@ -140,7 +140,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: harbor-repo.vmware.com/vcloud/cloud-director-named-disk-csi-driver:main-branch.6635f94
+          image: harbor-repo.vmware.com/vcloud/cloud-director-named-disk-csi-driver:main-branch.__GIT_COMMIT__
           imagePullPolicy: IfNotPresent
           command:
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
@@ -155,6 +155,11 @@ spec:
                   fieldPath: spec.nodeName
             - name: CSI_ENDPOINT
               value: unix:///var/lib/csi/sockets/pluginproxy/csi.sock
+            - name: CLUSTER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: vcloud-clusterid-secret
+                  key: clusterid
           volumeMounts:
             - name: socket-dir
               mountPath: /var/lib/csi/sockets/pluginproxy/
