@@ -14,11 +14,22 @@ build-within-docker:
 csi: $(GO_CODE)
 	docker build -f Dockerfile . -t cloud-director-named-disk-csi-driver:$(version)
 	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
-	# docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$$(docker images cloud-director-named-disk-csi-driver:$(version) -q)
+	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
 	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
 	touch out/$@
 
-all: csi
+prod: csi
+	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
+	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
+	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
+	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
+
+dev: csi
+	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
 
 test:
 	go test -tags testing -v github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient -cover -count=1
