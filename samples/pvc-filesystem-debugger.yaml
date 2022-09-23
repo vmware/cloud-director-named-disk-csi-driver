@@ -1,12 +1,12 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: volume-debugger
+  name: volume-debugger-fs
 spec:
   volumes:
     - name: volume-to-debug
       persistentVolumeClaim:
-       claimName: my-pvc
+       claimName: my-pvc-filesystem
   containers:
     - name: debugger
       image: busybox

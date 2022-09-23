@@ -139,7 +139,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: harbor-repo.vmware.com/vcloud/cloud-director-named-disk-csi-driver:main-branch.6e69474
+          image: harbor-repo.vmware.com/vcloud/cloud-director-named-disk-csi-driver:ak-block-mount-6.5254534
           imagePullPolicy: IfNotPresent
           command:
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
@@ -161,7 +161,7 @@ spec:
               mountPath: /dev
               mountPropagation: HostToContainer
             - name: pv-dir
-              mountPath: /var/lib/kubelet/plugins/kubernetes.io/csi/pv
+              mountPath: /var/lib/kubelet/plugins/kubernetes.io/csi
               mountPropagation: "Bidirectional"
             - name: vcloud-csi-config-volume
               mountPath: /etc/kubernetes/vcloud
@@ -189,7 +189,7 @@ spec:
             type: Directory
         - name: pv-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/kubernetes.io/csi/pv
+            path: /var/lib/kubelet/plugins/kubernetes.io/csi
             type: DirectoryOrCreate
         - name: vcloud-csi-config-volume
           configMap:

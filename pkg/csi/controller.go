@@ -100,10 +100,16 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 	if volumeCapabilities == nil || len(volumeCapabilities) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "CreateVolume: VolumeCapabilities should be provided")
 	}
+
+	isBlock := false
 	for _, volumeCapability := range volumeCapabilities {
 		if _, ok := VolumeCapabilityAccessModesStringMap[volumeCapability.AccessMode.Mode.String()]; !ok {
 			return nil, status.Errorf(codes.Unavailable, "CreateVolume: volume capability [%s] not supported",
 				volumeCapability.String())
+		}
+
+		if volumeCapability.GetBlock() != nil {
+			isBlock = true
 		}
 	}
 
@@ -128,7 +134,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskCreateError, "", diskName, map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
 			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskCreateError, cs.DiskManager.ClusterID, rdeErr)
 		}
-		return nil, fmt.Errorf("unable to create disk [%s] with sise [%d]MB: [%v]",
+		return nil, fmt.Errorf("unable to create disk [%s] with size [%d]MB: [%v]",
 			diskName, sizeMB, err)
 	}
 	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskCreateError, "", diskName); removeErrorRdeErr != nil {
@@ -145,8 +151,12 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 	fsType := ""
 	ok := false
 	if fsType, ok = req.Parameters[FileSystemParameter]; !ok {
-		fsType = "ext4"
-		klog.Infof("No FS specified for raw disk [%s]. Hence defaulting to [%s].", diskName, fsType)
+		if isBlock {
+			klog.Infof("Not setting a default FS for raw disk [%s] since it is a block mount", diskName)
+		} else {
+			fsType = "ext4"
+			klog.Infof("No FS specified for raw disk [%s]. Hence defaulting to [%s].", diskName, fsType)
+		}
 	}
 	attributes[FileSystemParameter] = fsType
 
@@ -220,10 +230,17 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		return nil, status.Errorf(codes.InvalidArgument,
 			"ControllerPublishVolume: Volume capability not provided")
 	}
-	mountDetails := volumeCapability.GetMount()
-	if mountDetails == nil {
-		return nil, status.Error(codes.InvalidArgument,
-			"ControllerPublishVolume: Volume capability does not have mount capabilities set")
+
+	isBlock := volumeCapability.GetBlock() != nil
+
+	fsType := ""
+	if !isBlock {
+		mountDetails := volumeCapability.GetMount()
+		if mountDetails == nil {
+			return nil, status.Error(codes.InvalidArgument,
+				"ControllerPublishVolume: Volume capability does not have mount capabilities set")
+		}
+		fsType = mountDetails.FsType
 	}
 
 	klog.Infof("Getting node details for [%s]", nodeID)
@@ -271,7 +288,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 			VMFullNameAttribute: vm.VM.Name,
 			DiskIDAttribute:     diskName,
 			DiskUUIDAttribute:   disk.UUID,
-			FileSystemAttribute: mountDetails.FsType,
+			FileSystemAttribute: fsType,
 		},
 	}, nil
 }
@@ -312,8 +329,10 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 
 	err = cs.DiskManager.DetachVolume(vm, volumeID)
 	if err != nil {
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskDetachError, "", volumeID, map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
-			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskDetachError, cs.DiskManager.ClusterID, rdeErr)
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskDetachError, "",
+			volumeID, map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v",
+				util.DiskDetachError, cs.DiskManager.ClusterID, rdeErr)
 		}
 		if err == govcd.ErrorEntityNotFound {
 			return nil, status.Errorf(codes.NotFound, "Volume [%s] does not exist", volumeID)

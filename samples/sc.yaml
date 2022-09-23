@@ -1,16 +1,4 @@
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: my-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: "vcd-disk-dev"
----
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -20,6 +8,6 @@ metadata:
 provisioner: named-disk.csi.cloud-director.vmware.com
 reclaimPolicy: Delete
 parameters:
-  storageProfile: "dev"
+  storageProfile: "Development2"
   filesystem: "ext4"
 ---

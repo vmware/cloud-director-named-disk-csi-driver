@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-debugger-block
+spec:
+  containers:
+  - name: test-container
+    image: harbor-repo.vmware.com/vcloud/ubuntu:20.04
+    command: ["/bin/sh", "-c", "while true ; do sleep 2 ; done"]
+    securityContext:
+      privileged: true
+    volumeDevices:
+    - name: data
+      devicePath: /dev/xvda-block
+  restartPolicy: Never
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: my-pvc-block
+      readOnly: false
+---
