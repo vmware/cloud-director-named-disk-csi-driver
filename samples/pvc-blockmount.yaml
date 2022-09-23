@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: my-pvc
+  name: pvc-block
 spec:
+  volumeMode: Block
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 104Mi
-  storageClassName: "vcd-disk-dev"
-
+      storage: 100Mi
+  storageClassName: vcd-disk-block
 ---
