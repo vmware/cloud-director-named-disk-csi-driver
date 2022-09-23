@@ -29,7 +29,7 @@ import (
 const (
 	// The maximum number of volumes that a node can have attached.
 	// Since we're using bus 1 only, it allows up-to 16 disks of which one (#7)
-	// is pre-allocated for the HBA. Hence, we have only 15 disks.
+	// is pre-allocated for the Host-Bus-Adapter. Hence, we have only 15 disks.
 	maxVolumesPerNode = 15
 
 	DevDiskPath          = "/dev/disk/by-path"
@@ -53,32 +53,55 @@ func NewNodeService(driver *VCDDriver, nodeID string) csi.NodeServer {
 	}
 }
 
-// NodeStageVolume mounts the device on a directory on the host. For sharing it with
-// pods we need to implement NodePublishVolume
-func (ns *nodeService) NodeStageVolume(ctx context.Context,
-	req *csi.NodeStageVolumeRequest) (*csi.NodeStageVolumeResponse, error) {
+// NodeStageVolumeBlockMount 'stages' block mounts. There is really no need to stage block mounts since the device is
+// directly exposed to the pod. However, we need to run some scans in order to ensure that disks that are resized are
+// correctly reconfigured on the host. Hence, this function does an NOP staging and sends scan signals on scsi buses.
+func (ns *nodeService) NodeStageVolumeBlockMount(ctx context.Context, volumeCapability *csi.VolumeCapability,
+	publishContext map[string]string, req *csi.NodeStageVolumeRequest) (*csi.NodeStageVolumeResponse, error) {
 
-	if req == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Request is empty")
+	volumeID := req.GetVolumeId()
+	if volumeID == "" {
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolumeBlockMount: Volume Id not provided")
 	}
 
-	klog.Infof("NodeStageVolume: called with args [%#v]", *req)
-
-	// Check for block device and exit early if specified
-	volumeCapability := req.GetVolumeCapability()
-	if volumeCapability == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Volume capability not provided")
+	vmFullName, ok := publishContext[VMFullNameAttribute]
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"NodeStageVolumeBlockMount: PublishContext did not contain full vm name in publish context")
 	}
 
-	// No staging needed for block device. Must be handled by pod
-	if blk := volumeCapability.GetBlock(); blk != nil {
-		return &csi.NodeStageVolumeResponse{}, nil
+	diskUUID, ok := publishContext[DiskUUIDAttribute]
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"NodeStageVolumeBlockMount: PublishContext did not contain disk UUID in publish context")
 	}
 
-	publishContext := req.GetPublishContext()
-	if publishContext == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Publish context not provided")
+	err := ns.rescanDiskInVM(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeBlockMount: unable to scan SCSI bus for vm [%s]: [%v]",
+			vmFullName, err)
 	}
+
+	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeBlockMount: unable to obtain disk for vm [%s], disk [%s]: [%v]",
+			vmFullName, volumeID, err)
+	}
+
+	// rescan block devices to get new sizes in case disks were resized
+	if err := ns.rescanScsiBlockDiskInVM(ctx, devicePath); err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeBlockMount: Unable to rescan disk [%s] in VM: [%v]",
+			devicePath, err)
+	}
+	klog.Infof("NodeStageVolumeBlockMount: Scanned size of disk [%s] on vm [%s] successfully", devicePath, vmFullName)
+
+	klog.Infof("NodeStageVolumeBlockMount: skipping stage of disk [%s] on vm [%s] since this is a block mount",
+		devicePath, vmFullName)
+	return &csi.NodeStageVolumeResponse{}, nil
+}
+
+func (ns *nodeService) NodeStageVolumeFilesystemMount(ctx context.Context, volumeCapability *csi.VolumeCapability,
+	publishContext map[string]string, req *csi.NodeStageVolumeRequest) (*csi.NodeStageVolumeResponse, error) {
 
 	// parameter fsType is the filesystem type of the storage block to be mounted
 	var fsType string
@@ -89,27 +112,27 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		fsType, ok = publishContext[FileSystemParameter]
 		if !ok {
 			return nil, status.Errorf(codes.InvalidArgument,
-				"NodeStageVolume: PublishContext does not have [%s] set", FileSystemParameter)
+				"NodeStageVolumeFilesystemMount: PublishContext does not have [%s] set", FileSystemParameter)
 		}
 	} else {
 		ephemeralVolume, ok := volumeContext[EphemeralVolumeContext]
 		if ok {
 			if ephemeralVolume == "true" {
 				return &csi.NodeStageVolumeResponse{}, status.Errorf(codes.Unimplemented,
-					"NodeStageVolume: [%s] not supported", EphemeralVolumeContext)
+					"NodeStageVolumeFilesystemMount: [%s] not supported", EphemeralVolumeContext)
 			}
 		}
 		fsType, ok = volumeContext[FileSystemParameter]
 		if !ok {
 			return nil, status.Errorf(codes.InvalidArgument,
-				"NodeStageVolume: PublishContext does not have [%s] set", FileSystemParameter)
+				"NodeStageVolumeFilesystemMount: PublishContext does not have [%s] set", FileSystemParameter)
 		}
 	}
 
 	vmFullName, ok := publishContext[VMFullNameAttribute]
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument,
-			"NodeStageVolume: PublishContext did not contain full vm name in publish context")
+			"NodeStageVolumeFilesystemMount: PublishContext did not contain full vm name in publish context")
 	}
 
 	mountMode := "rw"
@@ -134,36 +157,36 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 	diskUUID, ok := publishContext[DiskUUIDAttribute]
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument,
-			"NodeStageVolume: PublishContext did not contain disk UUID in publish context")
+			"NodeStageVolumeFilesystemMount: PublishContext did not contain disk UUID in publish context")
 	}
 
 	volumeID := req.GetVolumeId()
 	if volumeID == "" {
-		return nil, status.Error(codes.InvalidArgument, "NodeStageVolume: Volume Id not provided")
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolumeFilesystemMount: Volume Id not provided")
 	}
 
 	mountDir := req.GetStagingTargetPath()
 	if mountDir == "" {
-		return nil, status.Error(codes.InvalidArgument, "NodeStageVolume: Staging target not provided")
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolumeFilesystemMount: Staging target not provided")
 	}
 
 	err := ns.rescanDiskInVM(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "NodeStageVolume: unable to scan SCSI bus for vm [%s]: [%v]",
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeFilesystemMount: unable to scan SCSI bus for vm [%s]: [%v]",
 			vmFullName, err)
 	}
 	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "NodeStageVolume: unable to obtain disk for vm [%s], disk [%s]: [%v]",
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeFilesystemMount: unable to obtain disk for vm [%s], disk [%s]: [%v]",
 			vmFullName, volumeID, err)
 	}
 
 	// rescan block devices to get new sizes in case disks were resized
 	if err := ns.rescanScsiBlockDiskInVM(ctx, devicePath); err != nil {
-		return nil, status.Errorf(codes.Internal, "NodeStageVolume: Unable to rescan disk [%s] in VM: [%v]",
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeFilesystemMount: Unable to rescan disk [%s] in VM: [%v]",
 			devicePath, err)
 	}
-	klog.Infof("Scanned size of disk [%s] successfully", devicePath)
+	klog.Infof("NodeStageVolumeFilesystemMount: Scanned size of disk [%s] on vm [%s] successfully", devicePath, vmFullName)
 
 	// Check if already mounted
 	isMounted, isMountedAsExpected, err := ns.isVolumeMountedAsExpected(ctx, devicePath, mountDir, mountMode)
@@ -210,7 +233,48 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 	klog.Infof("Mounted device [%s] at path [%s] with fs [%s] and options [%v]",
 		devicePath, mountDir, fsType, mountFlags)
 
-	klog.Infof("NodeStageVolume successfully staged at [%s] for device [%s]", mountDir, devicePath)
+	klog.Infof("NodeStageVolumeFilesystemMount successfully staged at [%s] for device [%s]",
+		mountDir, devicePath)
+	return &csi.NodeStageVolumeResponse{}, nil
+}
+
+// NodeStageVolume mounts the device on a directory on the host. For sharing it with
+// pods we need to implement NodePublishVolume
+func (ns *nodeService) NodeStageVolume(ctx context.Context,
+	req *csi.NodeStageVolumeRequest) (*csi.NodeStageVolumeResponse, error) {
+
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Request is empty")
+	}
+
+	klog.Infof("NodeStageVolume: called with args [%#v]", *req)
+
+	// Check for block device and exit early if specified
+	volumeCapability := req.GetVolumeCapability()
+	if volumeCapability == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Volume capability not provided")
+	}
+
+	publishContext := req.GetPublishContext()
+	if publishContext == nil {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"NodeStageVolume: Publish context not provided")
+	}
+
+	// No staging needed for block device. Must be handled by pod itself.
+	if isBlockMount := volumeCapability.GetBlock(); isBlockMount != nil {
+		if resp, err := ns.NodeStageVolumeBlockMount(ctx, volumeCapability, publishContext, req); err != nil {
+			klog.Infof("NodeStageVolume: failed with err = [%v], resp = [%#v]", err, resp)
+			return nil, status.Errorf(codes.Internal, "unable to stage volume as block volume: [%v]", err)
+		}
+	} else {
+		klog.Infof("Staging volume as Filesystem Mount")
+		if resp, err := ns.NodeStageVolumeFilesystemMount(ctx, volumeCapability, publishContext, req); err != nil {
+			klog.Infof("NodeStageVolume: failed with err = [%v], resp = [%#v]", err, resp)
+			return nil, status.Errorf(codes.Internal, "unable to stage volume as filesystem volume: [%v]", err)
+		}
+	}
+
 	return &csi.NodeStageVolumeResponse{}, nil
 }
 
@@ -235,7 +299,7 @@ func (ns *nodeService) NodeUnstageVolume(ctx context.Context,
 		return &csi.NodeUnstageVolumeResponse{}, nil
 	}
 
-	isMountDirMounted, err := ns.checkIfDirMounted(ctx, mountDir)
+	isMountDirMounted, err := ns.checkIfPathMounted(ctx, mountDir)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to check if [%s] is mounted: [%v]", mountDir, err)
 	}
@@ -264,94 +328,156 @@ func (ns *nodeService) NodePublishVolume(ctx context.Context,
 	if volumeContext := req.GetVolumeContext(); volumeContext != nil {
 		if ephemeralVolume, ok := volumeContext[EphemeralVolumeContext]; ok {
 			if ephemeralVolume == "true" {
-				return &csi.NodePublishVolumeResponse{}, status.Errorf(codes.Unimplemented,
-					"[%s] not supported", EphemeralVolumeContext)
+				return &csi.NodePublishVolumeResponse{},
+					status.Errorf(codes.Unimplemented, "[%s] not supported", EphemeralVolumeContext)
 			}
 		}
 	}
 
 	diskName := req.GetVolumeId()
 	if diskName == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: VolumeId not provided")
-	}
-
-	podMountDir := req.GetTargetPath()
-	if podMountDir == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: TargetPath not provided")
+		return nil, status.Errorf(codes.InvalidArgument, "NodePublishVolume: VolumeId not provided")
 	}
 
 	volumeCapability := req.GetVolumeCapability()
 	if volumeCapability == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: VolumeCapability not provided")
-	}
-
-	mountMode := "rw"
-	if ns.isVolumeReadOnly(volumeCapability) {
-		mountMode = "ro"
-	}
-
-	hostMountDir := req.GetStagingTargetPath()
-	if hostMountDir == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: StagingTargetPath not provided")
+		return nil, status.Errorf(codes.InvalidArgument, "NodePublishVolume: VolumeCapability not provided")
 	}
 
 	publishContext := req.GetPublishContext()
 	if publishContext == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: PublishContext not provided")
+		return nil, status.Errorf(codes.InvalidArgument, "NodePublishVolume: PublishContext not provided")
+	}
+
+	isBlockMount := volumeCapability.GetBlock() != nil
+	if isBlockMount {
+		klog.Infof("NodePublishVolume: [%s] is a block volume. Hence will not publish volume.",
+			diskName)
 	}
 
 	mnt := volumeCapability.GetMount()
-	if mnt == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "volume capability must have mount details")
-	}
-	mountFlags := append(mnt.GetMountFlags(), mountMode)
-
-	// verify that host dir exists
-	hostMountDirExists, err := ns.checkIfDirExists(hostMountDir)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "unable to check if host mount dir [%s] exists: [%v]",
-			hostMountDir, err)
-	}
-	if !hostMountDirExists {
-		return nil, status.Errorf(codes.Internal, "host mount dir [%s] does not exist", hostMountDir)
+	if mnt == nil && !isBlockMount {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"volume capability must have mount details for filesystem mounts")
 	}
 
-	// create target dir if not exists
-	if err := ns.mkdir(podMountDir); err != nil {
-		return nil, status.Errorf(codes.Internal, "unable to create dir [%s]: [%v]", podMountDir, err)
+	podMountPath := req.GetTargetPath()
+	if podMountPath == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "NodePublishVolume: TargetPath not provided")
 	}
-	klog.Infof("Ensured that dir [%s] exists.", podMountDir)
+
+	mountMode := "rw"
+	if ns.isVolumeReadOnly(volumeCapability) {
+		// disallow ro if block, since block devices can still modify storage though mounted read-only
+		if isBlockMount {
+			klog.Infof("Block volume cannot be ReadOnly, since underlying block can still be modified")
+			return nil, status.Errorf(codes.InvalidArgument,
+				"Block volume cannot be ReadOnly, since underlying block can still be modified")
+		}
+
+		mountMode = "ro"
+	}
+
+	if isBlockMount {
+		// Create target path as file if not exists. For block mount the target should be a file.
+		podMountPathDir := filepath.Dir(podMountPath)
+		if err := os.MkdirAll(podMountPathDir, 0750); err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to create dir for path [%s]: [%v]",
+				podMountPathDir, err)
+		}
+
+		file, err := os.OpenFile(podMountPath, os.O_CREATE, 0660)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to create file [%s]: [%v]", podMountPath, err)
+		}
+
+		if err := file.Close(); err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to close file [%s]: [%v]", podMountPath, err)
+		}
+	} else {
+		// Create target path as dir if not exists.
+		if err := ns.mkdir(podMountPath); err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to create dir [%s]: [%v]", podMountPath, err)
+		}
+		klog.Infof("Ensured that dir [%s] exists.", podMountPath)
+	}
+
+	hostMountPath := ""
+	if isBlockMount {
+		// For block-mount, the disk on the host is to be directly bind-mounted to the pod.
+		diskUUID, ok := publishContext[DiskUUIDAttribute]
+		if !ok {
+			return nil, status.Errorf(codes.InvalidArgument,
+				"PublishContext did not contain disk UUID in publish context")
+		}
+		vmFullName, ok := publishContext[VMFullNameAttribute]
+		if !ok {
+			return nil, status.Errorf(codes.InvalidArgument,
+				"PublishContext did not contain full vm name in publish context")
+		}
+
+		volumeID := req.GetVolumeId()
+		if volumeID == "" {
+			return nil, status.Error(codes.InvalidArgument, "Volume Id not provided")
+		}
+
+		devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to obtain disk for vm [%s], disk [%s]: [%v]",
+				vmFullName, volumeID, err)
+		}
+		hostMountPath = devicePath
+	} else {
+		// For Filesystem mount, there is a host-level staging directory which needs to be bind-mounted to the pod.
+		hostMountPath = req.GetStagingTargetPath()
+		if hostMountPath == "" {
+			return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: StagingTargetPath not provided")
+		}
+
+		// For Filesystem mounts verify that host dir (staging dir) exists.
+		hostMountPathExists, err := ns.checkIfDirExists(hostMountPath)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to check if host mount dir [%s] exists: [%v]",
+				hostMountPath, err)
+		}
+		if !hostMountPathExists {
+			return nil, status.Errorf(codes.Internal, "host mount dir [%s] does not exist", hostMountPath)
+		}
+	}
+	klog.Infof("NodePublishVolume: host mount path is [%s]", hostMountPath)
 
 	// Check if already mounted
-	isMounted, isMountedAsExpected, err := ns.isVolumeMountedAsExpected(ctx, hostMountDir, podMountDir, mountMode)
+	isMounted, isMountedAsExpected, err := ns.isVolumeMountedAsExpected(ctx, hostMountPath, podMountPath, mountMode)
 	if err != nil {
 		return nil, fmt.Errorf("unable to check if dir [%s] is mounted on [%s] and mode [%s]: [%v]",
-			hostMountDir, podMountDir, mountMode, err)
+			hostMountPath, podMountPath, mountMode, err)
 	}
 	if isMounted {
 		if !isMountedAsExpected {
 			return nil, status.Errorf(codes.Internal,
 				"dir [%s] not mounted on [%s] and mode [%s] as expected: [%v]",
-				hostMountDir, podMountDir, mountMode, err)
+				hostMountPath, podMountPath, mountMode, err)
 		} else {
 			// the device is mounted as expected, so nothing to do
 			klog.Infof("dir [%s] mounted on [%s] with correct mode [%s]",
-				hostMountDir, podMountDir, mountMode)
+				hostMountPath, podMountPath, mountMode)
 			return &csi.NodePublishVolumeResponse{}, nil
 		}
 	}
 
 	// Mounting as the dir is not yet mounted
+	mountFlags := append(mnt.GetMountFlags(), mountMode)
 	klog.Infof("Mounting dir [%s] to folder [%s] with flags [%v]",
-		hostMountDir, podMountDir, mountFlags)
-	if err = gofsutil.BindMount(ctx, hostMountDir, podMountDir, mountFlags...); err != nil {
-		return nil, status.Error(codes.Internal,
-			fmt.Sprintf("unable to format and mount dir [%s] at path [%s] with flags [%v]: [%v]",
-				hostMountDir, podMountDir, mountFlags, err))
+		hostMountPath, podMountPath, mountFlags)
+	if err = gofsutil.BindMount(ctx, hostMountPath, podMountPath, mountFlags...); err != nil {
+		return nil, status.Errorf(codes.Internal,
+			"unable to format and mount path [%s] at path [%s] with flags [%v]: [%v]",
+			hostMountPath, podMountPath, mountFlags, err)
 	}
-	klog.Infof("Mounted dir [%s] at path [%s] with options [%v]", hostMountDir, podMountDir, mountFlags)
+	klog.Infof("Mounted path [%s] at path [%s] with options [%v]", hostMountPath, podMountPath, mountFlags)
 
-	klog.Infof("NodeStageVolume successfully staged at [%s] for host dir [%s]", podMountDir, hostMountDir)
+	klog.Infof("NodePublishVolume: volume successfully published at [%s] for host path [%s]",
+		podMountPath, hostMountPath)
 	return &csi.NodePublishVolumeResponse{}, nil
 }
 
@@ -364,39 +490,39 @@ func (ns *nodeService) NodeUnpublishVolume(ctx context.Context,
 		return nil, status.Errorf(codes.InvalidArgument, "NodeUnpublishVolume: volumeID must be provided")
 	}
 
-	podMountDir := req.GetTargetPath()
-	if podMountDir == "" {
+	podMountPath := req.GetTargetPath()
+	if podMountPath == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "NodeUnpublishVolume: Target Path must be provided")
 	}
 
-	podMountDirExists, err := ns.checkIfDirExists(podMountDir)
+	podMountPathExists, err := ns.checkIfPathExists(podMountPath)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "unable to check if pod mount dir [%s] exists: [%v]",
-			podMountDir, err)
+		return nil, status.Errorf(codes.Internal, "unable to check if pod mount path [%s] exists: [%v]",
+			podMountPath, err)
 	}
-	if !podMountDirExists {
-		klog.Infof("Pod mount dir [%s] does not exist. Assuming already unmounted.", podMountDir)
+	if !podMountPathExists {
+		klog.Infof("Pod mount path [%s] does not exist. Assuming already unmounted.", podMountPath)
 		return &csi.NodeUnpublishVolumeResponse{}, nil
 	}
 
-	isDirMounted, err := ns.checkIfDirMounted(ctx, podMountDir)
+	isDirMounted, err := ns.checkIfPathMounted(ctx, podMountPath)
 	if err != nil {
-		return nil, fmt.Errorf("unable to check if pod mount dir [%s] is mounted: [%v]", podMountDir, err)
+		return nil, fmt.Errorf("unable to check if pod mount dir [%s] is mounted: [%v]", podMountPath, err)
 	}
 
-	klog.Infof("Attempting to unmount pod mount dir [%s].", podMountDir)
+	klog.Infof("Attempting to unmount pod mount dir [%s].", podMountPath)
 	if isDirMounted {
-		if err = gofsutil.Unmount(ctx, podMountDir); err != nil {
-			return nil, fmt.Errorf("unable to unmount pod mount dir [%s]: [%v]", podMountDir, err)
+		if err = gofsutil.Unmount(ctx, podMountPath); err != nil {
+			return nil, fmt.Errorf("unable to unmount pod mount dir [%s]: [%v]", podMountPath, err)
 		}
 	}
 
-	klog.Infof("Attempting to remove pod mount dir [%s].", podMountDir)
-	if err := ns.rmdir(podMountDir); err != nil {
-		return nil, fmt.Errorf("failed to remove pod mount dir %v", podMountDir)
+	klog.Infof("Attempting to remove pod mount dir [%s].", podMountPath)
+	if err := ns.rmdir(podMountPath); err != nil {
+		return nil, fmt.Errorf("failed to remove pod mount dir %v", podMountPath)
 	}
 
-	klog.Infof("NodeUnpublishVolume successful for disk [%s] at mount dir [%s]", diskName, podMountDir)
+	klog.Infof("NodeUnpublishVolume successful for disk [%s] at mount path [%s]", diskName, podMountPath)
 	return &csi.NodeUnpublishVolumeResponse{}, nil
 }
 
@@ -691,7 +817,18 @@ func (ns *nodeService) checkIfDirExists(path string) (bool, error) {
 	return true, nil
 }
 
-func (ns *nodeService) checkIfDirMounted(ctx context.Context, mountDir string) (bool, error) {
+func (ns *nodeService) checkIfPathExists(path string) (bool, error) {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, fmt.Errorf("unable to get stat of [%s]: [%v]", path, err)
+	}
+
+	return true, nil
+}
+
+func (ns *nodeService) checkIfPathMounted(ctx context.Context, mountDir string) (bool, error) {
 	mountDevices, err := gofsutil.GetMounts(ctx)
 	if err != nil {
 		return false, fmt.Errorf("unable to get mounts of node")
@@ -710,7 +847,7 @@ func (ns *nodeService) mkdir(path string) error {
 	fi, err := os.Stat(path)
 	if err == nil {
 		if !fi.IsDir() {
-			return fmt.Errorf("Path [%s] exists but is not a directory", path)
+			return fmt.Errorf("path [%s] exists but is not a directory", path)
 		}
 
 		klog.Infof("Path [%s] already exists and is a directory.", path)
@@ -724,8 +861,8 @@ func (ns *nodeService) mkdir(path string) error {
 
 	// os.IsNotExist(err) == true here
 	mode := os.FileMode(0755)
-	if err = os.Mkdir(path, mode); err != nil {
-		return fmt.Errorf("unable to create dir [%s] with mode [%#v]: [%v]",
+	if err = os.MkdirAll(path, mode); err != nil {
+		return fmt.Errorf("unable to recursively create dir [%s] with mode [%#v]: [%v]",
 			path, mode, err)
 	}
 
