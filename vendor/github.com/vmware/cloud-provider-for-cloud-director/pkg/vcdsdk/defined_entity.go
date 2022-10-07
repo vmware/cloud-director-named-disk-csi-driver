@@ -8,6 +8,7 @@ import (
 	"k8s.io/klog"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -137,7 +138,7 @@ func convertMapToComponentStatus(componentStatusMap map[string]interface{}) (*Co
 
 // AddVCDResourceToStatusMap updates the input status map with VCDResource created from the input parameters. This function doesn't make any
 // 	calls to VCD.
-func AddVCDResourceToStatusMap(component string, componentName string, componentVersion string, statusMap map[string]interface{}, vcdResource VCDResource) (map[string]interface{}, error) {
+func AddVCDResourceToStatusMap(component string, componentName string, componentVersion string, statusMap map[string]interface{}, vcdResource VCDResource) (map[string]interface{}, bool,  error) {
 	// get the component info from the status
 	componentIf, ok := statusMap[component]
 	if !ok {
@@ -150,17 +151,17 @@ func AddVCDResourceToStatusMap(component string, componentName string, component
 			},
 		}
 		klog.V(3).Infof("created component map [%#v] since the component was not found in the status map", statusMap[component])
-		return statusMap, nil
+		return statusMap, true,  nil
 	}
 
 	componentMap, ok := componentIf.(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("failed to convert the status belonging to component [%s] to map[string]interface{}", component)
+		return nil, false, fmt.Errorf("failed to convert the status belonging to component [%s] to map[string]interface{}", component)
 	}
 
 	componentStatus, err := convertMapToComponentStatus(componentMap)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert component status map to component status object")
+		return nil, false, fmt.Errorf("failed to convert component status map to component status object")
 	}
 
 	if componentStatus.VCDResourceSet == nil || len(componentStatus.VCDResourceSet) == 0 {
@@ -170,24 +171,28 @@ func AddVCDResourceToStatusMap(component string, componentName string, component
 		}
 		componentMap["name"] = componentName
 		componentMap["version"] = componentVersion
-		return statusMap, nil
+		return statusMap, true, nil
 	}
 
+	updateRequired := true
 	resourceFound := false
 	// check if vcdResource is already present
 	for idx, resource := range componentStatus.VCDResourceSet {
 		if resource.ID == vcdResource.ID && resource.Type == vcdResource.Type {
 			resourceFound = true
+			if reflect.DeepEqual(resource.AdditionalDetails, vcdResource.AdditionalDetails) {
+				updateRequired = false
+			}
 			componentStatus.VCDResourceSet[idx].AdditionalDetails = vcdResource.AdditionalDetails
+			break
 		}
 	}
-
 	if !resourceFound {
 		componentStatus.VCDResourceSet = append(componentStatus.VCDResourceSet, vcdResource)
 	}
 
 	componentMap[ComponentStatusFieldVCDResourceSet] = componentStatus.VCDResourceSet
-	return statusMap, nil
+	return statusMap, updateRequired, nil
 }
 
 /*
@@ -219,8 +224,16 @@ func (rdeManager *RDEManager) AddToErrorSet(ctx context.Context, componentSectio
 			rdeManager.ClusterID, newError)
 		return nil
 	}
+	client := rdeManager.Client
+	clusterOrg, err := client.VCDClient.GetOrgByName(client.ClusterOrgName)
+	if err != nil {
+		return fmt.Errorf("unable to get org for org [%s]: [%v]", client.ClusterOrgName, err)
+	}
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return fmt.Errorf("obtained nil org for name [%s]", client.ClusterOrgName)
+	}
 	for i := MaxRDEUpdateRetries; i > 1; i-- {
-		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID)
+		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID, clusterOrg.Org.ID)
 		if resp != nil && resp.StatusCode != http.StatusOK {
 			var responseMessageBytes []byte
 			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
@@ -257,7 +270,7 @@ func (rdeManager *RDEManager) AddToErrorSet(ctx context.Context, componentSectio
 		rde.Entity["status"] = updatedStatusMap
 
 		// persist the updated statusMap to VCD
-		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, nil)
+		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, clusterOrg.Org.ID, nil)
 		if resp != nil {
 			if resp.StatusCode == http.StatusPreconditionFailed {
 				klog.Errorf("wrong etag while adding newError [%v] in RDE [%s]. Retry attempts remaining: [%d]", newError, rdeManager.ClusterID, i-1)
@@ -309,8 +322,16 @@ func (rdeManager *RDEManager) RemoveErrorByNameOrIdFromErrorSet(ctx context.Cont
 	if errorName == "" {
 		return fmt.Errorf("errorName cannot be empty, while removing error from the errorSet of [%s]", rdeManager.ClusterID)
 	}
+	client := rdeManager.Client
+	clusterOrg, err := client.VCDClient.GetOrgByName(client.ClusterOrgName)
+	if err != nil {
+		return fmt.Errorf("unable to get org for org [%s]: [%v]", client.ClusterOrgName, err)
+	}
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return fmt.Errorf("obtained nil org for name [%s]", client.ClusterOrgName)
+	}
 	for i := MaxRDEUpdateRetries; i > 1; i-- {
-		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID)
+		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID, clusterOrg.Org.ID)
 		if resp != nil && resp.StatusCode != http.StatusOK {
 			var responseMessageBytes []byte
 			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
@@ -351,7 +372,7 @@ func (rdeManager *RDEManager) RemoveErrorByNameOrIdFromErrorSet(ctx context.Cont
 		rde.Entity["status"] = updatedStatusMap
 
 		// persist the updated statusMap to VCD
-		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, nil)
+		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, clusterOrg.Org.ID, nil)
 		if resp != nil {
 			if resp.StatusCode == http.StatusPreconditionFailed {
 				klog.Errorf("wrong etag while removing error(s) of name [%s] in RDE [%s]. Retry attempts remaining: [%d]", errorName, rdeManager.ClusterID, i-1)
@@ -476,8 +497,16 @@ func (rdeManager *RDEManager) AddToEventSet(ctx context.Context, componentSectio
 			rdeManager.ClusterID, newEvent)
 		return nil
 	}
+	client := rdeManager.Client
+	clusterOrg, err := client.VCDClient.GetOrgByName(client.ClusterOrgName)
+	if err != nil {
+		return fmt.Errorf("unable to get org for org [%s]: [%v]", client.ClusterOrgName, err)
+	}
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return fmt.Errorf("obtained nil org for name [%s]", client.ClusterOrgName)
+	}
 	for i := MaxRDEUpdateRetries; i > 1; i-- {
-		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID)
+		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID, clusterOrg.Org.ID)
 		if resp != nil && resp.StatusCode != http.StatusOK {
 			var responseMessageBytes []byte
 			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
@@ -514,7 +543,7 @@ func (rdeManager *RDEManager) AddToEventSet(ctx context.Context, componentSectio
 		rde.Entity["status"] = updatedStatusMap
 
 		// persist the updated statusMap to VCD
-		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, nil)
+		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, clusterOrg.Org.ID, nil)
 		if resp != nil {
 			if resp.StatusCode == http.StatusPreconditionFailed {
 				klog.Errorf("wrong etag while adding newEvent [%#v] in RDE [%s]. Retry attempts remaining: [%d]", newEvent, rdeManager.ClusterID, i-1)
@@ -577,8 +606,16 @@ func (rdeManager *RDEManager) AddToVCDResourceSet(ctx context.Context, component
 			rdeManager.ClusterID, resourceType, resourceId)
 		return nil
 	}
+	client := rdeManager.Client
+	clusterOrg, err := client.VCDClient.GetOrgByName(client.ClusterOrgName)
+	if err != nil {
+		return fmt.Errorf("unable to get org for org [%s]: [%v]", client.ClusterOrgName, err)
+	}
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return fmt.Errorf("obtained nil org for name [%s]", client.ClusterOrgName)
+	}
 	for i := MaxRDEUpdateRetries; i > 1; i-- {
-		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID)
+		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID, clusterOrg.Org.ID)
 		if resp != nil && resp.StatusCode != http.StatusOK {
 			var responseMessageBytes []byte
 			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
@@ -611,13 +648,18 @@ func (rdeManager *RDEManager) AddToVCDResourceSet(ctx context.Context, component
 			Name:              resourceName,
 			AdditionalDetails: additionalDetails,
 		}
-		updatedStatusMap, err := AddVCDResourceToStatusMap(component, rdeManager.StatusComponentName,
+		updatedStatusMap, rdeUpdateRequired, err := AddVCDResourceToStatusMap(component, rdeManager.StatusComponentName,
 			rdeManager.StatusComponentVersion, statusMap, vcdResource)
 		if err != nil {
 			return fmt.Errorf("error occurred when updating VCDResource set of %s status in RDE [%s]: [%v]", rdeManager.ClusterID, component, err)
 		}
+		if !rdeUpdateRequired {
+			klog.V(3).Infof("VCD resource set for the RDE [%s(%s)] already has the resource [%v] in the status of the component [%s]",
+				rde.Name, rde.Id, vcdResource, component)
+			return nil
+		}
 		rde.Entity["status"] = updatedStatusMap
-		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, nil)
+		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, clusterOrg.Org.ID, nil)
 		if resp != nil {
 			if resp.StatusCode == http.StatusPreconditionFailed {
 				klog.Errorf("wrong etag while adding [%v] to VCDResourceSet in RDE [%s]. Retry attempts remaining: [%d]", vcdResource, rdeManager.ClusterID, i-1)
@@ -700,8 +742,16 @@ func (rdeManager *RDEManager) RemoveFromVCDResourceSet(ctx context.Context, comp
 			rdeManager.ClusterID, resourceType, resourceName)
 		return nil
 	}
+	client := rdeManager.Client
+	clusterOrg, err := client.VCDClient.GetOrgByName(client.ClusterOrgName)
+	if err != nil {
+		return fmt.Errorf("unable to get org for org [%s]: [%v]", client.ClusterOrgName, err)
+	}
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return fmt.Errorf("obtained nil org for name [%s]", client.ClusterOrgName)
+	}
 	for i := MaxRDEUpdateRetries; i > 1; i-- {
-		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID)
+		rde, resp, etag, err := rdeManager.Client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeManager.ClusterID, clusterOrg.Org.ID)
 		if resp != nil && resp.StatusCode != http.StatusOK {
 			var responseMessageBytes []byte
 			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
@@ -739,7 +789,7 @@ func (rdeManager *RDEManager) RemoveFromVCDResourceSet(ctx context.Context, comp
 		}
 		rde.Entity["status"] = updatedStatus
 
-		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, nil)
+		_, resp, err = rdeManager.Client.APIClient.DefinedEntityApi.UpdateDefinedEntity(ctx, rde, etag, rdeManager.ClusterID, clusterOrg.Org.ID,nil)
 		if resp != nil {
 			if resp.StatusCode == http.StatusPreconditionFailed {
 				klog.Errorf("wrong etag while removing [%s] from VCDResourceSet in RDE [%s]. Retry attempts remaining: [%d]", resourceName, rdeManager.ClusterID, i-1)

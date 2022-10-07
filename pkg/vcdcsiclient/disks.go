@@ -584,8 +584,18 @@ func (diskManager *DiskManager) addRDEPersistentVolumes(updatedPvs []string, eta
 			diskManager.ClusterID, err)
 	}
 	// can set invokeHooks as optional parameter
+
+	clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get org for org [%s]: [%v]", diskManager.VCDClient.ClusterOrgName, err)
+	}
+
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return nil, fmt.Errorf("obtained nil org for name [%s]", diskManager.VCDClient.ClusterOrgName)
+	}
+
 	_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
-		diskManager.ClusterID, nil)
+		diskManager.ClusterID, clusterOrg.Org.ID, nil)
 	if err != nil {
 		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
 	}
@@ -602,8 +612,17 @@ func (diskManager *DiskManager) removeRDEPersistentVolumes(updatedPvs []string, 
 			diskManager.ClusterID, err)
 	}
 
+	clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get org for org [%s]: [%v]", diskManager.VCDClient.ClusterOrgName, err)
+	}
+
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return nil, fmt.Errorf("obtained nil org for name [%s]", diskManager.VCDClient.ClusterOrgName)
+	}
+
 	_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.TODO(), *updatedRDE, etag,
-		diskManager.ClusterID, nil)
+		diskManager.ClusterID, clusterOrg.Org.ID, nil)
 	if err != nil {
 		return httpResponse, fmt.Errorf("error when updating defined entity: [%v]", err)
 	}
@@ -615,8 +634,17 @@ func (diskManager *DiskManager) removeRDEPersistentVolumes(updatedPvs []string, 
 
 func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rdeManager *vcdsdk.RDEManager) error {
 	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+		clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+		if err != nil {
+			return fmt.Errorf("unable to get org for org [%s]: [%v]", diskManager.VCDClient.ClusterOrgName, err)
+		}
+
+		if clusterOrg == nil || clusterOrg.Org == nil {
+			return fmt.Errorf("obtained nil org for name [%s]", diskManager.VCDClient.ClusterOrgName)
+		}
+
 		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-			diskManager.ClusterID)
+			diskManager.ClusterID, clusterOrg.Org.ID)
 		if err != nil {
 			return fmt.Errorf("error when getting defined entity: [%v]", err)
 		}
@@ -659,8 +687,17 @@ func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rde
 
 func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName string, rdeManager *vcdsdk.RDEManager) error {
 	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+		clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+		if err != nil {
+			return fmt.Errorf("unable to get org for org [%s]: [%v]", diskManager.VCDClient.ClusterOrgName, err)
+		}
+
+		if clusterOrg == nil || clusterOrg.Org == nil {
+			return fmt.Errorf("obtained nil org for name [%s]", diskManager.VCDClient.ClusterOrgName)
+		}
+
 		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-			diskManager.ClusterID)
+			diskManager.ClusterID, clusterOrg.Org.ID)
 		if err != nil {
 			return fmt.Errorf("error when getting defined entity: [%v]", err)
 		}
@@ -703,8 +740,17 @@ func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName 
 // UpgradeRDEPersistentVolumes This function will only upgrade RDE CSI section for CAPVCD cluster
 func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 	for retries := 0; retries < vcdsdk.MaxRDEUpdateRetries; retries++ {
+		clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+		if err != nil {
+			return fmt.Errorf("unable to get org for org [%s]: [%v]", diskManager.VCDClient.ClusterOrgName, err)
+		}
+
+		if clusterOrg == nil || clusterOrg.Org == nil {
+			return fmt.Errorf("obtained nil org for name [%s]", diskManager.VCDClient.ClusterOrgName)
+		}
+
 		rde, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-			diskManager.ClusterID)
+			diskManager.ClusterID, clusterOrg.Org.ID)
 		if err != nil {
 			return fmt.Errorf("error when getting defined entity from VCD: [%v]", err)
 		}
@@ -796,7 +842,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 		delete(updatedMap, util.OldPersistentVolumeKey)
 		rde.Entity["status"] = updatedMap
 		//d. update RDE in VCD with PV details
-		_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.Background(), rde, etag, diskManager.ClusterID, nil)
+		_, httpResponse, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(context.Background(), rde, etag, diskManager.ClusterID, clusterOrg.Org.ID, nil)
 		// TODO: Optimize the diskQuery process, try to make those happen in one time upgrade operation. Also might do extra sorting
 		for _, diskQueryError := range diskQueryErrorList {
 			if rdeErr := rdeManager.AddToErrorSet(context.Background(), vcdsdk.ComponentCSI, diskQueryError, util.DefaultWindowSize); rdeErr != nil {
