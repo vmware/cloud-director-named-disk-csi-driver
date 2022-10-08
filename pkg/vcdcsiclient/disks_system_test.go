@@ -131,8 +131,13 @@ func TestDiskCreateAttach(t *testing.T) {
 	require.NotNil(t, disk, "disk created should not be nil")
 
 	// Check RDE was updated with PV
+	clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+	assert.NoError(t, err, "unable to get org by name [%s]", diskManager.VCDClient.ClusterOrgName)
+	assert.NotNil(t, clusterOrg, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
+	assert.NotNil(t, clusterOrg.Org, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
+
 	defEnt, _, _, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	assert.NoError(t, err, "unable to get RDE")
 
 	currRDEPvs, err := GetCAPVCDRDEPersistentVolumes(&defEnt)
@@ -177,7 +182,7 @@ func TestDiskCreateAttach(t *testing.T) {
 
 	// Check PV was removed from RDE
 	defEnt, _, _, err = diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	assert.NoError(t, err, "unable to get RDE")
 	currRDEPvs, err = GetCAPVCDRDEPersistentVolumes(&defEnt)
 	assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
@@ -239,14 +244,20 @@ func TestRdeEtag(t *testing.T) {
 	diskManager.ClusterID = cloudConfig.ClusterID
 	assert.NoError(t, err, "Unable to get VCD client")
 	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
+
+	clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+	assert.NoError(t, err, "unable to get org by name [%s]", diskManager.VCDClient.ClusterOrgName)
+	assert.NotNil(t, clusterOrg, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
+	assert.NotNil(t, clusterOrg.Org, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
+
 	defEnt1, _, etag1, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	assert.NoError(t, err, "unable to get RDE")
 	rdePvs1, err := GetCAPVCDRDEPersistentVolumes(&defEnt1)
 	assert.NoError(t, err, "unable to get RDE PVs")
 
 	defEnt2, _, etag2, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	assert.NoError(t, err, "unable to get RDE")
 	rdePvs2, err := GetCAPVCDRDEPersistentVolumes(&defEnt2)
 	assert.NoError(t, err, "unable to get RDE PVs")
@@ -263,7 +274,7 @@ func TestRdeEtag(t *testing.T) {
 	assert.NoError(t, err, "should have no error when update RDE on first attempt")
 	assert.Equal(t, http.StatusOK, httpResponse1.StatusCode, "first RDE update should have an OK (200) response")
 	defEnt3, _, _, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	assert.NoError(t, err, "unable to get RDE")
 	rdePvs3, err := GetCAPVCDRDEPersistentVolumes(&defEnt3)
 	assert.NoError(t, err, "unable to get RDE PVs")
@@ -275,7 +286,7 @@ func TestRdeEtag(t *testing.T) {
 	assert.Error(t, err, "updating RDE with outdated etag should have an error")
 	assert.Equal(t, http.StatusPreconditionFailed, httpResponse2.StatusCode, "updating RDE does not have precondition failed (412) status code")
 	defEnt3, _, etag3, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	assert.NoError(t, err, "unable to get RDE")
 	rdePvs3, err = GetCAPVCDRDEPersistentVolumes(&defEnt3)
 	assert.NoError(t, err, "unable to get RDE PVs")
@@ -287,7 +298,7 @@ func TestRdeEtag(t *testing.T) {
 	assert.NoError(t, err, "should have no error updating RDE with current etag")
 	assert.Equal(t, http.StatusOK, httpResponse3.StatusCode, "updating PV had status code [%d] instead of 200 (OK)", httpResponse3.StatusCode)
 	defEnt4, _, etag4, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	assert.NoError(t, err, "unable to get RDE")
 	rdePvs4, err := GetCAPVCDRDEPersistentVolumes(&defEnt4)
 	assert.NoError(t, err, "unable to get RDE PVs")
@@ -296,7 +307,7 @@ func TestRdeEtag(t *testing.T) {
 	assert.NoError(t, err, "should have no error updating RDE with current etag")
 	assert.Equal(t, http.StatusOK, httpResponse5.StatusCode, "updating PV had status code 200 (OK)")
 	defEnt5, _, _, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID)
+		diskManager.ClusterID, clusterOrg.Org.ID)
 	rdePvs5, err := GetCAPVCDRDEPersistentVolumes(&defEnt5)
 	assert.NoError(t, err, "unable to get RDE PVs")
 	assert.False(t, foundStringInSlice(addPv1Name, rdePvs5), "pv [%s] should not be found in rde pvs", addPv1Name)
