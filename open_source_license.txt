@@ -1,6 +1,6 @@
 open_source_licenses.txt
 
-cloud director named disk csi driver 1.3 Beta
+cloud-director-named-disk-csi-driver 1.3 GA
 ======================================================================
 
 cloud-director-named-disk-csi-driver version 1.3 includes a number of components with separate 
@@ -8,8 +8,6 @@ copyright notices and license terms.  This product does not necessarily
 use all the open source components referred to below. Your use of the 
 source code for these components is subject to the terms and conditions 
 of the following licenses.
-
-
 
 ==================== TABLE OF CONTENTS ====================
 
@@ -43,14 +41,13 @@ SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
    >>> golang.org/x/oauth2-v0.0.0-20210819190943-2bc19b11175f
    >>> golang.org/x/net-v0.0.0-20210520170846-37e1c6afe023
 
-   
-   
+
 APPENDIX. Standard License Files
 
    >>> Apache License, V2.0
 
 
-   
+
 -------------------- SECTION 1: Apache License, V2.0 --------------------
 
    >>> akutz_gofsutil-v0.1.2
@@ -5010,11 +5007,11 @@ APPENDIX. Standard License Files
 
        integration_test.go
 
-       Copyright 2019 The Go Authors
+       Copyright d d d d The Go Authors
 
        integration_test.go
 
-       Copyright d d d d The Go Authors
+       Copyright 2019 The Go Authors
 
        internal/benchmarks/bench_test.go
 
@@ -11517,7 +11514,6 @@ APPENDIX. Standard License Files
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
 
-	   
 ==================== APPENDIX. Standard License Files ====================
 
 -------------------- SECTION 1: Apache License, V2.0 --------------------
@@ -11721,9 +11717,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-
-
 ==================== LICENSE TEXT REFERENCE TABLE ====================
 
 -------------------- SECTION 1 --------------------
@@ -11916,4 +11909,4 @@ All such requests should clearly specify: OPEN SOURCE FILES REQUEST, Attention G
 mail a copy of the Source Files to you on a CD or equivalent physical medium. This offer to obtain a copy of the Source
 Files is valid for three years from the date you acquired this software product.
 
-[CLOUDDIRECTORNAMEDDISKCSIDRIVER13BAS062922]
+[CLOUDDIRECTORNAMEDDISKCSIDRIVER13GARS100622]
