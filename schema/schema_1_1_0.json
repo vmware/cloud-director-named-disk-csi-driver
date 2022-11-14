@@ -30,7 +30,7 @@
         },
         "errorSet": {
           "type": "array",
-          "description": "list of errors encountered by CSI during execution."
+          "description": "list of errors encountered by CSI during execution.",
           "items": {
             "type": "object",
             "properties": {}
@@ -40,4 +40,3 @@
     }
   }
 }
-
