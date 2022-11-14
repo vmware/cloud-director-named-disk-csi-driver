@@ -1,0 +1,43 @@
+{
+  "components": {
+    "csi": {
+      "type": "object",
+      "description": "schema for the CSI status section in capvcdCluster defined entity.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "name of the CSI component"
+        },
+        "version": {
+          "type": "string",
+          "description": "version of CSI used"
+        },
+        "eventSet": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {}
+          },
+          "description": "list of most recent events from CSI"
+        },
+        "vcdResourceSet": {
+          "type": "array",
+          "description": "list of VCD resources created by CSI. VCD resource representing persistent volumes created by CSI will have the resource type 'named-disks'.",
+          "items": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        "errorSet": {
+          "type": "array",
+          "description": "list of errors encountered by CSI during execution."
+          "items": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      }
+    }
+  }
+}
+
