@@ -28,7 +28,7 @@ Note: This driver is not impacted by the Apache Log4j open source component vuln
 3. ClusterAdminUser: For CSI functionality, there needs to be a set of additional rights added to the `ClusterAdminRole` as described in the "Additional Rights for CSI" section below. The Kubernetes Cluster needs to be **created** by a user belonging to this **enhanced** `ClusterAdminRole`. For convenience, let us term this user as the `ClusterAdminUser`.
 
 ## VMware Cloud Director Configuration
-In this section, we assume that the Kubernetes cluster is created using the [Container Service Extension](https://github.com/vmware/container-service-extension). However that is not a mandatory requirement.
+In this section, we assume that the Kubernetes cluster is created using the Container Service Extension 4.0. However, that is not a mandatory requirement.
 
 ### Additional Rights for CSI
 The `ClusterAdminUser` should have view access to the vApp containing the Kubernetes cluster. Since the `ClusterAdminUser` itself creates the cluster, it will have this access by default.
