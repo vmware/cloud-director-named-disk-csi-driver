@@ -417,19 +417,21 @@ func (ns *nodeService) rescanDiskInVM(ctx context.Context) error {
 			klog.Errorf("Encounter error while generating regex error: [%v]", regErr)
 			return fmt.Errorf("encounter error while generating regex error: [%v]", regErr)
 		}
-		klog.Infof("Checking directory or file: [%s] => [%s]\n", path, fi.Name())
-		if fi.IsDir() && reg.MatchString(fi.Name()) {
+		if fi.IsDir() {
+			return nil
+		}
+		if reg.MatchString(fi.Name()) {
 			_, executedErr := exec.Command("bash", "-c", fmt.Sprintf("echo \"- - -\" > %s/scan", path)).CombinedOutput()
 			if executedErr != nil {
 				klog.Errorf("Encounter error while rescanning the disk in VM;executing command failed, [%v]", executedErr)
 				return fmt.Errorf("encounter error while rescanning the disk in VM;executing command failed, [%v]", executedErr)
 			}
-			klog.Infof("rescan the scsi host [%s] successfully", fi.Name())
+			klog.Infof("CSI node plugin rescanned the scsi host [%s] successfully", fi.Name())
 		}
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("could not conduct rescan for [%s]: [%v]", ScsiHostPath, err)
+		return fmt.Errorf("CSI node plugin could not rescan SCSI bus for [%s]: [%v]", ScsiHostPath, err)
 	}
 	return nil
 }
