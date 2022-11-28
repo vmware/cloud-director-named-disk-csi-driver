@@ -124,7 +124,7 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 
 	err := ns.rescanDiskInVM(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "unable to scan SCSI bus for vm [%s]: [%v}", vmFullName, err)
+		return nil, status.Errorf(codes.Internal, "unable to scan SCSI bus for vm [%s]: [%v]", vmFullName, err)
 	}
 	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
 	if err != nil {
@@ -408,8 +408,11 @@ func (ns *nodeService) NodeGetVolumeStats(ctx context.Context,
 // rescanDiskInVM re-scan the SCSI bus entirely. CSI runs "echo "- - -" > /sys/class/scsi_host/*/scan" inside VM,
 // where "- - -" represent controller channel lun.
 func (ns *nodeService) rescanDiskInVM(ctx context.Context) error {
+	// The filepath.Walk walks the file tree, calling the specified function for each file or directory in the tree, including root.
+	//  unnamed function is defined to check and perform rescan.
 	err := filepath.Walk(ScsiHostPath, func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
+			klog.Errorf("Encounter error while walking through the folder: [%v]", err)
 			return nil
 		}
 		reg, regErr := regexp.Compile(HostNameRegexPattern)
