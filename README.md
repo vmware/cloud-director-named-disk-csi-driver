@@ -57,7 +57,7 @@ kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GO
 **NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller StatefulSet and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.**
 
 ## Upgrde CSI
-To upgrade CSI to the latest version (v1.3.1), please execute the following command
+To upgrade CSI to the latest version (v1.3.1) from existing cluster, please execute the following command
 ```shell
 kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.3.1.latest"}]}}}}'
 kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.3.1.latest"}]}}}}'
