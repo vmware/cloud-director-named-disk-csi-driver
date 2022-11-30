@@ -4,7 +4,8 @@ This repository contains the source code and build methods to build a Kubernetes
 The version of the VMware Cloud Director API and Installation that are compatible for a given CSI container image are provided in the following compatibility matrix:
 
 | CSI Version | CSE Version | VMware Cloud Director API | VMware Cloud Director Installation | Notes | Kubernetes Versions | docs |
-| :---------: | :---------: | :-----------------------: | :--------------------------------: | :----: | :----------------- | :--: |
+| :---------: | :---------: | :-----------------------: | :--------------------------------: | :----: | :----------------------- | :--: |
+| 1.3.1 | 4.0.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Fixed issue where CSI failed to mount persistent volume to node successfully if SCSI Buses inside node are not rescanned </li></ul> |<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.3.z docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.3.z)|
 | 1.3.0 | 4.0.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Support for fsGroup</li><li>Support for volume metrics</li><li>Added secret-based way to get cluster-id for CRS</li></ul> |<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.3.z docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.3.z)|
 | 1.2.0 | 3.1.x | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Add support for Kubernetes 1.22</li><li>Small VCD url parsing fixes</li></ul> |<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.2.x docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.2.x)|
 | 1.1.1 | 3.1.x | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Fixed refresh-token based authentication issue observed when VCD cells are fronted by a load balancer (Fixes #26).</ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.1.x docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.1.x)|
@@ -54,6 +55,13 @@ kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GO
 ```
 
 **NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller StatefulSet and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.**
+
+## Upgrade CSI
+To upgrade CSI to the latest version (v1.3.1) from existing cluster, please execute the following command
+```shell
+kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.3.1.latest"}]}}}}'
+kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.3.1.latest"}]}}}}'
+```
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
