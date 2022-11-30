@@ -30,7 +30,7 @@ const (
 
 	DevDiskPath          = "/dev/disk/by-path"
 	ScsiHostPath         = "/sys/class/scsi_host"
-	HostNameRegexPattern = "^host[0-9]"
+	HostNameRegexPattern = "^host[0-9]+"
 )
 
 type nodeService struct {
@@ -424,10 +424,11 @@ func (ns *nodeService) rescanDiskInVM(ctx context.Context) error {
 			return nil
 		}
 		if reg.MatchString(fi.Name()) {
-			_, executedErr := exec.Command("bash", "-c", fmt.Sprintf("echo \"- - -\" > %s/scan", path)).CombinedOutput()
+			// file mode for scan: --w-------
+			executedErr := os.WriteFile(fmt.Sprintf("%s/scan", path), []byte("- - -"), 0200)
 			if executedErr != nil {
-				klog.Errorf("Encounter error while rescanning the disk in VM;executing command failed, [%v]", executedErr)
-				return fmt.Errorf("encounter error while rescanning the disk in VM;executing command failed, [%v]", executedErr)
+				klog.Errorf("Encounter error while rescanning the disk in VM [%s];executing command failed, [%v]", ns.NodeID, executedErr)
+				return fmt.Errorf("encounter error while rescanning the disk in VM [%s];executing command failed, [%v]", ns.NodeID, executedErr)
 			}
 			klog.Infof("CSI node plugin rescanned the scsi host [%s] successfully", fi.Name())
 		}
