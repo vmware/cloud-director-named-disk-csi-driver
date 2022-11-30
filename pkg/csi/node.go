@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package csi
@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/akutz/gofsutil"
@@ -27,12 +28,14 @@ const (
 	// is pre-allocated for the HBA. Hence we have only 15 disks.
 	maxVolumesPerNode = 15
 
-	DevDiskPath = "/dev/disk/by-path"
+	DevDiskPath          = "/dev/disk/by-path"
+	ScsiHostPath         = "/sys/class/scsi_host"
+	HostNameRegexPattern = "^host[0-9]+"
 )
 
 type nodeService struct {
-	Driver        *VCDDriver
-	NodeID        string
+	Driver *VCDDriver
+	NodeID string
 }
 
 // NewNodeService creates and returns a NodeService struct.
@@ -119,6 +122,10 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		return nil, status.Error(codes.InvalidArgument, "Staging target not provided")
 	}
 
+	err := ns.rescanDiskInVM(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to scan SCSI bus for vm [%s]: [%v]", vmFullName, err)
+	}
 	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to obtain disk for vm [%s], disk [%s]: [%v]",
@@ -252,7 +259,7 @@ func (ns *nodeService) NodePublishVolume(ctx context.Context,
 	mountFlags := append(mnt.GetMountFlags(), mountMode)
 
 	// verify that host dir exists
-	hostMountDirExists, err := ns.checkIfDirExists(hostMountDir);
+	hostMountDirExists, err := ns.checkIfDirExists(hostMountDir)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to check if host mount dir [%s] exists: [%v]",
 			hostMountDir, err)
@@ -325,7 +332,7 @@ func (ns *nodeService) NodeUnpublishVolume(ctx context.Context,
 	}
 
 	isDirMounted, err := ns.checkIfDirMounted(ctx, podMountDir)
-	if err!= nil {
+	if err != nil {
 		return nil, fmt.Errorf("unable to check if pod mount dir [%s] is mounted: [%v]", podMountDir, err)
 	}
 	if !isDirMounted {
@@ -384,18 +391,53 @@ func (ns *nodeService) NodeGetVolumeStats(ctx context.Context,
 		Usage: []*csi.VolumeUsage{
 			{
 				Available: int64(statFS.Bavail) * int64(statFS.Bsize),
-				Total: int64(statFS.Blocks) * int64(statFS.Bsize),
-				Used: (int64(statFS.Blocks) - int64(statFS.Bavail)) * int64(statFS.Bsize),
-				Unit: csi.VolumeUsage_BYTES,
+				Total:     int64(statFS.Blocks) * int64(statFS.Bsize),
+				Used:      (int64(statFS.Blocks) - int64(statFS.Bavail)) * int64(statFS.Bsize),
+				Unit:      csi.VolumeUsage_BYTES,
 			},
 			{
 				Available: int64(statFS.Ffree),
-				Total: int64(statFS.Files),
-				Used: int64(statFS.Files) - int64(statFS.Ffree),
-				Unit: csi.VolumeUsage_INODES,
+				Total:     int64(statFS.Files),
+				Used:      int64(statFS.Files) - int64(statFS.Ffree),
+				Unit:      csi.VolumeUsage_INODES,
 			},
 		},
 	}, nil
+}
+
+// rescanDiskInVM re-scan the SCSI bus entirely. CSI runs "echo "- - -" > /sys/class/scsi_host/*/scan" inside VM,
+// where "- - -" represent controller channel lun.
+func (ns *nodeService) rescanDiskInVM(ctx context.Context) error {
+	// The filepath.Walk walks the file tree, calling the specified function for each file or directory in the tree, including root.
+	//  unnamed function is defined to check and perform rescan.
+	err := filepath.Walk(ScsiHostPath, func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			klog.Errorf("Encounter error while walking through the folder: [%v]", err)
+			return nil
+		}
+		reg, regErr := regexp.Compile(HostNameRegexPattern)
+		if regErr != nil {
+			klog.Errorf("Encounter error while generating regex error: [%v]", regErr)
+			return fmt.Errorf("encounter error while generating regex error: [%v]", regErr)
+		}
+		if fi.IsDir() {
+			return nil
+		}
+		if reg.MatchString(fi.Name()) {
+			// file mode for scan: --w-------
+			executedErr := os.WriteFile(fmt.Sprintf("%s/scan", path), []byte("- - -"), 0200)
+			if executedErr != nil {
+				klog.Errorf("Encounter error while rescanning the disk in VM [%s];executing command failed, [%v]", ns.NodeID, executedErr)
+				return fmt.Errorf("encounter error while rescanning the disk in VM [%s];executing command failed, [%v]", ns.NodeID, executedErr)
+			}
+			klog.Infof("CSI node plugin rescanned the scsi host [%s] successfully", fi.Name())
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("CSI node plugin could not rescan SCSI bus for [%s]: [%v]", ScsiHostPath, err)
+	}
+	return nil
 }
 
 // getDiskPath looks for a device corresponding to vmName:diskName as stored in vSphere. It
@@ -410,7 +452,7 @@ func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskU
 	hexDiskUUID := strings.ReplaceAll(diskUUID, "-", "")
 
 	guestDiskPath := ""
-	err := filepath.Walk(DevDiskPath, func (path string, fi os.FileInfo, err error) error {
+	err := filepath.Walk(DevDiskPath, func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return nil
 		}
@@ -422,7 +464,7 @@ func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskU
 		}
 
 		fileToProcess := path
-		if fi.Mode() & os.ModeSymlink != 0 {
+		if fi.Mode()&os.ModeSymlink != 0 {
 			dst, err := filepath.EvalSymlinks(path)
 			if err != nil {
 				klog.Infof("Error accessing file [%s]: [%v]", path, err)
@@ -447,7 +489,7 @@ func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskU
 		}
 		out := strings.TrimSpace(string(outBytes))
 		if len(out) == 33 {
-			out = out [1:]
+			out = out[1:]
 		} else if len(out) != 32 {
 			klog.Infof("Obtained uuid with incorrect length: [%s]", out)
 			return nil
