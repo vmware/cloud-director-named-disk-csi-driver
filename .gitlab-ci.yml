@@ -1,0 +1,31 @@
+default:
+  image: golang:1.19
+
+stages:
+  - build
+  #  - test
+  - publish
+
+build:
+  stage: build
+  script:
+    - make build-within-docker
+
+#test:
+#  stage: test
+#  script:
+#    - make test
+#    - make integration-test
+
+publish:
+  stage: publish
+  image: docker:20.10.16
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  services:
+    - docker:20.10.16-dind
+  before_script:
+    - docker login -u "$HARBOR_USER" -p "$HARBOR_PW" harbor-repo.vmware.com
+  script:
+    - apk add --update make git
+    - make dev

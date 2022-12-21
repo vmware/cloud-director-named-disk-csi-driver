@@ -7,7 +7,7 @@ REGISTRY?="harbor-repo.vmware.com/vcloud"
 
 .PHONY: build-within-docker vendor
 
-build-within-docker:
+build-within-docker: vendor
 	mkdir -p /build/cloud-director-named-disk-csi-driver
 	go build -ldflags "-X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(version)" -o /build/vcloud/cloud-director-named-disk-csi-driver cmd/csi/main.go
 
