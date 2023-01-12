@@ -40,5 +40,5 @@ integration-test: test
 
 vendor:
 	go mod edit -go=1.17
-	go mod tidy
+	go mod tidy -compat=1.17
 	go mod vendor
