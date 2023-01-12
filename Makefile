@@ -19,17 +19,17 @@ csi: $(GO_CODE)
 	touch out/$@
 
 prod: csi
-	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
 
 dev: csi
 	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
-	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
-	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
-	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
-	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
 
 test:
 	go test -tags testing -v github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient -cover -count=1
@@ -40,5 +40,5 @@ integration-test: test
 
 vendor:
 	go mod edit -go=1.17
-	go mod tidy
+	go mod tidy -compat=1.17
 	go mod vendor
