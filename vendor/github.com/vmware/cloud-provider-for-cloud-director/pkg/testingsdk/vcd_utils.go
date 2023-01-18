@@ -25,7 +25,7 @@ func getRdeById(ctx context.Context, client *vcdsdk.Client, rdeId string) (*swag
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving org [%s]: [%v]", client.ClusterOrgName, err)
 	}
-	if clusterOrg != nil || clusterOrg.Org != nil {
+	if clusterOrg == nil || clusterOrg.Org == nil {
 		return nil, fmt.Errorf("retrieved org is nil for [%s]", client.ClusterOrgName)
 	}
 	rde, _, _, err := client.APIClient.DefinedEntityApi.GetDefinedEntity(ctx, rdeId, clusterOrg.Org.ID)

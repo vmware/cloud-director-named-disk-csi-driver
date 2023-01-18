@@ -148,7 +148,7 @@ func waitForDeploymentDeleted(ctx context.Context, k8sClient *kubernetes.Clients
 
 func waitForServiceDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, serviceName string) (bool, error) {
 	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
-		_, err := getDeployment(ctx, k8sClient, nameSpace, serviceName)
+		_, err := getService(ctx, k8sClient, nameSpace, serviceName)
 		if err != nil {
 			if err == ResourceNotFound {
 				return true, nil
@@ -452,28 +452,32 @@ func createDeployment(ctx context.Context, k8sClient *kubernetes.Clientset, para
 									ContainerPort: params.ContainerParams.ContainerPort,
 								},
 							},
-							VolumeMounts: []apiv1.VolumeMount{
-								{
-									Name:      params.VolumeParams.VolumeName,
-									MountPath: params.VolumeParams.MountPath,
-								},
-							},
-						},
-					},
-					Volumes: []apiv1.Volume{
-						{
-							Name: params.VolumeParams.VolumeName,
-							VolumeSource: apiv1.VolumeSource{
-								PersistentVolumeClaim: &apiv1.PersistentVolumeClaimVolumeSource{
-									ClaimName: params.VolumeParams.PvcRef,
-								},
-							},
 						},
 					},
 				},
 			},
 		},
 	}
+
+	if params.VolumeParams.VolumeName != "" && params.VolumeParams.PvcRef != "" && params.VolumeParams.MountPath != "" {
+		deployment.Spec.Template.Spec.Containers[0].VolumeMounts = []apiv1.VolumeMount{
+			{
+				Name:      params.VolumeParams.VolumeName,
+				MountPath: params.VolumeParams.MountPath,
+			},
+		}
+		deployment.Spec.Template.Spec.Volumes = []apiv1.Volume{
+			{
+				Name: params.VolumeParams.VolumeName,
+				VolumeSource: apiv1.VolumeSource{
+					PersistentVolumeClaim: &apiv1.PersistentVolumeClaimVolumeSource{
+						ClaimName: params.VolumeParams.PvcRef,
+					},
+				},
+			},
+		}
+	}
+
 	newDeployment, err := k8sClient.AppsV1().Deployments(nameSpace).Create(ctx, deployment, metav1.CreateOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("error occurred while creating deployment [%s]: [%v]", params.Name, err)
