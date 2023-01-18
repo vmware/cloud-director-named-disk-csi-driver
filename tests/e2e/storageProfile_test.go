@@ -10,12 +10,10 @@ import (
 )
 
 const (
-	staticDisk = "static-test"
-	diskType   = "MB"
-
-	//Todo: indicate the UNIT: MB
-	smallDiskSize           = 2048
-	largeDiskSize           = 4096
+	staticDisk              = "static-test"
+	diskType                = "MB"
+	smallDiskSizeMB         = 2048
+	largeDiskSizeMB         = 4096
 	storageProfileWithLimit = "Development2"
 )
 
@@ -70,7 +68,7 @@ var _ = Describe("CSI Storage Profile Test", func() {
 		err = adminVdc.AddStorageProfileWait(&types.VdcStorageProfileConfiguration{
 			Enabled: true,
 			Units:   diskType,
-			Limit:   smallDiskSize,
+			Limit:   smallDiskSizeMB,
 			Default: false,
 			ProviderVdcStorageProfile: &types.Reference{
 				HREF: spRecord.HREF,
@@ -82,7 +80,7 @@ var _ = Describe("CSI Storage Profile Test", func() {
 
 	It("should failed to create a PV with a size higher than quota", func() {
 		By("creating a disk with a size higher than quota")
-		err = utils.CreateDisk(tc.VcdClient, staticDisk, largeDiskSize, storageProfileWithLimit)
+		err = utils.CreateDisk(tc.VcdClient, staticDisk, largeDiskSizeMB, storageProfileWithLimit)
 		Expect(err).To(HaveOccurred())
 
 		By("verifying the error as being a storage limit error")
