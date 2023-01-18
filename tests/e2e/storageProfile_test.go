@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	staticDisk              = "static-test"
-	diskType                = "MB"
+	staticDisk = "static-test"
+	diskType   = "MB"
+
+	//Todo: indicate the UNIT: MB
 	smallDiskSize           = 2048
 	largeDiskSize           = 4096
 	storageProfileWithLimit = "Development2"

@@ -29,12 +29,12 @@ func init() {
 var _ = BeforeSuite(func() {
 	// We should validate that all credentials are present for generating a TestClient
 	//Todo: modify the description
-	Expect(host).NotTo(BeZero(), "Please make sure --host is set correctly.")
-	Expect(org).NotTo(BeZero(), "Please make sure --org is set correctly.")
-	Expect(ovdc).NotTo(BeZero(), "Please make sure --vdcName is set correctly.")
-	Expect(userName).NotTo(BeZero(), "Please make sure --username is set correctly.")
-	Expect(refreshToken).NotTo(BeZero(), "Please make sure --token is set correctly.")
-	Expect(rdeId).NotTo(BeZero(), "Please make sure --clusterId is set correctly.")
+	Expect(host).NotTo(BeZero(), "Please make sure --host WaitFor set correctly.")
+	Expect(org).NotTo(BeZero(), "Please make sure --org WaitFor set correctly.")
+	Expect(ovdc).NotTo(BeZero(), "Please make sure --vdcName WaitFor set correctly.")
+	Expect(userName).NotTo(BeZero(), "Please make sure --username WaitFor set correctly.")
+	Expect(refreshToken).NotTo(BeZero(), "Please make sure --token WaitFor set correctly.")
+	Expect(rdeId).NotTo(BeZero(), "Please make sure --clusterId WaitFor set correctly.")
 })
 
 func TestCSIAutomation(t *testing.T) {
