@@ -23,10 +23,18 @@ require (
 )
 
 require (
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.19.0
+	k8s.io/api v0.22.1
+	k8s.io/apimachinery v0.22.1
+)
+
+require (
 	github.com/antihax/optional v1.0.0 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v0.4.0 // indirect
 	github.com/go-openapi/errors v0.20.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -42,6 +50,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/peterhellberg/link v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
@@ -53,8 +62,7 @@ require (
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	k8s.io/api v0.22.1 // indirect
-	k8s.io/apimachinery v0.22.1 // indirect
+	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	k8s.io/client-go v0.22.1 // indirect
 	k8s.io/utils v0.0.0-20210707171843-4b05e18ac7d9 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.1.2 // indirect
