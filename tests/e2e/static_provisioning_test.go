@@ -41,7 +41,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 
 	//case: under delete policy
 	It("Create a disk using VCD API calls and Set up a PV based on the disk using delete policy", func() {
-		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSize, defaultStorageProfile)
+		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, defaultStorageProfile)
 		Expect(err).NotTo(HaveOccurred())
 		By("Disk is created successfully from VCD")
 
@@ -131,7 +131,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 	})
 	//case: under retain policy
 	It("Create a disk using VCD API calls and Set up a PV based on the disk using retain policy", func() {
-		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSize, defaultStorageProfile)
+		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, defaultStorageProfile)
 		Expect(err).NotTo(HaveOccurred())
 		By("Disk is created successfully from VCD")
 		pv, err = tc.CreatePV(ctx, testDiskName, storageClassRetain, defaultStorageProfile, storageSize, apiv1.PersistentVolumeReclaimRetain)
