@@ -10,7 +10,7 @@ import (
 // TODO: In the future, we will need to consider how to handle different versions of RDE. Currently these functions are not resilient to RDE version changes.
 
 func GetVCDResourceSet(ctx context.Context, client *vcdsdk.Client, clusterId, componentName string) ([]vcdsdk.VCDResource, error) {
-	vcdResourceSetMap, err := getVcdResourceSetComponentMapFromRDEId(ctx, client, componentName, clusterId)
+	vcdResourceSetMap, err := getVcdResourceSetComponentMapFromRDEId(ctx, client, clusterId, componentName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving vcd resource set array from RDE [%s]: [%v]", clusterId, err)
 	}
@@ -73,7 +73,7 @@ func GetKubeconfigFromRDEId(ctx context.Context, client *vcdsdk.Client, clusterI
 }
 
 func getVcdResourceSetComponentMapFromRDEId(ctx context.Context, client *vcdsdk.Client, clusterId, componentName string) (interface{}, error) {
-	componentStatusMap, err := GetComponentMapInStatus(ctx, client, componentName, clusterId)
+	componentStatusMap, err := GetComponentMapInStatus(ctx, client, clusterId, componentName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving field [%s] in status from RDE [%s]: [%v]", componentName, clusterId, err)
 	}
