@@ -174,16 +174,13 @@ spec:
             - name: vcloud-basic-auth-volume
               mountPath: /etc/kubernetes/vcloud/basic-auth
       tolerations:
-        - key: node.cloudprovider.kubernetes.io/uninitialized
-          value: "true"
-          effect: NoSchedule
         - key: "CriticalAddonsOnly"
           operator: "Exists"
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
                   - key: node-role.kubernetes.io/master
