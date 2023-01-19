@@ -31,10 +31,10 @@ var _ = BeforeSuite(func() {
 	//Todo: modify the description
 	Expect(host).NotTo(BeZero(), "Please make sure --host WaitFor set correctly.")
 	Expect(org).NotTo(BeZero(), "Please make sure --org WaitFor set correctly.")
-	Expect(ovdc).NotTo(BeZero(), "Please make sure --vdcName WaitFor set correctly.")
-	Expect(userName).NotTo(BeZero(), "Please make sure --username WaitFor set correctly.")
-	Expect(refreshToken).NotTo(BeZero(), "Please make sure --token WaitFor set correctly.")
-	Expect(rdeId).NotTo(BeZero(), "Please make sure --clusterId WaitFor set correctly.")
+	Expect(ovdc).NotTo(BeZero(), "Please make sure --ovdc WaitFor set correctly.")
+	Expect(userName).NotTo(BeZero(), "Please make sure --userName WaitFor set correctly.")
+	Expect(refreshToken).NotTo(BeZero(), "Please make sure --refreshToken WaitFor set correctly.")
+	Expect(rdeId).NotTo(BeZero(), "Please make sure --rdeId WaitFor set correctly.")
 })
 
 func TestCSIAutomation(t *testing.T) {

@@ -17,7 +17,7 @@ const (
 	testRetainPVCName     = "test-retain-pvc"
 	testDeletePVCName     = "test-delete-pvc"
 	testDeploymentName    = "test-deploy-name"
-	storageClassDelete    = "delete-sc"
+	storageClassDelete    = "delete-storage-class"
 	storageClassRetain    = "retain-storage-class"
 	storageSize           = "2Gi"
 	defaultStorageProfile = "*"
@@ -230,12 +230,17 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 
 	//under delete policy
 	It("PV resource should get deleted after PV is deleted in kubernetes", func() {
+		By("Should delete deployment in Kubernetes")
 		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
-		By("PVC is deleted in Kubernetes")
-		pv, err = tc.GetPV(ctx, dynamicPVName)
-		Expect(err).To(MatchError(testingsdk.ResourceNotFound))
-		Expect(pv).To(BeNil())
+
+		By("should delete PVC in Kubernetes")
+		err = tc.DeletePVC(ctx, testNameSpaceName, testDeletePVCName)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("should wait for PV deleted")
+		err = utils.WaitForPVDeleted(ctx, dynamicPVName, tc)
+		Expect(err).NotTo(HaveOccurred())
 		By("PV is deleted in Kubernetes")
 		vcdDisk, err = utils.GetDiskByNameViaVCD(tc.VcdClient, dynamicPVName)
 		Expect(err).To(MatchError(govcd.ErrorEntityNotFound))
