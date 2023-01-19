@@ -39,6 +39,17 @@ var _ = Describe("CSI static provisioning Test", func() {
 
 	ctx := context.TODO()
 
+	It("Should create the name space AND different storage classes", func() {
+		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(ns).NotTo(BeNil())
+		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(retainStorageClass).NotTo(BeNil())
+		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deleteStorageClass).NotTo(BeNil())
+	})
 	//case: under delete policy
 	It("Create a disk using VCD API calls and Set up a PV based on the disk using delete policy", func() {
 		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, defaultStorageProfile)
@@ -95,8 +106,8 @@ var _ = Describe("CSI static provisioning Test", func() {
 		By("Deployment is deleted successfully")
 
 		pv, err = tc.GetPV(ctx, testDiskName)
-		Expect(err).To(HaveOccurred())
-		Expect(pv).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
+		Expect(pv).NotTo(BeNil())
 		By("PV is presented in Kubernetes")
 
 		vcdDisk, err = utils.GetDiskByNameViaVCD(tc.VcdClient, testDiskName)

@@ -23,6 +23,7 @@ type CSItc struct {
 const (
 	defaultRetryInterval = 10 * time.Second
 	defaultRetryTimeout  = 60 * time.Second
+	defaultWaitTimeout   = 120 * time.Second
 	CSIVersion           = "1.3.0"
 )
 
@@ -103,6 +104,7 @@ func ValidateNoAttachedVM(vcdClient *vcdsdk.Client, disk *vcdtypes.Disk) error {
 	}
 	return nil
 }
+
 func CreateDisk(vcdClient *vcdsdk.Client, diskName string, diskSizeMB int64, storageProfileName string) error {
 	spRef, err := vcdClient.VDC.FindStorageProfileReference(storageProfileName)
 	d := &vcdtypes.Disk{
