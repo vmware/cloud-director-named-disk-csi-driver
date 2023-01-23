@@ -25,6 +25,7 @@ const (
 	defaultRetryTimeout  = 60 * time.Second
 	defaultWaitTimeout   = 120 * time.Second
 	CSIVersion           = "1.3.0"
+	MaxVCDUpdateRetries  = 10
 )
 
 func DeleteDisk(vcdClient *vcdsdk.Client, diskName string) error {
@@ -37,7 +38,7 @@ func DeleteDisk(vcdClient *vcdsdk.Client, diskName string) error {
 	}
 	err = ValidateNoAttachedVM(vcdClient, disk)
 	if err != nil {
-		return fmt.Errorf("sdsd")
+		return fmt.Errorf("unable to validate there is no VM attached to disk [%s]: [%v]", diskName, err)
 	}
 	var deleteDiskLink *types.Link
 	for _, diskLink := range disk.Link {
@@ -100,7 +101,7 @@ func ValidateNoAttachedVM(vcdClient *vcdsdk.Client, disk *vcdtypes.Disk) error {
 		return err
 	}
 	if attachedVMs.VmReference != nil && len(attachedVMs.VmReference) > 0 {
-		return fmt.Errorf("sd")
+		return fmt.Errorf("error getting attached vm references: %v", &attachedVMs.VmReference)
 	}
 	return nil
 }
@@ -129,7 +130,6 @@ func CreateDisk(vcdClient *vcdsdk.Client, diskName string, diskSizeMB int64, sto
 			break
 		}
 	}
-	// StorageProfile
 	newDisk := vcdtypes.Disk{}
 	_, err = vcdClient.VCDClient.Client.ExecuteRequestWithApiVersion(createDiskLink.HREF, http.MethodPost,
 		createDiskLink.Type, "error creating Disk with params: [%#v]", diskCreateParams, &newDisk,
@@ -149,7 +149,6 @@ func GetPVByNameViaRDE(pvName string, tc *testingsdk.TestClient, resourceType st
 			continue
 		}
 	}
-	//Todo
 	if len(updatedVcdResourceSet) == 1 {
 		return true, nil
 	} else if len(updatedVcdResourceSet) > 1 {
@@ -159,7 +158,6 @@ func GetPVByNameViaRDE(pvName string, tc *testingsdk.TestClient, resourceType st
 	return false, testingsdk.ResourceNotFound
 }
 
-//Todo: change the name
 func VerifyDiskViaVCD(vcdClient *vcdsdk.Client, diskName string) (*vcdtypes.Disk, error) {
 	var disk *vcdtypes.Disk
 	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
@@ -183,7 +181,8 @@ func GetDiskByNameViaVCD(vcdClient *vcdsdk.Client, diskName string) (disk *vcdty
 	if vcdClient.VDC == nil {
 		return nil, fmt.Errorf("error occurred while getting vcdClient VDC, [%v]", err)
 	}
-	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
+
+	for i := 0; i < MaxVCDUpdateRetries; i++ {
 		var diskList []vcdtypes.Disk
 		err = vcdClient.VDC.Refresh()
 		if err != nil {
@@ -209,7 +208,6 @@ func GetDiskByNameViaVCD(vcdClient *vcdsdk.Client, diskName string) (disk *vcdty
 	return nil, govcd.ErrorEntityNotFound
 }
 
-//
 func getDiskByHref(vcdClient *vcdsdk.Client, diskHref string) (*vcdtypes.Disk, error) {
 	disk := &vcdtypes.Disk{}
 
