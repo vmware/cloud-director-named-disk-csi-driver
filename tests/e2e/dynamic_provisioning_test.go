@@ -251,7 +251,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	})
 
 	//scenario 2: use 'Delete' retention policy. step2: verify the PV is not presented after PVC deleted.
-	It("PV resource should get deleted after PV is deleted in kubernetes", func() {
+	It("PV resource should get deleted after PVC is deleted in kubernetes", func() {
 		By("Should delete deployment successfully in Kubernetes")
 		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
