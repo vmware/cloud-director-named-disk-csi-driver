@@ -31,6 +31,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		dynamicPVName string
 		vcdDisk       *vcdtypes.Disk
 		pv            *apiv1.PersistentVolume
+		pvDeleted     bool
 	)
 
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
@@ -48,15 +49,17 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 
 	ctx := context.TODO()
 
-	ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(ns).NotTo(BeNil())
-	retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(retainStorageClass).NotTo(BeNil())
-	deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(deleteStorageClass).NotTo(BeNil())
+	It("Should create the name space AND different storage classes", func() {
+		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(ns).NotTo(BeNil())
+		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(retainStorageClass).NotTo(BeNil())
+		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deleteStorageClass).NotTo(BeNil())
+	})
 
 	//scenario 1: use 'Retain' retention policy. step1: create PVC and PV.
 	It("should create PVC and PV using retain reclaim policy", func() {
@@ -121,7 +124,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	//scenario 1: use 'Retain' retention policy. step3: delete pvc and deployment and Verify the PV is still presented
+	//scenario 1: use 'Retain' retention policy. step3: delete pvc and deployment and Verify the PV is deleted in VCD
 	It("should verify the presence of PV after PVC deletion", func() {
 		By("should delete the deployment successfully in Kubernetes")
 		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
@@ -260,11 +263,16 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		err = tc.DeletePVC(ctx, testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
 
-		By("should wait until PV deleted within the time constraint")
-		err = utils.WaitForPVDeleted(ctx, dynamicPVName, tc)
+		By("should wait until Disk deleted within the time constraint")
+		err = utils.WaitDiskDeleteViaVCD(tc.VcdClient, dynamicPVName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be not presented in Kubernetes")
+
+		pvDeleted, err = tc.WaitForPVDeleted(ctx, dynamicPVName)
+		Expect(pvDeleted).To(BeTrue())
+		Expect(err).NotTo(HaveOccurred())
+
 		By("PV should be not presented in VCD")
 		vcdDisk, err = utils.GetDiskByNameViaVCD(tc.VcdClient, dynamicPVName)
 		Expect(err).To(MatchError(govcd.ErrorEntityNotFound))

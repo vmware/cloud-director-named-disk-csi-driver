@@ -177,6 +177,23 @@ func VerifyDiskViaVCD(vcdClient *vcdsdk.Client, diskName string) (*vcdtypes.Disk
 	return disk, nil
 }
 
+func WaitDiskDeleteViaVCD(vcdClient *vcdsdk.Client, diskName string) error {
+	err := wait.PollImmediate(30*time.Second, 150*time.Second, func() (bool, error) {
+		_, err := GetDiskByNameViaVCD(vcdClient, diskName)
+		if err != nil {
+			if err == govcd.ErrorEntityNotFound {
+				return true, nil
+			}
+			return false, fmt.Errorf("error occurred while getting disk [%s] from VCD: %v", diskName, err)
+		}
+		return false, nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func GetDiskByNameViaVCD(vcdClient *vcdsdk.Client, diskName string) (disk *vcdtypes.Disk, err error) {
 	if vcdClient.VDC == nil {
 		return nil, fmt.Errorf("error occurred while getting vcdClient VDC, [%v]", err)

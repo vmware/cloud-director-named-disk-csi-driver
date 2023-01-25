@@ -18,10 +18,11 @@ const (
 
 var _ = Describe("CSI static provisioning Test", func() {
 	var (
-		tc      *testingsdk.TestClient
-		err     error
-		vcdDisk *vcdtypes.Disk
-		pv      *apiv1.PersistentVolume
+		tc        *testingsdk.TestClient
+		err       error
+		vcdDisk   *vcdtypes.Disk
+		pv        *apiv1.PersistentVolume
+		pvDeleted bool
 	)
 
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
@@ -38,20 +39,23 @@ var _ = Describe("CSI static provisioning Test", func() {
 	Expect(&tc.Cs).NotTo(BeNil())
 
 	ctx := context.TODO()
-	ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(ns).NotTo(BeNil())
-	retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(retainStorageClass).NotTo(BeNil())
-	deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(deleteStorageClass).NotTo(BeNil())
+
+	It("Should create the name space AND different storage classes", func() {
+		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(ns).NotTo(BeNil())
+		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(retainStorageClass).NotTo(BeNil())
+		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deleteStorageClass).NotTo(BeNil())
+	})
 
 	//scenario 1: use 'Delete' retention policy. step1: create VCD named-disk and PV.
 	It("should create a disk using VCD API calls and set up a PV based on the disk", func() {
 		By("should create the disk successfully from VCD")
-		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, defaultStorageProfile)
+		err = utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, defaultStorageProfile)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should create the static PV successfully in kubernetes")
@@ -101,7 +105,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	//scenario 1: use 'Delete' retention policy. step3: PV should be presented in kubernetes and VCD after PVC deleted
+	//scenario 1: use 'Delete' retention policy. step3: PV should not be presented in kubernetes and VCD after PVC deleted
 	It("PV should be presented in kubernetes and VCD after PVC AND Deployment is deleted", func() {
 		By("should delete the PVC successfully")
 		err = tc.DeletePVC(ctx, testNameSpaceName, testStaticPVCName)
@@ -111,39 +115,17 @@ var _ = Describe("CSI static provisioning Test", func() {
 		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
 
-		By("PV should be presented in Kubernetes")
-		pv, err = tc.GetPV(ctx, testDiskName)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(pv).NotTo(BeNil())
-
-		By("PV should be presented in VCD")
-		vcdDisk, err = utils.GetDiskByNameViaVCD(tc.VcdClient, testDiskName)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(vcdDisk).NotTo(BeNil())
-	})
-
-	//scenario 1: use 'Delete' retention policy. step4: PV should be presented in VCD after PV deleted
-	It("VCD Disk should be presented after PV gets deleted in RDE", func() {
-		By("should delete PV successfully")
-		err = tc.DeletePV(ctx, testDiskName)
+		By("PV should deleted in VCD")
+		err = utils.WaitDiskDeleteViaVCD(tc.VcdClient, testDiskName)
 		Expect(err).NotTo(HaveOccurred())
 
-		By("Verify PV is deleted in Kubernetes")
+		By("PV should be not presented in Kubernetes")
+		pvDeleted, err = tc.WaitForPVDeleted(ctx, testDiskName)
+		Expect(pvDeleted).To(BeTrue())
+		Expect(err).NotTo(HaveOccurred())
 		pv, err = tc.GetPV(ctx, testDiskName)
 		Expect(err).To(HaveOccurred())
 		Expect(pv).To(BeNil())
-
-		By("PV should be presented in VCD")
-		vcdDisk, err := utils.GetDiskByNameViaVCD(tc.VcdClient, testDiskName)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(vcdDisk).NotTo(BeNil())
-
-		By("cleaning up the disk in VCD")
-		err = utils.DeleteDisk(tc.VcdClient, testDiskName)
-		Expect(err).NotTo(HaveOccurred())
-		vcdDisk, err = utils.GetDiskByNameViaVCD(tc.VcdClient, testDiskName)
-		Expect(err).To(MatchError(govcd.ErrorEntityNotFound))
-		Expect(vcdDisk).To(BeNil())
 	})
 
 	//scenario 2: use 'Retain' retention policy. step1: create VCD named-disk and PV.
