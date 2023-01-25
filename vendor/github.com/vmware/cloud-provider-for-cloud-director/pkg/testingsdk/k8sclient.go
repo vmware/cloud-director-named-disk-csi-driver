@@ -12,25 +12,57 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilnet "k8s.io/apimachinery/pkg/util/net"
 	"k8s.io/apimachinery/pkg/util/wait"
-
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
 	"time"
 )
 
 var (
-	ResourceExisted            = errors.New("[REX] resource is already existed")
-	ResourceNotFound           = errors.New("[RNF] resource is not found")
-	ResourceNameNull           = errors.New("[RNN] resource name is null")
-	ControlPlaneLabel          = "node-role.kubernetes.io/control-plane"
-	defaultRetryInterval       = 10 * time.Second
-	defaultRetryTimeout        = 160 * time.Second
-	defaultLongRetryInterval   = 20 * time.Second
-	defaultLongRetryTimeout    = 300 * time.Second
-	defaultNodeInterval        = 2 * time.Second
-	defaultNodeReadyTimeout    = 20 * time.Minute
-	defaultNodeNotReadyTimeout = 8 * time.Minute
+	ResourceExisted             = errors.New("[REX] resource is already existed")
+	ResourceNotFound            = errors.New("[RNF] resource is not found")
+	ResourceNameNull            = errors.New("[RNN] resource name is null")
+	ControlPlaneLabel           = "node-role.kubernetes.io/control-plane"
+	defaultRetryInterval        = 10 * time.Second
+	defaultRetryTimeout         = 160 * time.Second
+	defaultLongRetryInterval    = 20 * time.Second
+	defaultLongRetryTimeout     = 300 * time.Second
+	defaultNodeInterval         = 2 * time.Second
+	defaultNodeReadyTimeout     = 20 * time.Minute
+	defaultNodeNotReadyTimeout  = 8 * time.Minute
+	defaultServiceRetryInterval = 10 * time.Second
+	defaultServiceRetryTimeout  = 5 * time.Minute
 )
+
+func waitForServiceExposure(cs kubernetes.Interface, namespace string, name string) (*apiv1.Service, error) {
+	var svc *apiv1.Service
+	var err error
+
+	err = wait.PollImmediate(defaultServiceRetryInterval, defaultServiceRetryTimeout, func() (bool, error) {
+		svc, err = cs.CoreV1().Services(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+		if err != nil {
+			// If our error is retryable, it's not a major error. So we do not need to return it as an error.
+			if IsRetryableError(err) {
+				return false, nil
+			}
+			return false, err
+		}
+
+		IngressList := svc.Status.LoadBalancer.Ingress
+		if len(IngressList) == 0 {
+			// we'll store an error here and continue to retry until timeout, if this was where we time out eventually, we will return an error at the end
+			err = fmt.Errorf("cannot find Ingress components after duration: [%d] minutes", defaultServiceRetryTimeout/time.Minute)
+			return false, nil
+		}
+
+		ip := svc.Status.LoadBalancer.Ingress[0].IP
+		return ip != "", nil // Once we have our IP, we can terminate the condition for polling and return the service
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	return svc, nil
+}
 
 func waitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) error {
 	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
