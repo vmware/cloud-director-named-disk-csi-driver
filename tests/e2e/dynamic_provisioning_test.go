@@ -213,7 +213,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pv).NotTo(BeNil())
 
-		By("PV shoule be presented in VCD")
+		By("PV should be presented in VCD")
 		vcdDisk, err := utils.VerifyDiskViaVCD(tc.VcdClient, dynamicPVName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(vcdDisk).NotTo(BeNil())
@@ -253,7 +253,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		By("Deployment should be ready")
 	})
 
-	//scenario 2: use 'Delete' retention policy. step2: verify the PV is not presented after PVC deleted.
+	//scenario 2: use 'Delete' retention policy. step3: verify the PV is not presented after PVC deleted.
 	It("PV resource should get deleted after PVC is deleted in kubernetes", func() {
 		By("Should delete deployment successfully in Kubernetes")
 		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
@@ -268,7 +268,6 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be not presented in Kubernetes")
-
 		pvDeleted, err = tc.WaitForPVDeleted(ctx, dynamicPVName)
 		Expect(pvDeleted).To(BeTrue())
 		Expect(err).NotTo(HaveOccurred())
