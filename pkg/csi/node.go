@@ -151,6 +151,21 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		}
 	}
 
+	// Check if  directory exists
+	mountDirExists, err := ns.checkIfDirExists(mountDir)
+	if err != nil {
+        	return nil, status.Errorf(codes.Internal, "could not verify that [%s] is a dir: [%v]", mountDir, err)
+    	}
+	if !mountDirExists {
+		// Directory doesn't exest
+        	klog.Infof("Path [%s] does not exist. Make it\n", mountDir)
+        	if err := os.MkdirAll(mountDir, 0750); err != nil {
+          		return nil, status.Error(codes.Internal,
+              			fmt.Sprintf("unable to mkdir at path [%s] - [%s] ",
+                  			mountDir, err.Error()))
+		}
+    	}
+
 	// Mounting as the device is not yet mounted
 	klog.Infof("Mounting device [%s] to folder [%s] of type [%s] with flags [%v]",
 		devicePath, mountDir, fsType, mountFlags)
