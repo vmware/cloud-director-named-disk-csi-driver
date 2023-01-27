@@ -173,6 +173,19 @@ spec:
               mountPath: /etc/kubernetes/vcloud
             - name: vcloud-basic-auth-volume
               mountPath: /etc/kubernetes/vcloud/basic-auth
+      tolerations:
+        - key: "CriticalAddonsOnly"
+          operator: "Exists"
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: "Exists"
       volumes:
         - name: socket-dir
           emptyDir: {}
