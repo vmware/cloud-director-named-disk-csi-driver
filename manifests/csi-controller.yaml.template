@@ -176,8 +176,9 @@ spec:
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
+            - weight: 1
+              preference:
+                matchExpressions:
                   - key: node-role.kubernetes.io/master
                     operator: "Exists"
       volumes:
