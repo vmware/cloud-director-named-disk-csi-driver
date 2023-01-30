@@ -19,10 +19,6 @@ csi: $(GO_CODE)
 	touch out/$@
 
 prod: csi prod-manifests crs-artifacts-prod
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
 
 dev: csi dev-manifests crs-artifacts-dev
 	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
