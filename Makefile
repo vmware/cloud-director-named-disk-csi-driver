@@ -18,9 +18,9 @@ csi: $(GO_CODE)
 	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
 	touch out/$@
 
-prod: csi prod-manifests crs-artifacts-prod
+prod: csi prod-manifests update-gcr-images crs-artifacts-prod
 
-dev: csi dev-manifests crs-artifacts-dev
+dev: csi dev-manifests update-gcr-images crs-artifacts-dev
 	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
 
 crs-artifacts-prod:
@@ -48,6 +48,17 @@ dev-manifests:
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
+
+update-gcr-images:
+	docker pull k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0
+	docker pull k8s.gcr.io/sig-storage/csi-attacher:v3.2.1
+	docker pull k8s.gcr.io/sig-storage/csi-provisioner:v2.2.2
+	docker tag k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0 $(REGISTRY)/sig-storage/csi-node-driver-registrar:v2.2.0
+	docker tag k8s.gcr.io/sig-storage/csi-attacher:v3.2.1 $(REGISTRY)/sig-storage/csi-attacher:v3.2.1
+	docker tag k8s.gcr.io/sig-storage/csi-provisioner:v2.2.2 $(REGISTRY)/sig-storage/csi-provisioner:v2.2.2
+	docker push $(REGISTRY)/sig-storage/csi-node-driver-registrar:v2.2.0
+	docker push $(REGISTRY)/sig-storage/csi-attacher:v3.2.1
+	docker push $(REGISTRY)/sig-storage/csi-provisioner:v2.2.2
 
 test:
 	go test -tags testing -v github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient -cover -count=1
