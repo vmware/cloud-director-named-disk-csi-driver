@@ -49,6 +49,7 @@ dev-manifests:
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
 
+# Pulls and pushes CSI images from gcr registry to harbor for airgapped
 update-gcr-images:
 	docker pull k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0
 	docker pull k8s.gcr.io/sig-storage/csi-attacher:v3.2.1
