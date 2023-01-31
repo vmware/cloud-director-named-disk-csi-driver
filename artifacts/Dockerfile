@@ -1,3 +1,5 @@
 FROM scratch
-COPY /artifacts/*.yaml /src/artifact/
+COPY /artifacts/csi-controller-crs-airgap.yaml.template \
+    /artifacts/csi-node-crs-airgap.yaml.template \
+    /artifacts/csi-driver-airgap.yaml /src/artifact/
 ENTRYPOINT ["/bin/sh"]
