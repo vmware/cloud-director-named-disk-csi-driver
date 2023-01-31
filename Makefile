@@ -3,6 +3,10 @@ GITROOT := $(shell git rev-parse --show-toplevel)
 GO_CODE := $(shell ls go.mod go.sum **/*.go)
 version := $(shell cat ${GITROOT}/release/version)
 
+csi_node_driver_registrar_version := v2.2.0
+csi_attacher_version := v3.2.1
+csi_provisioner_version := v2.2.2
+
 REGISTRY?="harbor-repo.vmware.com/vcloud"
 
 .PHONY: build-within-docker vendor
@@ -51,15 +55,15 @@ dev-manifests:
 
 # Pulls and pushes CSI images from gcr registry to harbor for airgapped
 update-gcr-images:
-	docker pull k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0
-	docker pull k8s.gcr.io/sig-storage/csi-attacher:v3.2.1
-	docker pull k8s.gcr.io/sig-storage/csi-provisioner:v2.2.2
-	docker tag k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0 $(REGISTRY)/sig-storage/csi-node-driver-registrar:v2.2.0
-	docker tag k8s.gcr.io/sig-storage/csi-attacher:v3.2.1 $(REGISTRY)/sig-storage/csi-attacher:v3.2.1
-	docker tag k8s.gcr.io/sig-storage/csi-provisioner:v2.2.2 $(REGISTRY)/sig-storage/csi-provisioner:v2.2.2
-	docker push $(REGISTRY)/sig-storage/csi-node-driver-registrar:v2.2.0
-	docker push $(REGISTRY)/sig-storage/csi-attacher:v3.2.1
-	docker push $(REGISTRY)/sig-storage/csi-provisioner:v2.2.2
+	docker pull k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker pull k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker pull k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker tag k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version) $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker tag k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version) $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker tag k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version) $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker push $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker push $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker push $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
 
 test:
 	go test -tags testing -v github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient -cover -count=1
