@@ -3,6 +3,10 @@ GITROOT := $(shell git rev-parse --show-toplevel)
 GO_CODE := $(shell ls go.mod go.sum **/*.go)
 version := $(shell cat ${GITROOT}/release/version)
 
+csi_node_driver_registrar_version := v2.2.0
+csi_attacher_version := v3.2.1
+csi_provisioner_version := v2.2.2
+
 REGISTRY?="harbor-repo.vmware.com/vcloud"
 
 .PHONY: build-within-docker vendor
@@ -18,18 +22,49 @@ csi: $(GO_CODE)
 	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
 	touch out/$@
 
-prod: csi
+prod: csi prod-manifests update-gcr-images crs-artifacts-prod
+
+dev: csi dev-manifests update-gcr-images crs-artifacts-dev
+	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
+
+# The below artifact commands will generate csi-node-crs-airgap.yaml.template, csi-controller-crs-airgap.yaml.template which are to be pushed each time images are made
+crs-artifacts-prod:
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-controller-crs-airgap.yaml.template > artifacts/csi-controller-crs-airgap.yaml.template
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
+	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(version)
+	docker tag csi-crs-airgapped:$(version) $(REGISTRY)/csi-crs-airgapped:$(version)
+	docker push $(REGISTRY)/csi-crs-airgapped:$(version)
+
+crs-artifacts-dev:
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-controller-crs-airgap.yaml.template > artifacts/csi-controller-crs-airgap.yaml.template
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
+	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(GITCOMMIT)
+	docker tag csi-crs-airgapped:$(GITCOMMIT) $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
+	docker push $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
+
+prod-manifests:
 	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
 	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
 	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
 	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
 
-dev: csi
-	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
+dev-manifests:
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
+
+# Pulls and pushes CSI images from gcr registry to harbor for airgapped
+update-gcr-images:
+	docker pull k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker pull k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker pull k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker tag k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version) $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker tag k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version) $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker tag k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version) $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker push $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker push $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker push $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
 
 test:
 	go test -tags testing -v github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient -cover -count=1
