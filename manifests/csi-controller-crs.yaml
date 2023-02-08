@@ -95,7 +95,6 @@ metadata:
   namespace: kube-system
 spec:
   replicas: 1
-  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: csi-vcd-controllerplugin
