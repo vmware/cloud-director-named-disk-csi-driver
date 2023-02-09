@@ -939,13 +939,13 @@ func (diskManager *DiskManager) UpgradeVersionConditionCheck(dstVersion string) 
 
 }
 
-// ConvertToLatestRDEVersionFormat provides an automatic conversion from current CSI status to the latest CSI version in use
+// ConvertToLatestCSIVersionFormat provides an automatic conversion from current CSI status to the latest CSI version in use
 // Call an API call (GET) to get the CAPVCD entity.
 // Provide an automatic conversion of the content in srcCapvcdEntity.entity.status.csi content to the latest CSI version format (vcdtypes.CSIStatus)
 // Add the placeholder for any special conversion logic inside vcdtypes.CSIStatus (for developers)
 // Call an API call (PUT) to update CAPVCD entity and persist data into VCD
 // Return dstCapvcdEntity as output.
-func (diskManager *DiskManager) ConvertToLatestRDEVersionFormat(srcVersion string, dstVersion string) (*swaggerClient.DefinedEntity, error) {
+func (diskManager *DiskManager) ConvertToLatestCSIVersionFormat(srcVersion string, dstVersion string) (*swaggerClient.DefinedEntity, error) {
 	clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
 	if err != nil {
 		return nil, fmt.Errorf("error when getting cluster org [%s] from VCD: [%v]; skipping upgrade of CSI status section from Version [%s] to Version [%s]", diskManager.ClusterID, err, srcVersion, dstVersion)
@@ -1000,9 +1000,10 @@ func (diskManager *DiskManager) ConvertToLatestRDEVersionFormat(srcVersion strin
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert RDE [%s(%s)] CAPVCD status map [%T] to CAPVCDStatus: [%v]; skipping upgrade of CSI status section from Version [%s] to Version [%s]", srcCapvcdEntity.Name, srcCapvcdEntity.Id, srcCSIStatusMapIf, err, srcVersion, dstVersion)
 		}
-		// ******************  placeHolder: add any special conversion logic for CAPVCDStatus  ******************
-		// For example: the latest CAPVCDStatus has a property: "PropertyToBeAdded" while old map "srcCAPVCDStatusMap" does not have the property
-		// Developers should set default value here: CAPVCDStatus.PropertyToBeAdded = true
+		// ******************  placeHolder: add any special conversion logic for CSIStatus  ******************
+		// Say CSI 1.3 has properties {X, Y} and CSI 1.4 introduces new property Z; {X, Y, Z}
+		// CSIStatus should update with {X, Y, Z=default}. Developers should update property Z at this place.
+		//PUT RDE.status.CSI should update with {X, Y, Z=updatedValue}
 		CSIStatus.Version = dstVersion
 		dstCSIStatusMap, err := util.ConvertCSIStatusToMap(CSIStatus)
 		if err != nil {

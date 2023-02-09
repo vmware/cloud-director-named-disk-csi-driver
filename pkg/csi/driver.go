@@ -143,7 +143,7 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 	dstCSIVersion := d.version
 	isSrcCSIVersionOutdated, srcCSIVersion := diskManager.UpgradeVersionConditionCheck(dstCSIVersion)
 	if isSrcCSIVersionOutdated && srcCSIVersion != "" {
-		_, err := diskManager.ConvertToLatestRDEVersionFormat(srcCSIVersion, dstCSIVersion)
+		_, err := diskManager.ConvertToLatestCSIVersionFormat(srcCSIVersion, dstCSIVersion)
 		if err != nil {
 			if rdeErr := diskManager.AddToErrorSet(util.RdeUpgradeError, "", "", map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
 				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeUpgradeError, diskManager.ClusterID, rdeErr)
