@@ -1,12 +1,13 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package vcdtypes
 
 import (
 	"encoding/xml"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
@@ -87,14 +88,22 @@ type DiskCreateParams struct {
 // Reference: vCloud API 35.0 - VmsType
 // https://code.vmware.com/apis/1046/vmware-cloud-director/doc/doc/types/VmsType.html
 type Vms struct {
-	XMLName     xml.Name   `xml:"Vms"`
-	Xmlns       string     `xml:"xmlns,attr,omitempty"`
+	XMLName xml.Name `xml:"Vms"`
+	Xmlns   string   `xml:"xmlns,attr,omitempty"`
 
-	HREF        string     `xml:"href,attr"`
-	Type        string     `xml:"type,attr"`
+	HREF string `xml:"href,attr"`
+	Type string `xml:"type,attr"`
 
 	// Elements
 	Link            []*types.Link          `xml:"Link,omitempty"`
 	VCloudExtension *types.VCloudExtension `xml:"VCloudExtension,omitempty"`
-	VmReference     []*types.Reference      `xml:"VmReference,omitempty"`
+	VmReference     []*types.Reference     `xml:"VmReference,omitempty"`
+}
+
+type CSIStatus struct {
+	Name           string                `json:"name,omitempty"`
+	Version        string                `json:"version,omitempty"`
+	ErrorSet       []vcdsdk.BackendError `json:"errorSet,omitempty"`
+	EventSet       []vcdsdk.BackendEvent `json:"eventSet,omitempty"`
+	VCDResourceSet []vcdsdk.VCDResource  `json:"vcdResourceSet,omitempty"`
 }
