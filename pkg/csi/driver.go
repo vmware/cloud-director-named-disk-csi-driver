@@ -142,7 +142,7 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 	// ******************   Upgrade CSI Section in RDE if needed   ******************
 	dstCSIVersion := d.version
 	isSrcCSIVersionOutdated, srcCSIVersion := diskManager.UpgradeVersionConditionCheck(dstCSIVersion)
-	if isSrcCSIVersionOutdated {
+	if isSrcCSIVersionOutdated && srcCSIVersion != "" {
 		_, err := diskManager.ConvertToLatestRDEVersionFormat(srcCSIVersion, dstCSIVersion)
 		if err != nil {
 			if rdeErr := diskManager.AddToErrorSet(util.RdeUpgradeError, "", "", map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
