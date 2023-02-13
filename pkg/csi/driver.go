@@ -149,7 +149,7 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 		}
 		return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
 	}
-	if addEventRdeErr := diskManager.AddToEventSet(util.RdeUpgradeEvent, "", "", map[string]interface{}{"Detailed Description": "Upgrade CSI content to the latest version"}); addEventRdeErr != nil {
+	if addEventRdeErr := diskManager.AddToEventSet(util.RdeUpgradeEvent, "", "", map[string]interface{}{"Detailed Description": "Upgrade CSI Status to the latest version in use"}); addEventRdeErr != nil {
 		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.RdeUpgradeEvent, diskManager.ClusterID)
 	}
 	if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.RdeUpgradeError, "", ""); removeErrorRdeErr != nil {
