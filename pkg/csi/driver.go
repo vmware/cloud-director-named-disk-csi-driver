@@ -139,23 +139,21 @@ func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string
 		}
 	}
 
-	// ******************   Upgrade CSI Section in RDE if needed   ******************
+	// ******************   Upgrade CSI Section in RDE   ******************
 	dstCSIVersion := d.version
-	isSrcCSIVersionOutdated, srcCSIVersion := diskManager.UpgradeVersionConditionCheck(dstCSIVersion)
-	if isSrcCSIVersionOutdated && srcCSIVersion != "" {
-		_, err := diskManager.ConvertToLatestCSIVersionFormat(srcCSIVersion, dstCSIVersion)
-		if err != nil {
-			if rdeErr := diskManager.AddToErrorSet(util.RdeUpgradeError, "", "", map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
-				klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeUpgradeError, diskManager.ClusterID, rdeErr)
-			}
-			return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
+	//Todo: Validate the compare srcCSIVersion and dstCSIVersion
+	_, err := diskManager.ConvertToLatestCSIVersionFormat(dstCSIVersion)
+	if err != nil {
+		if rdeErr := diskManager.AddToErrorSet(util.RdeUpgradeError, "", "", map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.RdeUpgradeError, diskManager.ClusterID, rdeErr)
 		}
-		if addEventRdeErr := diskManager.AddToEventSet(util.RdeUpgradeEvent, "", "", nil); addEventRdeErr != nil {
-			klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.RdeUpgradeEvent, diskManager.ClusterID)
-		}
-		if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.RdeUpgradeError, "", ""); removeErrorRdeErr != nil {
-			klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.RdeUpgradeError, diskManager.ClusterID)
-		}
+		return fmt.Errorf("CSI section upgrade failed when CAPVCD RDE is present, [%v]", err)
+	}
+	if addEventRdeErr := diskManager.AddToEventSet(util.RdeUpgradeEvent, "", "", map[string]interface{}{"Detailed Description": "Upgrade CSI content to the latest version"}); addEventRdeErr != nil {
+		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.RdeUpgradeEvent, diskManager.ClusterID)
+	}
+	if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.RdeUpgradeError, "", ""); removeErrorRdeErr != nil {
+		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.RdeUpgradeError, diskManager.ClusterID)
 	}
 	return nil
 }

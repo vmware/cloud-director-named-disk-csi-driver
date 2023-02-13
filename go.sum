@@ -70,7 +70,6 @@ github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+Ce
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/bketelsen/crypt v0.0.3-0.20200106085610-5cbc8cc4026c/go.mod h1:MKsuJmJgSg28kpZDP6UIiPt0e0Oz0kqKNGyRaWEPv84=
-github.com/blang/semver v3.5.1+incompatible h1:cQNTCjp13qL8KC3Nbxr/y2Bqb63oX6wdnnjpJbkM4JQ=
 github.com/blang/semver v3.5.1+incompatible/go.mod h1:kRBLl5iJ+tD4TcOOxsy/0fnwebNt5EWlYSAyrTnjyyk=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
@@ -381,8 +380,6 @@ github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69
 github.com/thecodeteam/gofsutil v0.1.2 h1:FL87mBzZeeuDMZm8hpYLFcYylQdq6bbm8UQ1oc6VRMM=
 github.com/thecodeteam/gofsutil v0.1.2/go.mod h1:7bDOpr2aMnmdm9RTdxBEeqdOr+8RpnQhsB/VUEI3DgM=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230117213850-723200cc3b0e h1:MQ5//mri43y83QtLawtLORN9fCXmzQpvYj6As3nwMAQ=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230117213850-723200cc3b0e/go.mod h1:HTrbzJ/Alt4T79LWz5YTZYdHO2VIRCA7pdfhGoHQb3Q=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230125004611-d1e7a9ae01a1 h1:i2NdFnfyzDl4L0xuoJj0tQw/coz5M5hiVpGu6qnRbjQ=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230125004611-d1e7a9ae01a1/go.mod h1:oVCZYSpG3WnkVTdzBpOrra0WT/5BYQTVaguGnxdAT2c=
 github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3 h1:VJolXzgomaRPrgzSr0EduuUtJIJEf5RdoLbktZFQqIc=
