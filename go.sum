@@ -380,8 +380,6 @@ github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69
 github.com/thecodeteam/gofsutil v0.1.2 h1:FL87mBzZeeuDMZm8hpYLFcYylQdq6bbm8UQ1oc6VRMM=
 github.com/thecodeteam/gofsutil v0.1.2/go.mod h1:7bDOpr2aMnmdm9RTdxBEeqdOr+8RpnQhsB/VUEI3DgM=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230117213850-723200cc3b0e h1:MQ5//mri43y83QtLawtLORN9fCXmzQpvYj6As3nwMAQ=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230117213850-723200cc3b0e/go.mod h1:HTrbzJ/Alt4T79LWz5YTZYdHO2VIRCA7pdfhGoHQb3Q=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230125004611-d1e7a9ae01a1 h1:i2NdFnfyzDl4L0xuoJj0tQw/coz5M5hiVpGu6qnRbjQ=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230125004611-d1e7a9ae01a1/go.mod h1:oVCZYSpG3WnkVTdzBpOrra0WT/5BYQTVaguGnxdAT2c=
 github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3 h1:VJolXzgomaRPrgzSr0EduuUtJIJEf5RdoLbktZFQqIc=

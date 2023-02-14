@@ -862,6 +862,116 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 	return fmt.Errorf("failed to upgrade CSI Persistent Volumes section of the RDE [%s] after [%d] retries", diskManager.ClusterID, vcdsdk.MaxRDEUpdateRetries)
 }
 
+// ConvertToLatestCSIVersionFormat provides an automatic conversion from current CSI status to the latest CSI version in use
+// Call an API call (GET) to get the CAPVCD entity.
+// Provide an automatic conversion of the content in srcCapvcdEntity.entity.status.csi content to the latest CSI version format (vcdtypes.CSIStatus)
+// Add the placeholder for any special conversion logic inside vcdtypes.CSIStatus (for developers)
+// Call an API call (PUT) to update CAPVCD entity and persist data into VCD
+// Return dstCapvcdEntity as output.
+func (diskManager *DiskManager) ConvertToLatestCSIVersionFormat(dstVersion string) (*swaggerClient.DefinedEntity, error) {
+	clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+	if err != nil {
+		return nil, fmt.Errorf("error when getting cluster org [%s] from VCD: [%v]; skipping upgrade of CSI status section to Version [%s]", diskManager.ClusterID, err, dstVersion)
+	}
+
+	if clusterOrg == nil || clusterOrg.Org == nil {
+		return nil, fmt.Errorf("obtained nil org when getting org by name [%s]; skipping upgrade of CSI status section to Version [%s]", diskManager.VCDClient.ClusterOrgName, dstVersion)
+	}
+	var srcVersion string
+	for retries := 0; retries < vcdsdk.MaxRDEUpdateRetries; retries++ {
+		srcCapvcdEntity, resp, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.Background(),
+			diskManager.ClusterID, clusterOrg.Org.ID)
+		if err != nil {
+			var responseMessageBytes []byte
+			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
+				responseMessageBytes = gsErr.Body()
+				klog.Errorf("error occurred when getting defined entity [%s]; skipping upgrade of CSI status section: [%s]",
+					diskManager.ClusterID, string(responseMessageBytes))
+			}
+			return nil, fmt.Errorf("error when getting defined entity [%s] from VCD: [%v]; skipping upgrade of CSI status section to Version [%s]", diskManager.ClusterID, err, dstVersion)
+		} else if resp == nil {
+			return nil, fmt.Errorf("unexpected response when fetching the defined entity [%s]; skipping upgrade of CSI status section to Version [%s]",
+				diskManager.ClusterID, dstVersion)
+		} else {
+			if resp.StatusCode != http.StatusOK {
+				return nil, fmt.Errorf("obtained unexpected response status code [%d] when fetching the defined entity [%s]. expected [%d]",
+					resp.StatusCode, diskManager.ClusterID, http.StatusOK)
+			}
+		}
+
+		newStatusMap := make(map[string]interface{})
+		// ******************  upgrade status.capvcd  ******************
+		statusEntryIf, statusEntryOk := srcCapvcdEntity.Entity["status"]
+		if !statusEntryOk {
+			return nil, fmt.Errorf("key 'Status' is missing in the RDE [%s]; skipping upgrade of CSI status section to Version [%s]", diskManager.ClusterID, dstVersion)
+		}
+
+		srcStatusMapIf, srcStatusMapOk := statusEntryIf.(map[string]interface{})
+		if !srcStatusMapOk {
+			return nil, fmt.Errorf("failed to convert RDE [%s] Status from [%T] to map[string]interface{}; skipping upgrade of CSI status section to Version [%s]", diskManager.ClusterID, statusEntryIf, dstVersion)
+		}
+
+		srcEntityCSIStatusIf, srcCSIStatusEntityOk := srcStatusMapIf[vcdsdk.ComponentCSI]
+		if !srcCSIStatusEntityOk {
+			klog.V(4).Infof("key 'CSI' is missing in the RDE [%s]; skipping upgrade of CSI status section to Version [%s]", diskManager.ClusterID, dstVersion)
+			return &srcCapvcdEntity, nil
+		}
+
+		srcCSIStatusMapIf, srcCSIStatusMapOk := srcEntityCSIStatusIf.(map[string]interface{})
+		if !srcCSIStatusMapOk {
+			klog.V(4).Infof("failed to convert RDE [%s] CSI status from [%T] to map[string]interface{}; skipping upgrade of CSI status section from Version [%s] to Version [%s]", diskManager.ClusterID, srcEntityCSIStatusIf, srcVersion, dstVersion)
+			return &srcCapvcdEntity, nil
+		}
+		newStatusMap = srcCSIStatusMapIf
+		CSIStatus, err := util.ConvertMapToCSIStatus(srcCSIStatusMapIf)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert RDE [%s(%s)] CSI status map [%T] to CAPVCDStatus: [%v]; skipping upgrade of CSI status section to Version [%s]", srcCapvcdEntity.Name, srcCapvcdEntity.Id, srcCSIStatusMapIf, err, dstVersion)
+		}
+		srcVersion = CSIStatus.Version
+		// ******************  placeHolder: add any special conversion logic for CSIStatus  ******************
+		// Say CSI 1.3 has properties {X, Y} and CSI 1.4 introduces new property Z; {X, Y, Z}
+		// CSIStatus should update with {X, Y, Z=default}. Developers should update property Z at this place.
+		//PUT RDE.status.CSI should update with {X, Y, Z=updatedValue}
+		CSIStatus.Version = dstVersion
+		dstCSIStatusMap, err := util.ConvertCSIStatusToMap(CSIStatus)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert upgraded RDE [%s(%s)] CAPVCD Status from [%T] to map[string]interface{}; skipping upgrade of CSI status section from Version [%s] to Version [%s]", srcCapvcdEntity.Name, srcCapvcdEntity.Id, CSIStatus, srcVersion, dstVersion)
+		}
+		newStatusMap[vcdsdk.ComponentCSI] = dstCSIStatusMap
+		srcCapvcdEntity.Entity["status"] = newStatusMap
+
+		updatedRde, resp, err := diskManager.VCDClient.APIClient.DefinedEntityApi.UpdateDefinedEntity(
+			context.Background(), srcCapvcdEntity, etag, diskManager.ClusterID, clusterOrg.Org.ID, nil)
+		if err != nil {
+			var responseMessageBytes []byte
+			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
+				responseMessageBytes = gsErr.Body()
+				klog.V(5).Infof("error occurred when upgrading CSI of defined entity [%s] from version [%s] to version [%s]: [%s]",
+					diskManager.ClusterID, srcVersion, dstVersion, string(responseMessageBytes))
+			}
+			return nil, fmt.Errorf("error when upgrading CSI of defined entity [%s] from Version [%s] to Version [%s]: [%v]",
+				diskManager.ClusterID, srcVersion, dstVersion, err)
+		} else if resp == nil {
+			return nil, fmt.Errorf("unexpected response when upgrading CSI of defined entity [%s] from Version [%s] to Version [%s]; obtained nil response",
+				diskManager.ClusterID, srcVersion, dstVersion)
+		} else {
+			if resp.StatusCode == http.StatusPreconditionFailed {
+				klog.V(5).Infof("wrong etag [%s] while upgrading CSI of defined entity [%s] from Version [%s] to Version [%s]. Retries remaining: [%d]",
+					etag, diskManager.ClusterID, srcVersion, dstVersion, vcdsdk.MaxRDEUpdateRetries-retries-1)
+				continue
+			} else if resp.StatusCode != http.StatusOK {
+				klog.Errorf("unexpected response status code when upgrading CSI of defined entity [%s] from Version [%s] to Version [%s]. Expected response [%d] obtained [%d]",
+					diskManager.ClusterID, srcVersion, dstVersion, http.StatusOK, resp.StatusCode)
+				continue
+			}
+		}
+		klog.V(4).Infof("successfully upgraded CSI of defined entity [%s] from Version [%s] to Version [%s]", diskManager.ClusterID, srcVersion, dstVersion)
+		return &updatedRde, nil
+	}
+	return nil, fmt.Errorf("failed to upgrade CSI of RDE [%s] from Version [%s] to Version [%s] after [%d] retries",
+		diskManager.ClusterID, srcVersion, dstVersion, vcdsdk.MaxRDEUpdateRetries)
+}
+
 func (diskManager *DiskManager) AddToErrorSet(errorType string, vcdResourceId string, vcdResourceName string, detailMap map[string]interface{}) error {
 	rdeManager := vcdsdk.NewRDEManager(diskManager.VCDClient, diskManager.ClusterID, util.CSIName, version.Version)
 	newError := vcdsdk.BackendError{
