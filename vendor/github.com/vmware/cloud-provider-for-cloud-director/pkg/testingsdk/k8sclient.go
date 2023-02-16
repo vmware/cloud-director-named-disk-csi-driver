@@ -517,7 +517,7 @@ func createDeployment(ctx context.Context, k8sClient *kubernetes.Clientset, para
 	return newDeployment, nil
 }
 
-func createLoadBalancerService(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, serviceName string, annotations map[string]string, labels map[string]string, servicePort []apiv1.ServicePort) (*apiv1.Service, error) {
+func createLoadBalancerService(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, serviceName string, annotations map[string]string, labels map[string]string, servicePort []apiv1.ServicePort, loadBalancerIP string) (*apiv1.Service, error) {
 	if serviceName == "" {
 		return nil, ResourceNameNull
 	}
@@ -535,6 +535,7 @@ func createLoadBalancerService(ctx context.Context, k8sClient *kubernetes.Client
 			Ports:    servicePort,
 			Selector: labels,
 			Type:     "LoadBalancer",
+			LoadBalancerIP: loadBalancerIP,
 		},
 	}
 	newSVC, err := k8sClient.CoreV1().Services(nameSpace).Create(ctx, svc, metav1.CreateOptions{})

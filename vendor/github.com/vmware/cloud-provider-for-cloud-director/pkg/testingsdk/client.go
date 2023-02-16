@@ -126,8 +126,8 @@ func (tc *TestClient) CreateDeployment(ctx context.Context, params *DeployParams
 	return deployment, nil
 }
 
-func (tc *TestClient) CreateLoadBalancerService(ctx context.Context, nameSpace string, serviceName string, annotations map[string]string, labels map[string]string, servicePort []apiv1.ServicePort) (*apiv1.Service, error) {
-	lbService, err := createLoadBalancerService(ctx, tc.Cs.(*kubernetes.Clientset), nameSpace, serviceName, annotations, labels, servicePort)
+func (tc *TestClient) CreateLoadBalancerService(ctx context.Context, nameSpace string, serviceName string, annotations map[string]string, labels map[string]string, servicePort []apiv1.ServicePort, loadBalancerIP string) (*apiv1.Service, error) {
+	lbService, err := createLoadBalancerService(ctx, tc.Cs.(*kubernetes.Clientset), nameSpace, serviceName, annotations, labels, servicePort, loadBalancerIP)
 	if err != nil {
 		return nil, fmt.Errorf("error creating LoadBalancer Service [%s] for cluster [%s(%s)]: [%v]", serviceName, tc.ClusterName, tc.ClusterId, err)
 	}
