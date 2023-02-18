@@ -10,7 +10,7 @@ spec:
         claimName: my-pvc
   containers:
     - name: debugger
-      image: busybox
+      image: projects-stg.registry.vmware.com/vmware-cloud-director/busybox:latest
       command: ['sleep', '3600']
       volumeMounts:
         - mountPath: "/data"

@@ -36,10 +36,11 @@ type VCDDriver struct {
 	volumeCapabilityAccessModes   []*csi.VolumeCapability_AccessMode
 	controllerServiceCapabilities []*csi.ControllerServiceCapability
 	nodeServiceCapabilities       []*csi.NodeServiceCapability
+
+	pluginCapabilityVolumeExpansion []*csi.PluginCapability_VolumeExpansion
 }
 
 var (
-	// VolumeCapabilityAccessModesList is used in CreateVolume as well
 	VolumeCapabilityAccessModesList = []csi.VolumeCapability_AccessMode_Mode{
 		csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER,
 		csi.VolumeCapability_AccessMode_SINGLE_NODE_READER_ONLY,
@@ -48,7 +49,30 @@ var (
 		csi.VolumeCapability_AccessMode_MULTI_NODE_MULTI_WRITER,
 	}
 
+	// VolumeCapabilityAccessModesStringMap is a cache for available VolumeCapabilityAccessModesList. This is later
+	// referenced in CreateVolume of the controller service.
 	VolumeCapabilityAccessModesStringMap = make(map[string]bool)
+
+	nodeServiceCapabilityList = []csi.NodeServiceCapability_RPC_Type{
+		csi.NodeServiceCapability_RPC_STAGE_UNSTAGE_VOLUME,
+		csi.NodeServiceCapability_RPC_GET_VOLUME_STATS,
+		csi.NodeServiceCapability_RPC_EXPAND_VOLUME, // node needs to expand in ONLINE mode
+	}
+
+	controllerServerCapabilitiesRPCList = []csi.ControllerServiceCapability_RPC_Type{
+		csi.ControllerServiceCapability_RPC_CREATE_DELETE_VOLUME,
+		csi.ControllerServiceCapability_RPC_LIST_VOLUMES,
+		csi.ControllerServiceCapability_RPC_PUBLISH_UNPUBLISH_VOLUME,
+		csi.ControllerServiceCapability_RPC_EXPAND_VOLUME, // controller needs to expand in OFFLINE modes
+	}
+
+	// VCD with named independent disks currently supports:
+	// 1. ONLINE volume expansion for all modes except RWO/RWX
+	// 2. OFFLINE volume expansion for RWO/RWX
+	pluginCapabilityVolumeExpansion = []csi.PluginCapability_VolumeExpansion_Type{
+		csi.PluginCapability_VolumeExpansion_OFFLINE,
+		csi.PluginCapability_VolumeExpansion_ONLINE,
+	}
 )
 
 // NewDriver creates new VCDDriver
@@ -72,10 +96,6 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 		}
 	}
 
-	nodeServiceCapabilityList := []csi.NodeServiceCapability_RPC_Type{
-		csi.NodeServiceCapability_RPC_STAGE_UNSTAGE_VOLUME,
-		csi.NodeServiceCapability_RPC_GET_VOLUME_STATS,
-	}
 	d.nodeServiceCapabilities = make([]*csi.NodeServiceCapability, len(nodeServiceCapabilityList))
 	for idx, nodeServiceCapability := range nodeServiceCapabilityList {
 		klog.Infof("Enabling node service capability: [%s]", nodeServiceCapability.String())
@@ -88,11 +108,6 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 		}
 	}
 
-	controllerServerCapabilitiesRPCList := []csi.ControllerServiceCapability_RPC_Type{
-		csi.ControllerServiceCapability_RPC_CREATE_DELETE_VOLUME,
-		csi.ControllerServiceCapability_RPC_LIST_VOLUMES,
-		csi.ControllerServiceCapability_RPC_PUBLISH_UNPUBLISH_VOLUME,
-	}
 	d.controllerServiceCapabilities = make([]*csi.ControllerServiceCapability, len(controllerServerCapabilitiesRPCList))
 	for idx, controllerServiceCapabilityRPC := range controllerServerCapabilitiesRPCList {
 		klog.Infof("Enabling controller service capability: [%s]", controllerServiceCapabilityRPC.String())
@@ -102,6 +117,15 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 					Type: controllerServiceCapabilityRPC,
 				},
 			},
+		}
+	}
+
+	d.pluginCapabilityVolumeExpansion = make([]*csi.PluginCapability_VolumeExpansion,
+		len(pluginCapabilityVolumeExpansion))
+	for idx, pluginCapabilityVolumeExpansionType := range pluginCapabilityVolumeExpansion {
+		klog.Infof("Enabling plugin capability [%s]", pluginCapabilityVolumeExpansionType.String())
+		d.pluginCapabilityVolumeExpansion[idx] = &csi.PluginCapability_VolumeExpansion{
+			Type: pluginCapabilityVolumeExpansionType,
 		}
 	}
 

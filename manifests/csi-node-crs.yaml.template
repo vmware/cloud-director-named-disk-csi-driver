@@ -72,20 +72,32 @@ spec:
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
+        - name: csi-resizer
+          image: k8s.gcr.io/sig-storage/csi-resizer:v1.4.0
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--timeout=30s"
+            - "--v=5"
+          env:
+            - name: ADDRESS
+              value: /var/lib/csi/sockets/pluginproxy/csi.sock
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /var/lib/csi/sockets/pluginproxy/
         - name: vcd-csi-plugin
           securityContext:
             privileged: true
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:__VERSION__
+          image: projects-stg.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:__VERSION__
           imagePullPolicy: IfNotPresent
           command :
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
             - --nodeid=$(NODE_ID)
             - --endpoint=$(CSI_ENDPOINT)
             - --cloud-config=/etc/kubernetes/vcloud/vcloud-csi-config.yaml
-            - --v=5
           env:
             - name: NODE_ID
               valueFrom:
