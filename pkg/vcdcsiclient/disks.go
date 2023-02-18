@@ -291,7 +291,7 @@ func (diskManager *DiskManager) GetDiskByName(name string) (*vcdtypes.Disk, erro
 }
 
 func (diskManager *DiskManager) govcdAttachedVM(disk *vcdtypes.Disk) ([]*types.Reference, error) {
-	klog.Infof("[TRACE] Disk attached VM, HREF: %s\n", disk.HREF)
+	klog.Infof("[TRACE] Entered Disk attached VM, HREF: %s\n", disk.HREF)
 
 	var attachedVMLink *types.Link
 
@@ -374,6 +374,79 @@ func (diskManager *DiskManager) govcdDelete(disk *vcdtypes.Disk) (govcd.Task, er
 	return diskManager.VCDClient.VCDClient.Client.ExecuteTaskRequestWithApiVersion(deleteDiskLink.HREF, http.MethodDelete,
 		"", "error delete disk: %s", nil,
 		diskManager.VCDClient.VCDClient.Client.APIVersion)
+}
+
+// UpdateDisk updates an independent disk
+// 1 Verify the independent disk is not connected to any VM
+// 2 Use newDiskInfo to change update the independent disk
+// 3 Return task of independent disk update
+// If the independent disk is connected to a VM, the task will be failed.
+// Reference: vCloud API Programming Guide for Service Providers vCloud API 30.0 PDF Page 104 - 106,
+// https://vdc-download.vmware.com/vmwb-repository/dcr-public/1b6cf07d-adb3-4dba-8c47-9c1c92b04857/
+// 241956dd-e128-4fcc-8131-bf66e1edd895/vcloud_sp_api_guide_30_0.pdf
+// copied from govcd and modified for independent disks
+func (diskManager *DiskManager) UpdateDisk(disk *vcdtypes.Disk, newDiskInfo *types.Disk) (govcd.Task, error) {
+	klog.Infof("Update disk, name: [%s=>%s], size: [%d=>%d], HREF: [%s] \n",
+		disk.Name, newDiskInfo.Name,
+		disk.SizeMb, newDiskInfo.SizeMb,
+		disk.HREF,
+	)
+
+	var err error
+
+	if newDiskInfo.Name == "" {
+		return govcd.Task{}, fmt.Errorf("disk name is required")
+	}
+
+	// Verify the independent disk is not connected to any VM
+	vmRefs, err := diskManager.govcdAttachedVM(disk)
+	if err != nil {
+		return govcd.Task{}, fmt.Errorf("error finding attached VM for disk [%s]: [%v]", disk.Name, err)
+	}
+	if vmRefs != nil && len(vmRefs) > 0 {
+		return govcd.Task{}, fmt.Errorf("error disk [%s] is attached to [%d] VMs", disk.Name, len(vmRefs))
+	}
+
+	var updateDiskLink *types.Link
+
+	// Find the proper link for request
+	for _, diskLink := range disk.Link {
+		if diskLink.Rel == types.RelEdit && diskLink.Type == types.MimeDisk {
+			klog.Infof(
+				"Update disk [%s]: found proper link for request, HREF: %s, name: %s, type: %s,id: %s, rel: %s",
+				disk.Name,
+				diskLink.HREF,
+				diskLink.Name,
+				diskLink.Type,
+				diskLink.ID,
+				diskLink.Rel)
+			updateDiskLink = diskLink
+			break
+		}
+	}
+
+	if updateDiskLink == nil {
+		return govcd.Task{},
+			fmt.Errorf("could not find request URL for update disk for [%s] in disk Link", disk.Name)
+	}
+
+	// Prepare the request payload
+	xmlPayload := &types.Disk{
+		Xmlns:       types.XMLNamespaceVCloud,
+		Description: newDiskInfo.Description,
+		SizeMb:      newDiskInfo.SizeMb,
+		Name:        newDiskInfo.Name,
+		Owner:       newDiskInfo.Owner,
+	}
+
+	// Return the task
+	task, err := diskManager.VCDClient.VCDClient.Client.ExecuteTaskRequest(updateDiskLink.HREF, http.MethodPut,
+		updateDiskLink.Type, "error updating disk: %s", xmlPayload)
+	if err != nil {
+		return govcd.Task{}, fmt.Errorf("unable to execute PUT request to update disk: [%v]", err)
+	}
+
+	return task, nil
 }
 
 // DeleteDisk will delete independent disk by its name

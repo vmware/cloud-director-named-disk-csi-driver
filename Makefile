@@ -6,6 +6,7 @@ version := $(shell cat ${GITROOT}/release/version)
 csi_node_driver_registrar_version := v2.2.0
 csi_attacher_version := v3.2.1
 csi_provisioner_version := v2.2.2
+csi_resizer_version := v1.4.0
 
 REGISTRY?="harbor-repo.vmware.com/vcloud"
 
@@ -59,12 +60,15 @@ update-gcr-images:
 	docker pull k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
 	docker pull k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version)
 	docker pull k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker pull k8s.gcr.io/sig-storage/csi-resizer:$(csi_resizer_version)
 	docker tag k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version) $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
 	docker tag k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version) $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
 	docker tag k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version) $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker tag k8s.gcr.io/sig-storage/csi-resizer:$(csi_resizer_version) $(REGISTRY)/sig-storage/csi-resizer:$(csi_resizer_version)
 	docker push $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
 	docker push $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
 	docker push $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker push $(REGISTRY)/sig-storage/csi-resizer:$(csi_resizer_version)
 
 test:
 	go test -tags testing -v github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdclient -cover -count=1

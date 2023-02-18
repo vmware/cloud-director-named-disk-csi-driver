@@ -13,6 +13,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"k8s.io/klog"
@@ -81,10 +82,10 @@ func (cs *controllerServer) isDiskShareable(volumeCapabilities []*csi.VolumeCapa
 
 func (cs *controllerServer) CreateVolume(ctx context.Context,
 	req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error) {
+
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "CreateVolume: req should not be nil")
 	}
-
 	klog.Infof("CreateVolume: called with req [%#v]", *req)
 
 	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
@@ -161,11 +162,12 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 }
 
 func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVolumeRequest) (*csi.DeleteVolumeResponse, error) {
+
 	if req == nil {
 		return nil, fmt.Errorf("req should not be nil")
 	}
-
 	klog.Infof("DeleteVolume: called with req [%#v]", *req)
+
 	volumeID := req.GetVolumeId()
 
 	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
@@ -339,14 +341,15 @@ func (cs *controllerServer) ListVolumes(ctx context.Context,
 	return nil, status.Error(codes.Unimplemented, "ListVolumes not implemented")
 }
 
-func (cs *controllerServer) GetCapacity(ctx context.Context,
-	req *csi.GetCapacityRequest) (*csi.GetCapacityResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "GetCapacity not implemented")
-}
-
 func (cs *controllerServer) ControllerGetCapabilities(ctx context.Context,
 	req *csi.ControllerGetCapabilitiesRequest) (*csi.ControllerGetCapabilitiesResponse, error) {
+
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "ControllerGetCapabilities: req should not be nil")
+	}
 	klog.Infof("ControllerGetCapabilities: called with args [%#v]", *req)
+
+	klog.Infof("Returning controller capabilities [%#v]", cs.Driver.controllerServiceCapabilities)
 	return &csi.ControllerGetCapabilitiesResponse{
 		Capabilities: cs.Driver.controllerServiceCapabilities,
 	}, nil
@@ -367,9 +370,75 @@ func (cs *controllerServer) ListSnapshots(ctx context.Context,
 	return nil, status.Error(codes.InvalidArgument, "ListSnapshots not implemented")
 }
 
+func (cs *controllerServer) GetCapacity(ctx context.Context,
+	req *csi.GetCapacityRequest) (*csi.GetCapacityResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "GetCapacity not implemented")
+}
+
 func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 	req *csi.ControllerExpandVolumeRequest) (*csi.ControllerExpandVolumeResponse, error) {
-	return nil, status.Error(codes.InvalidArgument, "ControllerExpandVolume not implemented")
+
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "ControllerExpandVolume: req should not be nil")
+	}
+	klog.Infof("ControllerExpandVolume: called with req [%#v]", *req)
+
+	diskName := req.VolumeId
+	if len(diskName) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Volume Id not provided")
+	}
+
+	if req.CapacityRange.LimitBytes > 0 && req.CapacityRange.RequiredBytes > req.CapacityRange.LimitBytes {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"required bytes [%d] should be lesser than limit bytes [%d]",
+			req.CapacityRange.RequiredBytes, req.CapacityRange.LimitBytes)
+	}
+
+	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
+		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
+	}
+
+	disk, err := cs.DiskManager.GetDiskByName(diskName)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Unable to get disk by ID [%s]: [%v]", diskName, err)
+	}
+
+	// The required bytes is a minimum and need something >= it. Hence use ceil.
+	newSizeMb := int64(math.Ceil(float64(req.CapacityRange.RequiredBytes / MbToBytes)))
+	if disk.SizeMb == newSizeMb {
+		klog.Infof("Volume [%s] already at requested size [%d]Mb", diskName, newSizeMb)
+		return &csi.ControllerExpandVolumeResponse{
+			CapacityBytes:         newSizeMb * MbToBytes,
+			NodeExpansionRequired: false,
+		}, nil
+	} else if disk.SizeMb > newSizeMb {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"Disk [%s] new size [%d]Mb cannot be less than previous value [%d]",
+			diskName, newSizeMb, disk.SizeMb)
+	}
+
+	newDisk := &types.Disk{ // note that this is a SDK type
+		Description: disk.Description,
+		SizeMb:      newSizeMb,
+		Name:        disk.Name,
+		Owner:       disk.Owner,
+	}
+
+	klog.Infof("Expanding volume [%s] from [%d]Mb to [%d]Mb...", disk.Name, disk.SizeMb, newSizeMb)
+	task, err := cs.DiskManager.UpdateDisk(disk, newDisk)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to update disk [%s]: [%v]", disk.Name, err)
+	}
+	if err = task.WaitTaskCompletion(); err != nil {
+		return nil, status.Errorf(codes.Internal, "unable to wait for task [%v] for expansion of disk [%s]: [%v]",
+			task, disk.Name, err)
+	}
+	klog.Infof("Volume [%s] expanded to [%d]Mb successfully.", disk.Name, newSizeMb)
+
+	return &csi.ControllerExpandVolumeResponse{
+		CapacityBytes:         newSizeMb * MbToBytes,
+		NodeExpansionRequired: false,
+	}, nil
 }
 
 func (cs *controllerServer) ControllerGetVolume(ctx context.Context,
