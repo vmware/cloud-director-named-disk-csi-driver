@@ -56,14 +56,14 @@ kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GO
 
 **NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller StatefulSet and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.**
 ## CSI Feature matrix
-| Feature | Support Scope |
-| :---------: | :----------------------- |
-| Storage Type | Independent Shareable Named Disks of VCD |
-|Provisioning|<ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>|
-|Access Modes|<ul><li>ReadOnlyMany</li><li>ReadWriteOnce</li></ul>|
-|Volume|Block|
-|VolumeMode|<ul><li>FileSystem</li></ul>|
-|Topology|<ul><li>Static Provisioning: reuses VCD topology capabilities</li><li>Dynamic Provisioning: places disk in the OVDC of the `ClusterAdminUser` based on the StorageProfile specified.</li></ul>|
+| Feature | Support Scope                                                                                                                                                                                  |
+| :---------: |:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Storage Type | Independent Shareable Named Disks of VCD                                                                                                                                                       |
+|Provisioning| <ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>                                                                                                                             |
+|Access Modes| <ul><li>ReadOnlyMany</li><li>ReadWriteOnce</li></ul>                                                                                                                                           |
+|Volume| Block                                                                                                                                                                                          |
+|VolumeMode| <ul><li>FileSystem</li><li>Block</li></ul>                                                                                                                                                     |
+|Topology| <ul><li>Static Provisioning: reuses VCD topology capabilities</li><li>Dynamic Provisioning: places disk in the OVDC of the `ClusterAdminUser` based on the StorageProfile specified.</li></ul> |
 
 ## Contributing
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on how to contribute.
