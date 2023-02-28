@@ -922,7 +922,7 @@ func (diskManager *DiskManager) ConvertToLatestCSIVersionFormat(dstVersion strin
 			klog.V(4).Infof("failed to convert RDE [%s] CSI status from [%T] to map[string]interface{}; skipping upgrade of CSI status section from Version [%s] to Version [%s]", diskManager.ClusterID, srcEntityCSIStatusIf, srcVersion, dstVersion)
 			return &srcCapvcdEntity, nil
 		}
-		newStatusMap = srcStatusMapIf
+		newStatusMap = srcCSIStatusMapIf
 		CSIStatus, err := util.ConvertMapToCSIStatus(srcCSIStatusMapIf)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert RDE [%s(%s)] CSI status map [%T] to CAPVCDStatus: [%v]; skipping upgrade of CSI status section to Version [%s]", srcCapvcdEntity.Name, srcCapvcdEntity.Id, srcCSIStatusMapIf, err, dstVersion)
