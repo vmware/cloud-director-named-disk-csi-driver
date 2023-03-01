@@ -3,6 +3,7 @@ package e2e
 import (
 	"context"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
@@ -13,15 +14,14 @@ import (
 )
 
 const (
-	testNameSpaceName     = "provisioning-test-ns"
-	testRetainPVCName     = "test-retain-pvc"
-	testDeletePVCName     = "test-delete-pvc"
-	testDeploymentName    = "test-deploy-name"
-	storageClassDelete    = "delete-storage-class"
-	storageClassRetain    = "retain-storage-class"
-	storageSize           = "2Gi"
-	defaultStorageProfile = "*"
-	volumeName            = "deployment-pv"
+	testNameSpaceName  = "provisioning-test-ns"
+	testRetainPVCName  = "test-retain-pvc"
+	testDeletePVCName  = "test-delete-pvc"
+	testDeploymentName = "test-deploy-name"
+	storageClassDelete = "delete-storage-class"
+	storageClassRetain = "retain-storage-class"
+	storageSize        = "2Gi"
+	volumeName         = "deployment-pv"
 )
 
 var _ = Describe("CSI dynamic provisioning Test", func() {
@@ -33,14 +33,13 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		pv            *apiv1.PersistentVolume
 		pvDeleted     bool
 	)
-
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
 		Host:         host,
 		OvdcName:     ovdc,
 		OrgName:      org,
 		Username:     userName,
 		RefreshToken: refreshToken,
-		UserOrg:      "system",
+		UserOrg:      userOrg,
 		GetVdcClient: true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
@@ -53,10 +52,10 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
-		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
+		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, storageProfile, busType)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
-		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
+		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, storageProfile, busType)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})
@@ -74,6 +73,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 
 		By("PVC should be presented in kubernetes")
 		pvc, err = tc.GetPVC(ctx, testNameSpaceName, testRetainPVCName)
+		Expect(err).NotTo(HaveOccurred())
 		dynamicPVName = pvc.Spec.VolumeName
 		Expect(dynamicPVName).NotTo(BeEmpty())
 

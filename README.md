@@ -78,9 +78,20 @@ kubectl apply -f https://raw.githubusercontent.com/vmware/cloud-director-named-d
 | Storage Type | Independent Shareable Named Disks of VCD |
 |Provisioning|<ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>|
 |Access Modes|<ul><li>ReadOnlyMany</li><li>ReadWriteOnce</li></ul>|
-|Volume|Block|
+|Volume|<ul><li>Block</ul></li>|
 |VolumeMode|<ul><li>FileSystem</li></ul>|
 |Topology|<ul><li>Static Provisioning: reuses VCD topology capabilities</li><li>Dynamic Provisioning: places disk in the OVDC of the `ClusterAdminUser` based on the StorageProfile specified.</li></ul>|
+
+## Supported Bus Types
+| Bus Type | `bustype` Parameter in `StorageClass` | 
+| :--------- | :----------------------- |
+| Paravirtual (SCSI) | `scsi_paravirtual` (default) |
+| LSI Logic Parallel (SCSI) | `scsi_lsi_logic_parallel` |
+| LSI Logic SAS (SCSI) | `scsi_lsi_logic_sas` |
+| Bus Logic (SCSI) | `scsi_buslogic` |
+| SATA | `sata` |
+| NVME | `nvme` |
+
 
 ## Contributing
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on how to contribute.

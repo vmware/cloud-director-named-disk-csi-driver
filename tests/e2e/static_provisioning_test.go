@@ -2,8 +2,10 @@ package e2e
 
 import (
 	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	csiClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
@@ -31,7 +33,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 		OrgName:      org,
 		Username:     userName,
 		RefreshToken: refreshToken,
-		UserOrg:      "system",
+		UserOrg:      userOrg,
 		GetVdcClient: true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
@@ -44,10 +46,10 @@ var _ = Describe("CSI static provisioning Test", func() {
 		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
-		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
+		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, storageProfile, busType)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
-		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
+		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, storageProfile, busType)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})
@@ -55,11 +57,11 @@ var _ = Describe("CSI static provisioning Test", func() {
 	//scenario 1: use 'Delete' retention policy. step1: create VCD named-disk and PV.
 	It("should create a disk using VCD API calls and set up a PV based on the disk", func() {
 		By("should create the disk successfully from VCD")
-		err = utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, defaultStorageProfile)
+		err = utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, csiClient.BusTypesSet[busType], storageProfile)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should create the static PV successfully in kubernetes")
-		pv, err = tc.CreatePV(ctx, testDiskName, storageClassDelete, defaultStorageProfile, storageSize, apiv1.PersistentVolumeReclaimDelete)
+		pv, err = tc.CreatePV(ctx, testDiskName, storageClassDelete, storageProfile, storageSize, busType, apiv1.PersistentVolumeReclaimDelete)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pv).NotTo(BeNil())
 
@@ -131,11 +133,11 @@ var _ = Describe("CSI static provisioning Test", func() {
 	//scenario 2: use 'Retain' retention policy. step1: create VCD named-disk and PV.
 	It("Create a disk using VCD API calls and Set up a PV based on the disk using retain policy", func() {
 		By("should create the disk successfully from VCD")
-		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, defaultStorageProfile)
+		err := utils.CreateDisk(tc.VcdClient, testDiskName, smallDiskSizeMB, csiClient.BusTypesSet[busType], storageProfile)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should create the static PV successfully in kubernetes")
-		pv, err = tc.CreatePV(ctx, testDiskName, storageClassRetain, defaultStorageProfile, storageSize, apiv1.PersistentVolumeReclaimRetain)
+		pv, err = tc.CreatePV(ctx, testDiskName, storageClassRetain, storageProfile, storageSize, busType, apiv1.PersistentVolumeReclaimRetain)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pv).NotTo(BeNil())
 

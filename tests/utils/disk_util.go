@@ -3,6 +3,10 @@ package utils
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	csiClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
@@ -11,9 +15,6 @@ import (
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"k8s.io/apimachinery/pkg/util/wait"
-	"net/http"
-	"strings"
-	"time"
 )
 
 type CSItc struct {
@@ -24,8 +25,9 @@ const (
 	defaultRetryInterval = 10 * time.Second
 	defaultRetryTimeout  = 60 * time.Second
 	defaultWaitTimeout   = 120 * time.Second
+	deleteDiskTimeout    = 180 * time.Second
+	deleteDiskInterval   = 20 * time.Second
 	CSIVersion           = "1.3.0"
-	MaxVCDUpdateRetries  = 10
 )
 
 func DeleteDisk(vcdClient *vcdsdk.Client, diskName string) error {
@@ -106,13 +108,16 @@ func ValidateNoAttachedVM(vcdClient *vcdsdk.Client, disk *vcdtypes.Disk) error {
 	return nil
 }
 
-func CreateDisk(vcdClient *vcdsdk.Client, diskName string, diskSizeMB int64, storageProfileName string) error {
+func CreateDisk(vcdClient *vcdsdk.Client, diskName string, diskSizeMB int64, busTuple csiClient.BusTuple, storageProfileName string) error {
 	spRef, err := vcdClient.VDC.FindStorageProfileReference(storageProfileName)
+	if err != nil {
+		return fmt.Errorf("could not find storage profile %s %w", storageProfileName, err)
+	}
 	d := &vcdtypes.Disk{
 		Name:           diskName,
 		SizeMb:         diskSizeMB,
-		BusType:        csiClient.VCDBusTypeSCSI,
-		BusSubType:     csiClient.VCDBusSubTypeVirtualSCSI,
+		BusType:        busTuple.BusType,
+		BusSubType:     busTuple.BusSubType,
 		Description:    "",
 		Shareable:      false,
 		StorageProfile: &spRef,
@@ -178,7 +183,7 @@ func VerifyDiskViaVCD(vcdClient *vcdsdk.Client, diskName string) (*vcdtypes.Disk
 }
 
 func WaitDiskDeleteViaVCD(vcdClient *vcdsdk.Client, diskName string) error {
-	err := wait.PollImmediate(30*time.Second, 150*time.Second, func() (bool, error) {
+	err := wait.PollImmediate(deleteDiskInterval, deleteDiskTimeout, func() (bool, error) {
 		_, err := GetDiskByNameViaVCD(vcdClient, diskName)
 		if err != nil {
 			if err == govcd.ErrorEntityNotFound {
@@ -199,7 +204,7 @@ func GetDiskByNameViaVCD(vcdClient *vcdsdk.Client, diskName string) (disk *vcdty
 		return nil, fmt.Errorf("error occurred while getting vcdClient VDC, [%v]", err)
 	}
 
-	for i := 0; i < MaxVCDUpdateRetries; i++ {
+	for i := 0; i < vcdsdk.MaxRDEUpdateRetries; i++ {
 		var diskList []vcdtypes.Disk
 		err = vcdClient.VDC.Refresh()
 		if err != nil {
