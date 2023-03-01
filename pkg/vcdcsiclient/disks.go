@@ -9,6 +9,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
@@ -17,9 +21,6 @@ import (
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"k8s.io/klog"
-	"net/http"
-	"strings"
-	"time"
 )
 
 type DiskManager struct {
@@ -28,9 +29,33 @@ type DiskManager struct {
 }
 
 const (
-	VCDBusTypeSCSI           = "6"
-	VCDBusSubTypeVirtualSCSI = "VirtualSCSI"
-	NoRdePrefix              = `NO_RDE_`
+	NoRdePrefix = `NO_RDE_`
+)
+
+type BusTuple struct {
+	BusType, BusSubType string
+}
+
+var (
+	// BusTypesSet matches all the types of BusTypes in the StorageClass to a pair BusType/SubBusType
+	BusTypesSet = map[string]BusTuple{
+		"sata":                    {"20", "vmware.sata.ahci"},
+		"nvme":                    {"20", "vmware.nvme.controller"},
+		"scsi_paravirtual":        {"6", "VirtualSCSI"},
+		"scsi_lsi_logic_parallel": {"6", "lsilogic"},
+		"scsi_lsi_logic_sas":      {"6", "lsilogicsas"},
+	}
+
+	/* BusSubTypesFromValues resolves BusTypes from BusSubType ID.
+	It defines better the busType since BusSubType ID are unique.
+	*/
+	BusSubTypesFromValues = map[string]string{
+		"vmware.sata.ahci":       "sata",
+		"vmware.nvme.controller": "nvme",
+		"lsilogic":               "lsi logic parallel (scsi)",
+		"lsilogicsas":            "lsi logic sas (scsi)",
+		"VirtualSCSI":            "paravirtual (scsi)",
+	}
 )
 
 // Returns a Disk structure as JSON

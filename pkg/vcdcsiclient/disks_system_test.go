@@ -9,16 +9,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
-	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
+	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
+	"gopkg.in/yaml.v3"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -74,6 +76,7 @@ func TestUpdateRDE(t *testing.T) {
 	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
 	diskManager.UpgradeRDEPersistentVolumes()
 }
+
 func TestDiskCreateAttach(t *testing.T) {
 
 	diskManager := new(DiskManager)
@@ -89,104 +92,156 @@ func TestDiskCreateAttach(t *testing.T) {
 	cloudConfig, err := getTestConfig()
 	assert.NoError(t, err, "There should be no error opening and parsing cloud config file contents.")
 
-	// get client
-	vcdClient, err := getTestVCDClient(cloudConfig, map[string]interface{}{
-		"getVdcClient": true,
-		"user":         authDetails.Username,
-		"secret":       authDetails.Password,
-		"userOrg":      authDetails.UserOrg,
-	})
-	diskManager.VCDClient = vcdClient
-	vAppName := cloudConfig.VCD.VAppName
-	diskManager.ClusterID = cloudConfig.ClusterID
-	assert.NoError(t, err, "Unable to get VCD client")
-	require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
+	type args struct {
+		storageProfile string
+		nodeID         string
+		busTuple       BusTuple
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *vcdtypes.Disk
+		wantErr bool
+	}{
+		{
+			name: "SATA",
+			args: args{
+				storageProfile: "*",
+				nodeID:         "capi-cluster-2-md0-85c8585c96-8bqj2",
+				busTuple:       BusTypesSet["sata"],
+			},
+		},
+		{
+			name: "Paravirtual(SCSI)",
+			args: args{
+				storageProfile: "*",
+				nodeID:         "capi-cluster-2-md0-85c8585c96-8bqj2",
+				busTuple:       BusTypesSet["scsi_paravirtual"],
+			},
+		},
+		{
+			name: "NVME",
+			args: args{
+				storageProfile: "*",
+				nodeID:         "capi-cluster-2-md0-85c8585c96-8bqj2",
+				busTuple:       BusTypesSet["nvme"],
+			},
+		},
+		{
+			name: "LSI Logic Parallel (SCSI)",
+			args: args{
+				storageProfile: "*",
+				nodeID:         "capi-cluster-2-md0-85c8585c96-8bqj2",
+				busTuple:       BusTypesSet["scsi_lsi_logic_parallel"],
+			},
+		},
+		{
+			name: "LSI Logic SAS (SCSI)",
+			args: args{
+				storageProfile: "*",
+				nodeID:         "capi-cluster-2-md0-85c8585c96-8bqj2",
+				busTuple:       BusTypesSet["scsi_lsi_logic_sas"],
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// get client
+			vcdClient, err := getTestVCDClient(cloudConfig, map[string]interface{}{
+				"getVdcClient": true,
+				"user":         authDetails.Username,
+				"secret":       authDetails.Password,
+				"userOrg":      authDetails.UserOrg,
+			})
+			diskManager.VCDClient = vcdClient
+			vAppName := cloudConfig.VCD.VAppName
+			diskManager.ClusterID = cloudConfig.ClusterID
+			assert.NoError(t, err, "Unable to get VCD client")
+			require.NotNil(t, vcdClient, "VCD DiskManager should not be nil")
 
-	_, err = vcdClient.VDC.FindStorageProfileReference("dev")
-	assert.Errorf(t, err, "unable to find storage profile reference")
+			_, err = vcdClient.VDC.FindStorageProfileReference("dev")
+			assert.Errorf(t, err, "unable to find storage profile reference")
 
-	_, err = vcdClient.VDC.FindStorageProfileReference("*")
-	assert.NoErrorf(t, err, "unable to find storage profile reference")
+			_, err = vcdClient.VDC.FindStorageProfileReference(tt.args.storageProfile)
+			assert.NoErrorf(t, err, "unable to find storage profile reference")
 
-	// create disk with bad storage profile: should not succeed
-	diskName := fmt.Sprintf("test-pvc-%s", uuid.New().String())
-	disk, err := diskManager.CreateDisk(diskName, 100, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
-		"", "dev", true)
-	assert.Errorf(t, err, "should not be able to create disk with storage profile [dev]")
-	assert.Nil(t, disk, "disk created should be nil")
+			diskName := fmt.Sprintf("test-pvc-%s", uuid.New().String())
 
-	// create disk
-	diskName = fmt.Sprintf("test-pvc-%s", uuid.New().String())
-	// diskName = "test-pvc-29830aa7-377e-4496-b87d-41f2e50a5491"
-	disk, err = diskManager.CreateDisk(diskName, 100, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
-		"", "*", true)
-	assert.NoErrorf(t, err, "unable to create disk with name [%s]", diskName)
-	require.NotNil(t, disk, "disk created should not be nil")
-	assert.NotNil(t, disk.UUID, "disk UUID should not be nil")
+			// create disk with bad storage profile: should not succeed
+			disk, err := diskManager.CreateDisk(diskName, 100, tt.args.busTuple.BusType, tt.args.busTuple.BusSubType,
+				"", "dev", true)
+			assert.Errorf(t, err, "should not be able to create disk with storage profile [dev]")
+			assert.Nil(t, disk, "disk created should be nil")
 
-	// try to create same disk with same parameters: should succeed
-	disk, err = diskManager.CreateDisk(diskName, 100, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
-		"", "*", true)
-	assert.NoError(t, err, "unable to create disk again with name [%s]", diskName)
-	require.NotNil(t, disk, "disk created should not be nil")
+			// create disk
+			diskName = fmt.Sprintf("test-pvc-%s", uuid.New().String())
 
-	// Check RDE was updated with PV
-	clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
-	assert.NoError(t, err, "unable to get org by name [%s]", diskManager.VCDClient.ClusterOrgName)
-	assert.NotNil(t, clusterOrg, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
-	assert.NotNil(t, clusterOrg.Org, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
+			disk, err = diskManager.CreateDisk(diskName, 100, tt.args.busTuple.BusType, tt.args.busTuple.BusSubType, "", tt.args.storageProfile, true)
+			assert.NoErrorf(t, err, "unable to create disk with name [%s]", diskName)
+			require.NotNil(t, disk, "disk created should not be nil")
+			assert.NotNil(t, disk.UUID, "disk UUID should not be nil")
 
-	defEnt, _, _, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID, clusterOrg.Org.ID)
-	assert.NoError(t, err, "unable to get RDE")
+			// try to create same disk with same parameters: should succeed
+			disk, err = diskManager.CreateDisk(diskName, 100, tt.args.busTuple.BusType, tt.args.busTuple.BusSubType, "", tt.args.storageProfile, true)
+			assert.NoError(t, err, "unable to create disk again with name [%s]", diskName)
+			require.NotNil(t, disk, "disk created should not be nil")
 
-	currRDEPvs, err := GetCAPVCDRDEPersistentVolumes(&defEnt)
-	assert.NoError(t, err, "unable to get RDE PVs after creating disk")
-	assert.Equal(t, true, foundStringInSlice(disk.Name, currRDEPvs), "Disk Id should be found in RDE")
+			// Check RDE was updated with PV
+			clusterOrg, err := diskManager.VCDClient.VCDClient.GetOrgByName(diskManager.VCDClient.ClusterOrgName)
+			assert.NoError(t, err, "unable to get org by name [%s]", diskManager.VCDClient.ClusterOrgName)
+			assert.NotNil(t, clusterOrg, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
+			assert.NotNil(t, clusterOrg.Org, "retrieved org is nil for org name [%s]", diskManager.VCDClient.ClusterOrgName)
 
-	// try to create same disk with different parameters; should not succeed
-	disk1, err := diskManager.CreateDisk(diskName, 1000, VCDBusTypeSCSI, VCDBusSubTypeVirtualSCSI,
-		"", "", true)
-	assert.Error(t, err, "should not be able to create same disk with different parameters")
-	assert.Nil(t, disk1, "disk should not be created")
+			defEnt, _, _, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+				diskManager.ClusterID, clusterOrg.Org.ID)
+			assert.NoError(t, err, "unable to get RDE")
 
-	// get VM nodeID should be the existing VM name
-	nodeID := "capi-cluster-2-md0-85c8585c96-8bqj2"
+			currRDEPvs, err := GetCAPVCDRDEPersistentVolumes(&defEnt)
+			assert.NoError(t, err, "unable to get RDE PVs after creating disk")
+			assert.Equal(t, true, foundStringInSlice(disk.Name, currRDEPvs), "Disk Id should be found in RDE")
 
-	vdcManager, err := vcdsdk.NewVDCManager(diskManager.VCDClient, diskManager.VCDClient.ClusterOrgName, diskManager.VCDClient.ClusterOVDCName)
-	assert.NoError(t, err, "unable to get vdcManager")
-	// Todo find a suitable way to handle cluster
-	vm, err := vdcManager.FindVMByName(vAppName, nodeID)
-	require.NoError(t, err, "unable to find VM [%s] by name", nodeID)
-	require.NotNil(t, vm, "vm should not be nil")
+			// try to create same disk with different parameters; should not succeed
+			disk1, err := diskManager.CreateDisk(diskName, 1000, tt.args.busTuple.BusType, tt.args.busTuple.BusSubType, "", "", true)
+			assert.Error(t, err, "should not be able to create same disk with different parameters")
+			assert.Nil(t, disk1, "disk should not be created")
 
-	// attach to VM
-	err = diskManager.AttachVolume(vm, disk)
-	assert.NoError(t, err, "unable to attach disk [%s] to vm [%#v]", disk.Name, vm)
+			// get VM nodeID should be the existing VM name
+			vdcManager, err := vcdsdk.NewVDCManager(diskManager.VCDClient, diskManager.VCDClient.ClusterOrgName, diskManager.VCDClient.ClusterOVDCName)
+			assert.NoError(t, err, "unable to get vdcManager")
+			// Todo find a suitable way to handle cluster
+			vm, err := vdcManager.FindVMByName(vAppName, tt.args.nodeID)
+			require.NoError(t, err, "unable to find VM [%s] by name", tt.args.nodeID)
+			require.NotNil(t, vm, "vm should not be nil")
 
-	attachedVMs, err := diskManager.govcdAttachedVM(disk)
-	assert.NoError(t, err, "unable to get VMs attached to disk [%#v]", disk)
-	assert.NotNil(t, attachedVMs, "VM [%s] should be returned", nodeID)
-	assert.EqualValues(t, len(attachedVMs), 1, "[%d] VM(s) should be returned", 1)
-	assert.EqualValues(t, attachedVMs[0].Name, nodeID, "VM Name should be [%s]", nodeID)
+			// attach to VM
+			err = diskManager.AttachVolume(vm, disk)
+			assert.NoError(t, err, "unable to attach disk [%s] to vm [%#v]", disk.Name, vm)
 
-	err = diskManager.DetachVolume(vm, disk.Name)
-	assert.NoError(t, err, "unable to detach disk [%s] from vm [%#v]", disk.Name, vm)
+			attachedVMs, err := diskManager.govcdAttachedVM(disk)
+			assert.NoError(t, err, "unable to get VMs attached to disk [%#v]", disk)
+			assert.NotNil(t, attachedVMs, "VM [%s] should be returned", tt.args.nodeID)
+			assert.EqualValues(t, len(attachedVMs), 1, "[%d] VM(s) should be returned", 1)
+			assert.EqualValues(t, attachedVMs[0].Name, tt.args.nodeID, "VM Name should be [%s]", tt.args.nodeID)
 
-	attachedVMs, err = diskManager.govcdAttachedVM(disk)
-	assert.NoError(t, err, "unable to get VMs attached to disk [%#v]", disk)
-	assert.Nil(t, attachedVMs, "no VM should be returned", nodeID)
+			err = diskManager.DetachVolume(vm, disk.Name)
+			assert.NoError(t, err, "unable to detach disk [%s] from vm [%#v]", disk.Name, vm)
 
-	err = diskManager.DeleteDisk(diskName)
-	assert.NoError(t, err, "unable to delete disk [%s]", disk.Name)
+			attachedVMs, err = diskManager.govcdAttachedVM(disk)
+			assert.NoError(t, err, "unable to get VMs attached to disk [%#v]", disk)
+			assert.Nil(t, attachedVMs, "no VM should be returned", tt.args.nodeID)
 
-	// Check PV was removed from RDE
-	defEnt, _, _, err = diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-		diskManager.ClusterID, clusterOrg.Org.ID)
-	assert.NoError(t, err, "unable to get RDE")
-	currRDEPvs, err = GetCAPVCDRDEPersistentVolumes(&defEnt)
-	assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
-	assert.False(t, foundStringInSlice(disk.Name, currRDEPvs), "Disk Id should not be found in RDE")
+			err = diskManager.DeleteDisk(diskName)
+			assert.NoError(t, err, "unable to delete disk [%s]", disk.Name)
+
+			// Check PV was removed from RDE
+			defEnt, _, _, err = diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
+				diskManager.ClusterID, clusterOrg.Org.ID)
+			assert.NoError(t, err, "unable to get RDE")
+			currRDEPvs, err = GetCAPVCDRDEPersistentVolumes(&defEnt)
+			assert.NoError(t, err, "unable to get RDE PVs after deleting disk")
+			assert.False(t, foundStringInSlice(disk.Name, currRDEPvs), "Disk Id should not be found in RDE")
+		})
+	}
 }
 
 func GetCAPVCDRDEPersistentVolumes(rde *swaggerClient.DefinedEntity) ([]string, error) {

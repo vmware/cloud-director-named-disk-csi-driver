@@ -8,15 +8,16 @@ package csi
 import (
 	"context"
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
+
 	"github.com/akutz/gofsutil"
 	"github.com/container-storage-interface/spec/lib/go/csi"
+	"github.com/jaypipes/ghw"
 	"golang.org/x/sys/unix"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -29,7 +30,7 @@ const (
 	// is pre-allocated for the HBA. Hence we have only 15 disks.
 	maxVolumesPerNode = 15
 
-	DevDiskPath          = "/dev/disk/by-path"
+	DevDiskPath          = "/dev/"
 	ScsiHostPath         = "/sys/class/scsi_host"
 	HostNameRegexPattern = "^host[0-9]+"
 )
@@ -474,73 +475,23 @@ func (ns *nodeService) rescanDiskInVM(ctx context.Context) error {
 	return nil
 }
 
-// getDiskPath looks for a device corresponding to vmName:diskName as stored in vSphere. It
-// enumerates devices in /dev/disk/by-path and returns a device with UUID matching the scsi UUID.
-// It needs disk.enableUUID to be set for the VM.
-func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskUUID string) (string, error) {
-
-	if diskUUID == "" {
-		return "", fmt.Errorf("diskUUID should not be an empty string")
-	}
-
-	hexDiskUUID := strings.ReplaceAll(diskUUID, "-", "")
-
-	guestDiskPath := ""
-	err := filepath.Walk(DevDiskPath, func(path string, fi os.FileInfo, err error) error {
-		if err != nil {
-			return nil
-		}
-		if guestDiskPath != "" {
-			return nil
-		}
-		if fi.IsDir() {
-			return nil
-		}
-
-		fileToProcess := path
-		if fi.Mode()&os.ModeSymlink != 0 {
-			dst, err := filepath.EvalSymlinks(path)
-			if err != nil {
-				klog.Infof("Error accessing file [%s]: [%v]", path, err)
-				return nil
-			}
-			fileToProcess = dst
-		}
-		if fileToProcess == "" {
-			return nil
-		}
-
-		klog.Infof("Checking file: [%s] => [%s]\n", path, fileToProcess)
-		outBytes, err := exec.Command(
-			"/lib/udev/scsi_id",
-			"--page=0x83",
-			"--whitelisted",
-			fmt.Sprintf("--device=%v", fileToProcess)).CombinedOutput()
-		if err != nil {
-			klog.Infof("Encountered error while processing file [%s]: [%v]", fileToProcess, err)
-			klog.Infof("Please check if the `disk.enableUUID` parameter is set to 1 for the VM in VC config.")
-			return nil
-		}
-		out := strings.TrimSpace(string(outBytes))
-		if len(out) == 33 {
-			out = out[1:]
-		} else if len(out) != 32 {
-			klog.Infof("Obtained uuid with incorrect length: [%s]", out)
-			return nil
-		}
-
-		if strings.ToLower(out) == strings.ToLower(hexDiskUUID) {
-			guestDiskPath = fileToProcess
-		}
-
-		return nil
-	})
+// getDiskPath looks for a disk corresponding to vmName:diskName as stored in vSphere.
+// Scan disk drives and returns the disk with the matching UUID.
+// It needs disk.enableUUID to be set for the VM. Also /run must be propagated from Host VM.
+func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName, diskUUID string) (string, error) {
+	block, err := ghw.Block()
 	if err != nil {
-		return "", fmt.Errorf("could not create filepath.Walk for [%s]: [%v]", DevDiskPath, err)
+		return "", fmt.Errorf("error getting block storage info: %w", err)
+	}
+	hexDiskUUID := strings.ReplaceAll(diskUUID, "-", "")
+	for _, disk := range block.Disks {
+		if disk.SerialNumber == hexDiskUUID {
+			klog.Infof("Obtained matching disk [%s%s] with [%s] controller\n", DevDiskPath, disk.Name, disk.StorageController)
+			return DevDiskPath + disk.Name, nil
+		}
 	}
 
-	klog.Infof("Obtained matching disk [%s]", guestDiskPath)
-	return guestDiskPath, nil
+	return "", nil
 }
 
 func (ns *nodeService) isVolumeReadOnly(capability *csi.VolumeCapability) bool {
