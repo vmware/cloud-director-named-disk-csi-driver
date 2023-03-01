@@ -2,18 +2,22 @@ package e2e
 
 import (
 	"flag"
+	"testing"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"testing"
 )
 
 var (
-	rdeId        string
-	host         string
-	org          string
-	ovdc         string
-	userName     string
-	refreshToken string
+	rdeId          string
+	host           string
+	org            string
+	ovdc           string
+	userName       string
+	refreshToken   string
+	busType        string
+	storageProfile string
+	userOrg        string
 )
 
 func init() {
@@ -24,6 +28,9 @@ func init() {
 	flag.StringVar(&userName, "userName", "", "Username for login to generate client")
 	flag.StringVar(&refreshToken, "refreshToken", "", "Refresh token of user to generate client")
 	flag.StringVar(&rdeId, "rdeId", "", "Cluster ID to fetch cluster RDE")
+	flag.StringVar(&busType, "busType", "scsi_paravirtual", "busType of the Disks")
+	flag.StringVar(&storageProfile, "storageProfile", "*", "storageProfile")
+	flag.StringVar(&userOrg, "userOrg", "system", "UserOrg to generate client")
 }
 
 var _ = BeforeSuite(func() {

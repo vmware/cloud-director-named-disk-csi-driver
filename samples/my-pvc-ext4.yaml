@@ -22,5 +22,5 @@ provisioner: named-disk.csi.cloud-director.vmware.com
 reclaimPolicy: Delete
 parameters:
   storageProfile: "dev"
+  # busType defaults to scsi_paravirtual
   filesystem: "ext4"
----

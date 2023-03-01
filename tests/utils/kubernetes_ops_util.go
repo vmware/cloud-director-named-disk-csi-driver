@@ -3,6 +3,9 @@ package utils
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	apiv1 "k8s.io/api/core/v1"
 	stov1 "k8s.io/api/storage/v1"
@@ -12,8 +15,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog/v2"
-	"strings"
-	"time"
 )
 
 const (
@@ -21,31 +22,28 @@ const (
 	defaultLongRetryTimeout  = 300 * time.Second
 )
 
-func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) error {
-	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
-		ready := false
-		pvc, err := GetPVC(ctx, k8sClient, nameSpace, pvcName)
+func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, name, namespace string) error {
+	return wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
+		pvc, err := GetPVC(ctx, k8sClient, name, namespace)
 		if err != nil {
 			if testingsdk.IsRetryableError(err) {
 				return false, nil
 			}
-			return false, fmt.Errorf("unexpected error occurred while getting pvc [%s]", pvcName)
+			return false, fmt.Errorf("unexpected error occurred while getting pvc [%s]", name)
 		}
 		if pvc != nil && pvc.Status.Phase == apiv1.ClaimBound {
-			ready = true
+			return true, nil
 		}
-		if !ready {
-			fmt.Printf("pvc %s is not bound\n", pvc.Name)
-			return false, nil
-		}
-		return true, nil
+
+		klog.Info("pvc %s is not bound", name)
+
+		return false, nil
 	})
-	return err
 }
 
-func WaitForPVDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, pvName string) (bool, error) {
+func WaitForPVDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, name string) (bool, error) {
 	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
-		_, err := GetPV(ctx, k8sClient, pvName)
+		_, err := GetPV(ctx, k8sClient, name)
 		if err != nil {
 			if err == testingsdk.ResourceNotFound {
 				return true, nil
@@ -53,19 +51,19 @@ func WaitForPVDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, pvNa
 			if testingsdk.IsRetryableError(err) {
 				return false, nil
 			}
-			return false, fmt.Errorf("unexpected error occurred while getting persistentVolume [%s]", pvName)
+			return false, fmt.Errorf("unexpected error occurred while getting persistentVolume [%s]", name)
 		}
 		return false, nil
 	})
 	if err != nil {
-		return false, fmt.Errorf("error occurred while checking PV status: %v", err)
+		return false, fmt.Errorf("error occurred while checking PV status: %w", err)
 	}
 	return true, nil
 }
 
-func WaitForPVCDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) (bool, error) {
-	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
-		_, err := GetPVC(ctx, k8sClient, pvcName, nameSpace)
+func WaitForPVCDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, name, namespace string) (bool, error) {
+	if err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
+		_, err := GetPVC(ctx, k8sClient, name, namespace)
 		if err != nil {
 			if err == testingsdk.ResourceNotFound {
 				return true, nil
@@ -73,105 +71,106 @@ func WaitForPVCDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, nam
 			if testingsdk.IsRetryableError(err) {
 				return false, nil
 			}
-			return false, fmt.Errorf("unexpected error occurred while getting persistentVolumeClaim [%s]", pvcName)
+			return false, fmt.Errorf("unexpected error occurred while getting persistentVolumeClaim [%s]", name)
 		}
 		return false, nil
-	})
-	if err != nil {
-		return false, fmt.Errorf("error occurred while checking PVC status: %v", err)
+	}); err != nil {
+		return false, fmt.Errorf("error occurred while checking PVC status: %w", err)
 	}
 	return true, nil
 }
 
-func waitForStorageClassDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, scName string) (bool, error) {
-	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
-		_, err := k8sClient.StorageV1().StorageClasses().Get(ctx, scName, metav1.GetOptions{})
-		if err != nil {
+func waitForStorageClassDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, name string) (bool, error) {
+	if err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
+		if _, err := k8sClient.StorageV1().StorageClasses().Get(ctx, name, metav1.GetOptions{}); err != nil {
 			if apierrs.IsNotFound(err) {
 				return true, nil
 			}
 			if testingsdk.IsRetryableError(err) {
 				return false, nil
 			}
-			return false, fmt.Errorf("unexpected error occurred while getting storage class [%s]")
+			return false, fmt.Errorf("unexpected error occurred while getting storage class [%s]", name)
 		}
 		return false, nil
-	})
-	if err != nil {
-		return false, fmt.Errorf("error occurred while checking namespace status: %v", err)
+	}); err != nil {
+		return false, fmt.Errorf("error occurred while checking namespace status: %w", err)
 	}
+
 	return true, nil
 }
 
-func GetPV(ctx context.Context, k8sClient *kubernetes.Clientset, pvName string) (*apiv1.PersistentVolume, error) {
-	if pvName == "" {
+func GetPV(ctx context.Context, k8sClient *kubernetes.Clientset, name string) (pv *apiv1.PersistentVolume, err error) {
+	if name == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
-	pv, err := k8sClient.CoreV1().PersistentVolumes().Get(ctx, pvName, metav1.GetOptions{})
-	if err != nil {
+
+	if pv, err = k8sClient.CoreV1().PersistentVolumes().Get(ctx, name, metav1.GetOptions{}); err != nil {
 		if apierrs.IsNotFound(err) {
 			return nil, testingsdk.ResourceNotFound
 		}
 		return nil, err
 	}
+
 	return pv, nil
 }
 
-func GetPVC(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) (*apiv1.PersistentVolumeClaim, error) {
-	if pvcName == "" {
+func GetPVC(ctx context.Context, k8sClient *kubernetes.Clientset, name string, namespace string) (pvc *apiv1.PersistentVolumeClaim, err error) {
+	if name == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
-	pvc, err := k8sClient.CoreV1().PersistentVolumeClaims(nameSpace).Get(ctx, pvcName, metav1.GetOptions{})
-	if err != nil {
+
+	if pvc, err = k8sClient.CoreV1().PersistentVolumeClaims(namespace).Get(ctx, name, metav1.GetOptions{}); err != nil {
 		if apierrs.IsNotFound(err) {
 			return nil, testingsdk.ResourceNotFound
 		}
 		return nil, err
 	}
+
 	return pvc, nil
 }
 
-func GetStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string) (*stov1.StorageClass, error) {
-	if scName == "" {
+func GetStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, name string) (sc *stov1.StorageClass, err error) {
+	if name == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
-	sc, err := k8sClient.StorageV1().StorageClasses().Get(ctx, scName, metav1.GetOptions{})
-	if err != nil {
+
+	if sc, err = k8sClient.StorageV1().StorageClasses().Get(ctx, name, metav1.GetOptions{}); err != nil {
 		if apierrs.IsNotFound(err) {
 			return nil, testingsdk.ResourceNotFound
 		}
 		return nil, err
 	}
+
 	return sc, nil
 }
 
-func CreatePV(ctx context.Context, k8sClient *kubernetes.Clientset, persistentVolumeName string, storageClass string, storageProfile string, storageSize string, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy) (*apiv1.PersistentVolume, error) {
-	if persistentVolumeName == "" {
+func CreatePV(ctx context.Context, k8sClient *kubernetes.Clientset, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, name, storageClassName, storageProfileName, storageSize, fsType, busType string) (pv *apiv1.PersistentVolume, err error) {
+	if name == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
 	persistentVolumeFilesystem := apiv1.PersistentVolumeFilesystem
-	pv := &apiv1.PersistentVolume{
+
+	if pv, err = k8sClient.CoreV1().PersistentVolumes().Create(ctx, &apiv1.PersistentVolume{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: persistentVolumeName,
+			Name: name,
 			Annotations: map[string]string{
 				"pv.kubernetes.io/provisioned-by": "named-disk.csi.cloud-director.vmware.com",
 			},
 		},
 		Spec: apiv1.PersistentVolumeSpec{
-			StorageClassName: storageClass,
+			StorageClassName: storageClassName,
 			AccessModes: []apiv1.PersistentVolumeAccessMode{
 				"ReadWriteOnce",
 			},
 			PersistentVolumeSource: apiv1.PersistentVolumeSource{
 				CSI: &apiv1.CSIPersistentVolumeSource{
 					Driver:       "named-disk.csi.cloud-director.vmware.com",
-					FSType:       "ext4",
-					VolumeHandle: persistentVolumeName,
+					FSType:       fsType,
+					VolumeHandle: name,
 					VolumeAttributes: map[string]string{
-						"busSubType":     "VirtualSCSI",
-						"busType":        "SCSI",
-						"filesystem":     "ext4",
-						"storageProfile": storageProfile,
+						"busType":        busType,
+						"filesystem":     fsType,
+						"storageProfile": storageProfileName,
 					},
 				},
 			},
@@ -181,29 +180,27 @@ func CreatePV(ctx context.Context, k8sClient *kubernetes.Clientset, persistentVo
 			VolumeMode:                    &persistentVolumeFilesystem,
 			PersistentVolumeReclaimPolicy: reclaimPolicy,
 		},
+	}, metav1.CreateOptions{}); err != nil {
+		return nil, fmt.Errorf("error occurred while creating persistent volume [%s]: %w", name, err)
 	}
-	newPV, err := k8sClient.CoreV1().PersistentVolumes().Create(ctx, pv, metav1.CreateOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("error occurred while creating persistent volume [%s]: [%v]", persistentVolumeName, err)
-	}
-	return newPV, nil
+	return pv, nil
 }
 
-func CreatePVC(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string, storageClass string, storageSize string) (*apiv1.PersistentVolumeClaim, error) {
-	if pvcName == "" {
+func CreatePVC(ctx context.Context, k8sClient *kubernetes.Clientset, name, namespace, storageClass, storageSize string) (pvc *apiv1.PersistentVolumeClaim, err error) {
+	if name == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
-	if nameSpace == "" {
-		nameSpace = apiv1.NamespaceDefault
+	if namespace == "" {
+		namespace = apiv1.NamespaceDefault
 	}
-	var storageClassName = storageClass
-	pvc := &apiv1.PersistentVolumeClaim{
+
+	if pvc, err = k8sClient.CoreV1().PersistentVolumeClaims(namespace).Create(ctx, &apiv1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      pvcName,
-			Namespace: nameSpace,
+			Name:      name,
+			Namespace: namespace,
 		},
 		Spec: apiv1.PersistentVolumeClaimSpec{
-			StorageClassName: &storageClassName,
+			StorageClassName: &storageClass,
 			AccessModes: []apiv1.PersistentVolumeAccessMode{
 				apiv1.ReadWriteOnce,
 			},
@@ -213,22 +210,19 @@ func CreatePVC(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace s
 				},
 			},
 		},
+	}, metav1.CreateOptions{}); err != nil {
+		return nil, fmt.Errorf("error occurred while creating persistent volume claim [%s]: %w", name, err)
 	}
-
-	newPVC, err := k8sClient.CoreV1().PersistentVolumeClaims(nameSpace).Create(ctx, pvc, metav1.CreateOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("error occurred while creating persistent volume claim [%s]: [%v]", pvcName, err)
-	}
-	return newPVC, nil
+	return pvc, nil
 }
 
-func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, storageProfile string, fsType string) (*stov1.StorageClass, error) {
-	if scName == "" {
+func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, name, storageProfile, fsType string) (sc *stov1.StorageClass, err error) {
+	if name == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
-	sc := &stov1.StorageClass{
+	if sc, err = k8sClient.StorageV1().StorageClasses().Create(ctx, &stov1.StorageClass{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: scName,
+			Name: name,
 			Annotations: map[string]string{
 				"storageclass.kubernetes.io/is-default-class": "false",
 			},
@@ -239,59 +233,54 @@ func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, sc
 			"storageProfile": storageProfile,
 			"filesystem":     fsType,
 		},
+	}, metav1.CreateOptions{}); err != nil {
+		return nil, fmt.Errorf("error occurred while creating new storageclass [%s]: %w", name, err)
 	}
-	newSC, err := k8sClient.StorageV1().StorageClasses().Create(ctx, sc, metav1.CreateOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("error occurred while creating new storageclass [%s]: %v", scName, err)
-	}
-	return newSC, nil
+
+	return sc, nil
 }
 
-func DeletePVC(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) error {
-	if pvcName == "" {
+func DeletePVC(ctx context.Context, k8sClient *kubernetes.Clientset, name string, namespace string) error {
+	if name == "" {
 		return testingsdk.ResourceNameNull
 	}
-	_, err := GetPVC(ctx, k8sClient, nameSpace, pvcName)
-	if err != nil {
+	if _, err := GetPVC(ctx, k8sClient, name, namespace); err != nil {
 		if err == testingsdk.ResourceNotFound {
-			return fmt.Errorf("the persistentVolumeClaim [%s] does not exist", pvcName)
+			return fmt.Errorf("the persistentVolumeClaim [%s] does not exist", name)
 		}
-		return fmt.Errorf("error occurred while deleting persistentVolumeClaim [%s]: [%v]", pvcName, err)
+		return fmt.Errorf("error occurred while deleting persistentVolumeClaim [%s]: [%v]", name, err)
 	}
-	err = k8sClient.CoreV1().PersistentVolumeClaims(nameSpace).Delete(ctx, pvcName, metav1.DeleteOptions{})
-	if err != nil {
-		return fmt.Errorf("failed to delete persistentVolumeClaim [%s]", pvcName)
+	if err := k8sClient.CoreV1().PersistentVolumeClaims(namespace).Delete(ctx, name, metav1.DeleteOptions{}); err != nil {
+		return fmt.Errorf("failed to delete persistentVolumeClaim [%s]", name)
 	}
-	pvcDeleted, err := WaitForPVCDeleted(ctx, k8sClient, nameSpace, pvcName)
-	if err != nil {
-		return fmt.Errorf("error occurred while deleting persistentVolumeClaim [%s]: [%v]", pvcName, err)
+
+	if pvcDeleted, err := WaitForPVCDeleted(ctx, k8sClient, name, namespace); err != nil {
+		return fmt.Errorf("error occurred while deleting persistentVolumeClaim [%s]: %w", name, err)
+	} else if !pvcDeleted {
+		return fmt.Errorf("persistentVolumeClaim [%s] still exists", name)
 	}
-	if !pvcDeleted {
-		return fmt.Errorf("persistentVolumeClaim [%s] still exists", pvcName)
-	}
+
 	return nil
 }
 
-func DeletePV(ctx context.Context, k8sClient *kubernetes.Clientset, pvName string) error {
-	_, err := GetPV(ctx, k8sClient, pvName)
-	if err != nil {
-		return fmt.Errorf("the persistentVolumeClaim [%s] does not exist", pvName)
+func DeletePV(ctx context.Context, k8sClient *kubernetes.Clientset, name string) error {
+	if _, err := GetPV(ctx, k8sClient, name); err != nil {
+		return fmt.Errorf("the persistentVolumeClaim [%s] does not exist", name)
 	}
-	err = k8sClient.CoreV1().PersistentVolumes().Delete(ctx, pvName, metav1.DeleteOptions{})
-	if err != nil {
-		return fmt.Errorf("failed to delete persistentVolume [%s]", pvName)
+	if err := k8sClient.CoreV1().PersistentVolumes().Delete(ctx, name, metav1.DeleteOptions{}); err != nil {
+		return fmt.Errorf("failed to delete persistentVolume [%s]", name)
 	}
-	pvDeleted, err := WaitForPVDeleted(ctx, k8sClient, pvName)
-	if err != nil {
-		return fmt.Errorf("error occurred while deleting persistentVolume [%s]: [%v]", pvName, err)
+
+	if pvDeleted, err := WaitForPVDeleted(ctx, k8sClient, name); err != nil {
+		return fmt.Errorf("error occurred while deleting persistentVolume [%s]: %w", name, err)
+	} else if !pvDeleted {
+		return fmt.Errorf("persistentVolume [%s] still exists", name)
 	}
-	if !pvDeleted {
-		return fmt.Errorf("persistentVolume [%s] still exists", pvName)
-	}
+
 	return nil
 }
 
-func FindFsTypeWithMountPath(executedOutput string, mountedPath string, fsType string) (bool, error) {
+func FindFsTypeWithMountPath(executedOutput, mountedPath, fsType string) (bool, error) {
 	filesystemSlices := strings.Split(executedOutput, "\n")
 	if len(filesystemSlices) < 2 {
 		return false, fmt.Errorf("error occurred while parsing filesystemData into multiple lines")
@@ -308,27 +297,27 @@ func FindFsTypeWithMountPath(executedOutput string, mountedPath string, fsType s
 		}
 
 	}
+
 	return false, fmt.Errorf("the desired filesystemType [%s] not found with the mountedPath provided: [%s]", fsType, mountedPath)
 }
 
-func DeleteStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string) error {
-	_, err := GetStorageClass(ctx, k8sClient, scName)
-	if err != nil {
+func DeleteStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, name string) error {
+	if _, err := GetStorageClass(ctx, k8sClient, name); err != nil {
 		if err == testingsdk.ResourceNotFound {
-			return fmt.Errorf("the storageClass [%s] does not exist", scName)
+			return fmt.Errorf("the storageClass [%s] does not exist", name)
 		}
-		klog.Info("error occurred while getting storageClass [%s]: [%v]", scName, err)
+		klog.Info("error occurred while getting storageClass [%s]: %w", name, err)
 	}
-	err = k8sClient.StorageV1().StorageClasses().Delete(ctx, scName, metav1.DeleteOptions{})
-	if err != nil {
-		return fmt.Errorf("failed to delete service [%s]", scName)
+
+	if err := k8sClient.StorageV1().StorageClasses().Delete(ctx, name, metav1.DeleteOptions{}); err != nil {
+		return fmt.Errorf("failed to delete service [%s]", name)
 	}
-	scDeleted, err := waitForStorageClassDeleted(ctx, k8sClient, scName)
-	if err != nil {
-		return fmt.Errorf("error occurred while deleting storageClass [%s]: [%v]", scName, err)
+
+	if scDeleted, err := waitForStorageClassDeleted(ctx, k8sClient, name); err != nil {
+		return fmt.Errorf("error occurred while deleting storageClass [%s]: %w", name, err)
+	} else if !scDeleted {
+		return fmt.Errorf("storageClass [%s] still exists", name)
 	}
-	if !scDeleted {
-		return fmt.Errorf("storageClass [%s] still exists", scName)
-	}
+
 	return nil
 }

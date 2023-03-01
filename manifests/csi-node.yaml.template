@@ -111,6 +111,9 @@ spec:
               mountPath: /etc/kubernetes/vcloud
             - name: vcloud-basic-auth-volume
               mountPath: /etc/kubernetes/vcloud/basic-auth
+            - mountPath: /run
+              name: host-run-dir
+              mountPropagation:  "HostToContainer"
       volumes:
         - name: socket-dir
           hostPath:
@@ -142,4 +145,7 @@ spec:
         - name: vcloud-basic-auth-volume
           secret:
             secretName: vcloud-basic-auth
----
+        - name: host-run-dir
+          hostPath:
+            path: /run
+            type: Directory

@@ -1,0 +1,48 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+  name: vcd-disk-sata-dev
+provisioner: named-disk.csi.cloud-director.vmware.com
+reclaimPolicy: Delete
+parameters:
+  storageProfile: "dev"
+  busType: "sata"
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+  name: vcd-disk-nvme-dev
+provisioner: named-disk.csi.cloud-director.vmware.com
+reclaimPolicy: Delete
+parameters:
+  storageProfile: "dev"
+  busType: "nvme"
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+  name: vcd-disk-scsi-lsi-logic-parallel-dev
+provisioner: named-disk.csi.cloud-director.vmware.com
+reclaimPolicy: Delete
+parameters:
+  storageProfile: "dev"
+  busType: "scsi_lsi_logic_parallel"
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+  name: vcd-disk-scsi-lsi-logic-parallel-dev
+provisioner: named-disk.csi.cloud-director.vmware.com
+reclaimPolicy: Delete
+parameters:
+  storageProfile: "dev"
+  busType: "scsi_lsi_logic_sas"

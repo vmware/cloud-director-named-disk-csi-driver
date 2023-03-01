@@ -3,8 +3,10 @@ package e2e
 import (
 	"context"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
@@ -36,14 +38,13 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		pv            *apiv1.PersistentVolume
 		pvDeleted     bool
 	)
-
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
 		Host:         host,
 		OvdcName:     ovdc,
 		OrgName:      org,
 		Username:     userName,
 		RefreshToken: refreshToken,
-		UserOrg:      "system",
+		UserOrg:      userOrg,
 		GetVdcClient: true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
@@ -56,10 +57,10 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
-		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4)
+		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), apiv1.PersistentVolumeReclaimRetain, storageClassRetain, defaultStorageProfile, csi.DefaultFSType)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
-		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4)
+		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), apiv1.PersistentVolumeReclaimDelete, storageClassDelete, defaultStorageProfile, csi.DefaultFSType)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})
@@ -72,11 +73,13 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(pvc).NotTo(BeNil())
 
 		By("PVC status should be 'Bound'")
-		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
+		pvc, err = utils.GetPVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
 		Expect(err).NotTo(HaveOccurred())
+		Expect(pvc).NotTo(BeNil())
 
 		By("PVC should be presented in kubernetes")
 		pvc, err = utils.GetPVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
+		Expect(err).NotTo(HaveOccurred())
 		dynamicPVName = pvc.Spec.VolumeName
 		Expect(dynamicPVName).NotTo(BeEmpty())
 
@@ -208,6 +211,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 
 		By("PVC should be presented in kubernetes")
 		pvc, err = utils.GetPVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
+		Expect(err).NotTo(HaveOccurred())
 		dynamicPVName = pvc.Spec.VolumeName
 		Expect(dynamicPVName).NotTo(BeEmpty())
 
