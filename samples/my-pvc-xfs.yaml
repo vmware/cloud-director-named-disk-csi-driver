@@ -1,4 +1,3 @@
-# ext4 is the default filesystem type in CSI
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -10,17 +9,17 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: "vcd-disk-dev"
+  storageClassName: "vcd-disk-xfs"
 ---
-kind: StorageClass
 apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
-  name: vcd-disk-dev
+  name: vcd-disk-xfs
 provisioner: named-disk.csi.cloud-director.vmware.com
-reclaimPolicy: Delete
 parameters:
-  storageProfile: "dev"
-  filesystem: "ext4"
+  csi.storage.k8s.io/fstype: "xfs"
+  storageProfile: "*"
+  filesystem: "xfs"
 ---
