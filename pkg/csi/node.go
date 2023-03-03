@@ -76,7 +76,6 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 
 	// parameter fsType is the filesystem type of the storage block to be mounted
 	var fsType string
-	// parameter ok is the boolean output of checking whether a given set is existed
 	var ok bool
 	volumeContext := req.GetVolumeContext()
 	// volumeContext might be optional;

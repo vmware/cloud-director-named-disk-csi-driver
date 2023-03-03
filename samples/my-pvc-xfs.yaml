@@ -20,6 +20,8 @@ metadata:
 provisioner: named-disk.csi.cloud-director.vmware.com
 parameters:
   csi.storage.k8s.io/fstype: "xfs"
+  # storageProfile will be reflected in pv.spec.csi.fsType whenever the pv is created based on xfs storage class.
   storageProfile: "*"
+  # filesystem will be reflected in pv.spec.csi.volumeAttributes.filesystem whenever the pv is created based on xfs storage class.
   filesystem: "xfs"
 ---
