@@ -1,6 +1,6 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package csi
@@ -8,6 +8,7 @@ package csi
 import (
 	"context"
 	"fmt"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -69,10 +70,30 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		return nil, status.Errorf(codes.InvalidArgument, "NodeStageVolume: Publish context not provided")
 	}
 
-	fsType, ok := publishContext[FileSystemParameter]
-	if !ok {
-		return nil, status.Errorf(codes.InvalidArgument,
-			"publish context does not have [%s] set", FileSystemParameter)
+	// parameter fsType is the filesystem type of the storage block to be mounted
+	var fsType string
+	var ok bool
+	volumeContext := req.GetVolumeContext()
+	// volumeContext might be optional;
+	if volumeContext == nil {
+		fsType, ok = publishContext[FileSystemParameter]
+		if !ok {
+			return nil, status.Errorf(codes.InvalidArgument,
+				"publish context does not have [%s] set", FileSystemParameter)
+		}
+	} else {
+		ephemeralVolume, ok := volumeContext[EphemeralVolumeContext]
+		if ok {
+			if ephemeralVolume == "true" {
+				return &csi.NodeStageVolumeResponse{}, status.Errorf(codes.Unimplemented,
+					"[%s] not supported", EphemeralVolumeContext)
+			}
+		}
+		fsType, ok = volumeContext[FileSystemParameter]
+		if !ok {
+			return nil, status.Errorf(codes.InvalidArgument,
+				"publish context does not have [%s] set", FileSystemParameter)
+		}
 	}
 
 	vmFullName, ok := publishContext[VMFullNameAttribute]
@@ -87,21 +108,19 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 	}
 
 	mnt := volumeCapability.GetMount()
+	mountFlags := mnt.GetMountFlags()
 	if mnt == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "volume capability must have mount details")
 	}
 	if mnt.FsType != fsType {
-		if mnt.FsType != "" {
-			return nil, fmt.Errorf("fs type in mountpoint [%s] does not match specified fs type [%s]",
-				mnt.FsType, fsType)
-		}
-
 		// allow fsType passed from the PV or other sources to go through
-		klog.Infof("Volume capability has empty FsType. Using FS [%s] from PV config.", fsType)
+		klog.Infof("fs type in mountpoint [%s] does not match specified fs type [%s]. Using FS [%s] from PV config.",
+			mnt.FsType, fsType, fsType)
 		mnt.FsType = fsType
 	}
-	mountFlags := append(mnt.GetMountFlags(), mountMode)
+	mountFlags = util.CollectMountOptions(mnt.FsType, mountFlags)
 
+	mountFlags = append(mountFlags, mountMode)
 	diskUUID, ok := publishContext[DiskUUIDAttribute]
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument,
@@ -149,7 +168,7 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 	if err = gofsutil.FormatAndMount(ctx, devicePath, mountDir, fsType, mountFlags...); err != nil {
 		return nil, status.Error(codes.Internal,
 			fmt.Sprintf("unable to format and mount device [%s] at path [%s] with fs [%s] and flags [%v]: [%v]",
-				devicePath, mountDir, mountFlags, err))
+				devicePath, mountDir, fsType, mountFlags, err))
 	}
 	klog.Infof("Mounted device [%s] at path [%s] with fs [%s] and options [%v]",
 		devicePath, mountDir, fsType, mountFlags)
@@ -251,7 +270,7 @@ func (ns *nodeService) NodePublishVolume(ctx context.Context,
 	mountFlags := append(mnt.GetMountFlags(), mountMode)
 
 	// verify that host dir exists
-	hostMountDirExists, err := ns.checkIfDirExists(hostMountDir);
+	hostMountDirExists, err := ns.checkIfDirExists(hostMountDir)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "unable to check if host mount dir [%s] exists: [%v]",
 			hostMountDir, err)
@@ -324,7 +343,7 @@ func (ns *nodeService) NodeUnpublishVolume(ctx context.Context,
 	}
 
 	isDirMounted, err := ns.checkIfDirMounted(ctx, podMountDir)
-	if err!= nil {
+	if err != nil {
 		return nil, fmt.Errorf("unable to check if pod mount dir [%s] is mounted: [%v]", podMountDir, err)
 	}
 	if !isDirMounted {
@@ -379,7 +398,7 @@ func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskU
 	hexDiskUUID := strings.ReplaceAll(diskUUID, "-", "")
 
 	guestDiskPath := ""
-	err := filepath.Walk(DevDiskPath, func (path string, fi os.FileInfo, err error) error {
+	err := filepath.Walk(DevDiskPath, func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return nil
 		}
@@ -416,7 +435,7 @@ func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskU
 		}
 		out := strings.TrimSpace(string(outBytes))
 		if len(out) == 33 {
-			out = out [1:]
+			out = out[1:]
 		} else if len(out) != 32 {
 			klog.Infof("Obtained uuid with incorrect length: [%s]", out)
 			return nil
