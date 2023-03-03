@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: "vcd-disk-xfs"
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+  name: vcd-disk-xfs
+provisioner: named-disk.csi.cloud-director.vmware.com
+parameters:
+  csi.storage.k8s.io/fstype: "xfs"
+  # storageProfile will be reflected in pv.spec.csi.fsType whenever the pv is created based on xfs storage class.
+  storageProfile: "*"
+  # filesystem will be reflected in pv.spec.csi.volumeAttributes.filesystem whenever the pv is created based on xfs storage class.
+  filesystem: "xfs"
+---
