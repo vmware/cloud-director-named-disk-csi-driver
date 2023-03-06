@@ -1,3 +1,4 @@
+# ext4 is the default filesystem type in CSI
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
