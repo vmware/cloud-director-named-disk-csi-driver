@@ -31,8 +31,8 @@ const (
 )
 
 type nodeService struct {
-	Driver        *VCDDriver
-	NodeID        string
+	Driver *VCDDriver
+	NodeID string
 }
 
 // NewNodeService creates and returns a NodeService struct.
@@ -410,7 +410,7 @@ func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskU
 		}
 
 		fileToProcess := path
-		if fi.Mode() & os.ModeSymlink != 0 {
+		if fi.Mode()&os.ModeSymlink != 0 {
 			dst, err := filepath.EvalSymlinks(path)
 			if err != nil {
 				klog.Infof("Error accessing file [%s]: [%v]", path, err)
