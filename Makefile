@@ -31,6 +31,8 @@ dev: csi dev-manifests update-gcr-images crs-artifacts-dev
 crs-artifacts-prod:
 	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-controller-crs-airgap.yaml.template > artifacts/csi-controller-crs-airgap.yaml.template
 	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/bom.json.template > artifacts/bom.json
+	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g"artifacts/dependencies.txt.template > artifacts/dependencies.txt
 	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(version)
 	docker tag csi-crs-airgapped:$(version) $(REGISTRY)/csi-crs-airgapped:$(version)
 	docker push $(REGISTRY)/csi-crs-airgapped:$(version)
@@ -38,6 +40,8 @@ crs-artifacts-prod:
 crs-artifacts-dev:
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-controller-crs-airgap.yaml.template > artifacts/csi-controller-crs-airgap.yaml.template
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/bom.json.template > artifacts/bom.json
+	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g"artifacts/dependencies.txt.template > artifacts/dependencies.txt
 	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(GITCOMMIT)
 	docker tag csi-crs-airgapped:$(GITCOMMIT) $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
 	docker push $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
@@ -56,12 +60,12 @@ dev-manifests:
 
 # Pulls and pushes CSI images from gcr registry to harbor for airgapped
 update-gcr-images:
-	docker pull k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
-	docker pull k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version)
-	docker pull k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version)
-	docker tag k8s.gcr.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version) $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
-	docker tag k8s.gcr.io/sig-storage/csi-attacher:$(csi_attacher_version) $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
-	docker tag k8s.gcr.io/sig-storage/csi-provisioner:$(csi_provisioner_version) $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker pull registry.k8s.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker pull registry.k8s.io/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker pull registry.k8s.io/sig-storage/csi-provisioner:$(csi_provisioner_version)
+	docker tag registry.k8s.io/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version) $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
+	docker tag registry.k8s.io/sig-storage/csi-attacher:$(csi_attacher_version) $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
+	docker tag registry.k8s.io/sig-storage/csi-provisioner:$(csi_provisioner_version) $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
 	docker push $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(csi_node_driver_registrar_version)
 	docker push $(REGISTRY)/sig-storage/csi-attacher:$(csi_attacher_version)
 	docker push $(REGISTRY)/sig-storage/csi-provisioner:$(csi_provisioner_version)
