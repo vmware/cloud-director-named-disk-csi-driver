@@ -63,7 +63,7 @@ To upgrade CSI to the latest version (v1.3.2) from existing cluster, please exec
 kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin  -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.3.2"}, {"name": "csi-attacher", "image": "registry.k8s.io/sig-storage/csi-attacher:v3.2.1"}, {"name": "csi-provisioner", "image": "registry.k8s.io/sig-storage/csi-provisioner:v2.2.2"}]}}}}'
 kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.3.2"}, {"name": "node-driver-registrar", "image": "registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.2.0"}]}}}}'
 ```
-We strongly advise cluster owners to upgrade their CSI installation; otherwise, unforeseen failures may occur.
+**We strongly advise cluster owners to upgrade their CSI installation; otherwise, unforeseen failures may occur.**
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
