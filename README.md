@@ -3,12 +3,13 @@ This repository contains the source code and build methods to build a Kubernetes
 
 The version of the VMware Cloud Director API and Installation that are compatible for a given CSI container image are provided in the following compatibility matrix:
 
-| CSI Version | VMware Cloud Director API | VMware Cloud Director Installation | Notes | Kubernetes Versions |
-| :---------: | :-----------------------: | :--------------------------------: | :----: | :----------------- |
-| 1.0.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) | First cut with support for Named Independent Disks |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
-| 1.1.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Remove legacy Kubernetes dependencies.</li><li>Support for CAPVCD RDEs.</li></ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
-| 1.1.1 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Fixed refresh-token based authentication issue observed when VCD cells are fronted by a load balancer (Fixes #26).</ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
-| 1.2.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Add support for Kubernetes 1.22</li><li>Small VCD url parsing fixes</li></ul> |<ul><li>**1.22**</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+| CSI Version | CSE Version |                         VMware Cloud Director API                          | VMware Cloud Director Installation | Notes | Kubernetes Versions |
+|:-----------:|:-----------:|:--------------------------------------------------------------------------:| :--------------------------------: | :----: | :----------------- |
+|    1.0.0    |   3.1.x	 |                                   36.0+                                    | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments)  | First cut with support for Named Independent Disks |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+|    1.1.0    |   3.1.x	 |                                   36.0+                                    | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Remove legacy Kubernetes dependencies.</li><li>Support for CAPVCD RDEs.</li></ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+|    1.1.1    |   3.1.x	 |                                   36.0+                                    | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Fixed refresh-token based authentication issue observed when VCD cells are fronted by a load balancer (Fixes #26).</ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+|    1.2.0    |   3.1.x	 |                                   36.0+                                    | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Add support for Kubernetes 1.22</li><li>Small VCD url parsing fixes</li></ul> |<ul><li>**1.22**</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
+|    1.2.1    |   3.1.x	 |                                   36.0+                                    | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Add XFS filesystem support (Fixes [#122](https://github.com/vmware/cloud-director-named-disk-csi-driver/issues/122)) </li><li>Updated CSI container registry references to use 'registry.k8s.io' ([k8s.gcr.io freeze announcement](https://kubernetes.io/blog/2023/02/06/k8s-gcr-io-freeze-announcement)) </li></ul> |<ul><li>**1.22**</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|
 
 This extension is intended to be installed into a Kubernetes cluster installed with [VMware Cloud Director](https://www.vmware.com/products/cloud-director.html) as a Cloud Provider, by a user that has the rights as described in the sections below.
 
@@ -37,11 +38,12 @@ This `ClusterAdminUser` needs to be created from a `ClusterAdminRole` with the f
 2. Organization VDC => Create a Shared Disk
 
 ## Upgrde CSI
-To upgrade CSI to the latest version (v1.1.1), please execute the following command
+To upgrade CSI to the latest version (v1.2.1), please execute the following command
 ```shell
-kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.1.1.latest"}]}}}}'
-kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.1.1.latest"}]}}}}'
+kubectl patch StatefulSet -n kube-system csi-vcd-controllerplugin  -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.2.1.latest"}, {"name": "csi-attacher", "image": "registry.k8s.io/sig-storage/csi-attacher:v3.2.1"}, {"name": "csi-provisioner", "image": "registry.k8s.io/sig-storage/csi-provisioner:v2.2.2"}]}}}}'
+kubectl patch DaemonSet -n kube-system csi-vcd-nodeplugin -p '{"spec": {"template": {"spec": {"containers": [{"name": "vcd-csi-plugin", "image": "projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.2.1.latest"}, {"name": "node-driver-registrar", "image": "registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.2.0"}]}}}}'
 ```
+**We strongly advise cluster owners to upgrade their CSI installation; otherwise, unforeseen failures may occur.**
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
