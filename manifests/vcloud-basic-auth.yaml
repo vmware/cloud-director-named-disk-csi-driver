@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -6,4 +7,5 @@ metadata:
 data:
   username: ""
   password: ""
+  # Refresh token can be omitted when using username and password
   refreshToken: ""
