@@ -52,11 +52,26 @@ The container logs can be obtained using the command `kubectl logs -n kube-syste
 
 To stop logging the HTTP requests and responses from VCD, the following command can be executed -
 ```shell
-kubectl set env -n kube-system StatefulSet/csi-vcd-controllerplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
+kubectl set env -n kube-system Deployment/csi-vcd-controllerplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
 kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
 ```
 
-**NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller StatefulSet and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.**
+**NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller Deployment and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.**
+### Upgrade CSI
+
+To perform an upgrade of the Container Storage Interface (CSI) from versions v1.2.0, v1.2.1, v1.3.0, v1.3.1, and v1.3.2, it is recommended to follow the following steps:
+1. Remove the current StatefulSet and any associated persistent volumes (if applicable):
+```shell
+kubectl delete statefulset -n kube-system csi-vcd-controllerplugin
+kubectl delete pvc -l app=<app-name>
+```
+2. Apply the new CSI Deployment manifest:
+```shell
+kubectl delete statefulset -n kube-system csi-vcd-controllerplugin
+kubectl apply -f https://raw.githubusercontent.com/vmware/cloud-director-named-disk-csi-driver/main/manifests/csi-controller-crs.yaml
+```
+**NOTE: These steps ensure a successful upgrade of CSI to the latest version and guarantee that the new CSI Deployment is properly installed within the Kubernetes environment.**
+
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
