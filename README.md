@@ -60,18 +60,18 @@ kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GO
 ### Upgrade CSI
 
 To perform an upgrade of the Container Storage Interface (CSI) from versions v1.2.0, v1.2.1, v1.3.0, v1.3.1, and v1.3.2, it is recommended to follow the following steps:
-1. Remove the current StatefulSet and any associated persistent volumes (if applicable):
+1. Remove the current StatefulSet:
 ```shell
 kubectl delete statefulset -n kube-system csi-vcd-controllerplugin
-kubectl delete pvc -l app=<app-name>
 ```
 2. Apply the new CSI Deployment manifest:
 ```shell
-kubectl delete statefulset -n kube-system csi-vcd-controllerplugin
 kubectl apply -f https://raw.githubusercontent.com/vmware/cloud-director-named-disk-csi-driver/main/manifests/csi-controller-crs.yaml
 ```
-**NOTE: These steps ensure a successful upgrade of CSI to the latest version and guarantee that the new CSI Deployment is properly installed within the Kubernetes environment.**
+**NOTE:** 
 
+1. These steps ensure a successful upgrade of CSI to the latest version and guarantee that the new CSI Deployment is properly installed within the Kubernetes environment.
+2. it is recommended not to manually delete any Persistent Volumes (PVs) or Persistent Volume Claims (PVCs) associated with a StatefulSet.
 ## CSI Feature matrix
 | Feature | Support Scope |
 | :---------: | :----------------------- |
