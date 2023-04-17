@@ -10,6 +10,7 @@ import (
 	stov1 "k8s.io/api/storage/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/apimachinery/pkg/version"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -102,22 +103,6 @@ func (tc *TestClient) CreateStorageClass(ctx context.Context, scName string, rec
 	return sc, nil
 }
 
-func (tc *TestClient) CreatePV(ctx context.Context, persistentVolumeName string, storageClass string, storageProfile string, storageSize string, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy) (*apiv1.PersistentVolume, error) {
-	pv, err := createPV(ctx, tc.Cs.(*kubernetes.Clientset), persistentVolumeName, storageClass, storageProfile, storageSize, reclaimPolicy)
-	if err != nil {
-		return nil, fmt.Errorf("error creating Persistent Volume [%s] for cluster [%s(%s)]: [%v]", persistentVolumeName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return pv, nil
-}
-
-func (tc *TestClient) CreatePVC(ctx context.Context, nameSpace string, pvcName string, storageClass string, storageSize string) (*apiv1.PersistentVolumeClaim, error) {
-	pvc, err := createPVC(ctx, tc.Cs.(*kubernetes.Clientset), nameSpace, pvcName, storageClass, storageSize)
-	if err != nil {
-		return nil, fmt.Errorf("error creating Persistent Volume Claim [%s] for cluster [%s(%s)]: [%v]", pvcName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return pvc, nil
-}
-
 func (tc *TestClient) CreateDeployment(ctx context.Context, params *DeployParams, nameSpace string) (*appsv1.Deployment, error) {
 	deployment, err := createDeployment(ctx, tc.Cs.(*kubernetes.Clientset), params, nameSpace)
 	if err != nil {
@@ -132,22 +117,6 @@ func (tc *TestClient) CreateLoadBalancerService(ctx context.Context, nameSpace s
 		return nil, fmt.Errorf("error creating LoadBalancer Service [%s] for cluster [%s(%s)]: [%v]", serviceName, tc.ClusterName, tc.ClusterId, err)
 	}
 	return lbService, nil
-}
-
-func (tc *TestClient) DeletePVC(ctx context.Context, nameSpace string, pvcName string) error {
-	err := deletePVC(ctx, tc.Cs.(*kubernetes.Clientset), nameSpace, pvcName)
-	if err != nil {
-		return fmt.Errorf("error deleting Persistent Volume Claim [%s] for cluster [%s(%s)]: [%v]", pvcName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return nil
-}
-
-func (tc *TestClient) DeletePV(ctx context.Context, pvName string) error {
-	err := deletePV(ctx, tc.Cs.(*kubernetes.Clientset), pvName)
-	if err != nil {
-		return fmt.Errorf("error deleting Persistent Volume [%s] for cluster [%s(%s)]: [%v]", pvName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return nil
 }
 
 func (tc *TestClient) DeleteDeployment(ctx context.Context, nameSpace string, deploymentName string) error {
@@ -194,6 +163,17 @@ func (tc *TestClient) GetWorkerNodes(ctx context.Context) ([]apiv1.Node, error) 
 	return wnPool, nil
 }
 
+func (tc *TestClient) GetNodes(ctx context.Context) ([]apiv1.Node, error) {
+	nPool, err := getNodes(ctx, tc.Cs.(*kubernetes.Clientset))
+	if err != nil {
+		if err == ResourceNotFound {
+			return nil, err
+		}
+		return nil, fmt.Errorf("error getting Node Pool for cluster [%s(%s)]: [%v]", tc.ClusterName, tc.ClusterId, err)
+	}
+	return nPool, nil
+}
+
 func (tc *TestClient) GetStorageClass(ctx context.Context, scName string) (*stov1.StorageClass, error) {
 	sc, err := getStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), scName)
 	if err != nil {
@@ -203,28 +183,6 @@ func (tc *TestClient) GetStorageClass(ctx context.Context, scName string) (*stov
 		return nil, fmt.Errorf("error getting Storage Class [%s] for cluster [%s(%s)]: [%v]", scName, tc.ClusterName, tc.ClusterId, err)
 	}
 	return sc, nil
-}
-
-func (tc *TestClient) GetPV(ctx context.Context, pvName string) (*apiv1.PersistentVolume, error) {
-	pv, err := getPV(ctx, tc.Cs.(*kubernetes.Clientset), pvName)
-	if err != nil {
-		if err == ResourceNotFound {
-			return nil, err
-		}
-		return nil, fmt.Errorf("error getting Persistent Volume [%s] for cluster [%s(%s)]: [%v]", pvName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return pv, nil
-}
-
-func (tc *TestClient) GetPVC(ctx context.Context, nameSpace string, pvcName string) (*apiv1.PersistentVolumeClaim, error) {
-	pvc, err := getPVC(ctx, tc.Cs.(*kubernetes.Clientset), nameSpace, pvcName)
-	if err != nil {
-		if err == ResourceNotFound {
-			return nil, err
-		}
-		return nil, fmt.Errorf("error getting Persistent Volume Claim [%s] for cluster [%s(%s)]: [%v]", pvcName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return pvc, nil
 }
 
 func (tc *TestClient) GetDeployment(ctx context.Context, nameSpace string, deployName string) (*appsv1.Deployment, error) {
@@ -251,6 +209,10 @@ func (tc *TestClient) GetService(ctx context.Context, nameSpace string, serviceN
 
 func (tc *TestClient) GetConfigMap(namespace, name string) (*apiv1.ConfigMap, error) {
 	return tc.Cs.CoreV1().ConfigMaps(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func (tc *TestClient) GetK8sVersion() (*version.Info, error) {
+	return tc.Cs.(*kubernetes.Clientset).Discovery().ServerVersion()
 }
 
 func (tc *TestClient) GetIpamSubnetFromConfigMap(cm *apiv1.ConfigMap) (string, error) {
@@ -309,14 +271,6 @@ func (tc *TestClient) GetNetworkNameFromConfigMap(cm *apiv1.ConfigMap) (string, 
 		}
 	}
 	return "", nil
-}
-
-func (tc *TestClient) WaitForPvcReady(ctx context.Context, nameSpace string, pvcName string) error {
-	err := waitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), nameSpace, pvcName)
-	if err != nil {
-		return fmt.Errorf("error querying PVC [%s] status for cluster [%s(%s)]: [%v]", pvcName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return nil
 }
 
 func (tc *TestClient) WaitForDeploymentReady(ctx context.Context, nameSpace string, deployName string) error {
@@ -407,12 +361,4 @@ func (tc *TestClient) WaitForExtIP(namespace string, name string) (string, error
 	}
 	// We can safely return below as we handled the len(IngressList) check in waitServiceExposure()
 	return svc.Status.LoadBalancer.Ingress[0].IP, nil
-}
-
-func (tc *TestClient) WaitForPVDeleted(ctx context.Context, pvName string) (bool, error) {
-	pvDeleted, err := waitForPVDeleted(ctx, tc.Cs.(*kubernetes.Clientset), pvName)
-	if err != nil {
-		return pvDeleted, fmt.Errorf("error occurred while waiting for PV deleted for cluster [%s(%s)]: [%v]", tc.ClusterName, tc.ClusterId, err)
-	}
-	return pvDeleted, nil
 }
