@@ -7,11 +7,11 @@ import (
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
-	stov1 "k8s.io/api/storage/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/version"
 	"k8s.io/client-go/kubernetes"
+	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -20,6 +20,7 @@ type TestClient struct {
 	Cs          kubernetes.Interface
 	ClusterId   string
 	ClusterName string
+	Config      *restclient.Config
 }
 
 type VCDAuthParams struct {
@@ -61,8 +62,11 @@ func NewTestClient(params *VCDAuthParams, clusterId string) (*TestClient, error)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get kubeconfig from RDE [%s]: [%v]", clusterId, err)
 	}
-
-	cs, err := createKubeClient(kubeConfig)
+	config, err := clientcmd.RESTConfigFromKubeConfig([]byte(kubeConfig))
+	if err != nil {
+		return nil, fmt.Errorf("unable to create RESTConfig using kubeconfig from RDE: [%v]", err)
+	}
+	cs, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create clientset using RESTConfig generated from kubeconfig for cluster [%s]: [%v]", clusterId, err)
 	}
@@ -76,6 +80,7 @@ func NewTestClient(params *VCDAuthParams, clusterId string) (*TestClient, error)
 		Cs:          cs,
 		ClusterId:   clusterId,
 		ClusterName: clusterName,
+		Config:      config,
 	}, nil
 }
 
@@ -93,14 +98,6 @@ func (tc *TestClient) CreateNameSpace(ctx context.Context, nsName string) (*apiv
 		return nil, fmt.Errorf("error creating NameSpace [%s] for cluster [%s(%s)]: [%v]", nsName, tc.ClusterName, tc.ClusterId, err)
 	}
 	return ns, nil
-}
-
-func (tc *TestClient) CreateStorageClass(ctx context.Context, scName string, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, storageProfile string) (*stov1.StorageClass, error) {
-	sc, err := createStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), scName, reclaimPolicy, storageProfile)
-	if err != nil {
-		return nil, fmt.Errorf("error creating Storage Class [%s] for cluster [%s(%s)]: [%v]", scName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return sc, nil
 }
 
 func (tc *TestClient) CreateDeployment(ctx context.Context, params *DeployParams, nameSpace string) (*appsv1.Deployment, error) {
@@ -144,14 +141,6 @@ func (tc *TestClient) DeleteService(ctx context.Context, nameSpace string, servi
 	return nil
 }
 
-func (tc *TestClient) DeleteStorageClass(ctx context.Context, scName string) error {
-	err := deleteStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), scName)
-	if err != nil {
-		return fmt.Errorf("error deleting Persistent Volume[%s] for cluster [%s(%s)]: [%v]", scName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return nil
-}
-
 func (tc *TestClient) GetWorkerNodes(ctx context.Context) ([]apiv1.Node, error) {
 	wnPool, err := getWorkerNodes(ctx, tc.Cs.(*kubernetes.Clientset))
 	if err != nil {
@@ -172,17 +161,6 @@ func (tc *TestClient) GetNodes(ctx context.Context) ([]apiv1.Node, error) {
 		return nil, fmt.Errorf("error getting Node Pool for cluster [%s(%s)]: [%v]", tc.ClusterName, tc.ClusterId, err)
 	}
 	return nPool, nil
-}
-
-func (tc *TestClient) GetStorageClass(ctx context.Context, scName string) (*stov1.StorageClass, error) {
-	sc, err := getStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), scName)
-	if err != nil {
-		if err == ResourceNotFound {
-			return nil, err
-		}
-		return nil, fmt.Errorf("error getting Storage Class [%s] for cluster [%s(%s)]: [%v]", scName, tc.ClusterName, tc.ClusterId, err)
-	}
-	return sc, nil
 }
 
 func (tc *TestClient) GetDeployment(ctx context.Context, nameSpace string, deployName string) (*appsv1.Deployment, error) {
