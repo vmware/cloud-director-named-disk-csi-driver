@@ -6,7 +6,6 @@ import (
 	"fmt"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
-	stov1 "k8s.io/api/storage/v1"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilnet "k8s.io/apimachinery/pkg/util/net"
@@ -152,46 +151,12 @@ func waitForNameSpaceDeleted(ctx context.Context, k8sClient *kubernetes.Clientse
 	return true, nil
 }
 
-func waitForStorageClassDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, scName string) (bool, error) {
-	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
-		_, err := k8sClient.StorageV1().StorageClasses().Get(ctx, scName, metav1.GetOptions{})
-		if err != nil {
-			if apierrs.IsNotFound(err) {
-				return true, nil
-			}
-			if IsRetryableError(err) {
-				return false, nil
-			}
-			return false, fmt.Errorf("unexpected error occurred while getting storage class [%s]")
-		}
-		return false, nil
-	})
-	if err != nil {
-		return false, fmt.Errorf("error occurred while checking namespace status: %v", err)
-	}
-	return true, nil
-}
-
 func IsRetryableError(err error) bool {
 	if apierrs.IsInternalError(err) || apierrs.IsTimeout(err) || apierrs.IsServerTimeout(err) ||
 		apierrs.IsTooManyRequests(err) || utilnet.IsProbableEOF(err) || utilnet.IsConnectionReset(err) {
 		return true
 	}
 	return false
-}
-
-func getStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string) (*stov1.StorageClass, error) {
-	if scName == "" {
-		return nil, ResourceNameNull
-	}
-	sc, err := k8sClient.StorageV1().StorageClasses().Get(ctx, scName, metav1.GetOptions{})
-	if err != nil {
-		if apierrs.IsNotFound(err) {
-			return nil, ResourceNotFound
-		}
-		return nil, err
-	}
-	return sc, nil
 }
 
 func getDeployment(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, deployName string) (*appsv1.Deployment, error) {
@@ -247,31 +212,6 @@ func getNodes(ctx context.Context, k8sClient *kubernetes.Clientset) ([]apiv1.Nod
 		allNodes = append(allNodes, node)
 	}
 	return allNodes, nil
-}
-
-func createStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, storageProfile string) (*stov1.StorageClass, error) {
-	if scName == "" {
-		return nil, ResourceNameNull
-	}
-	sc := &stov1.StorageClass{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: scName,
-			Annotations: map[string]string{
-				"storageclass.kubernetes.io/is-default-class": "false",
-			},
-		},
-		ReclaimPolicy: &reclaimPolicy,
-		Provisioner:   "named-disk.csi.cloud-director.vmware.com",
-		Parameters: map[string]string{
-			"storageProfile": storageProfile,
-			"filesystem":     "ext4",
-		},
-	}
-	newSC, err := k8sClient.StorageV1().StorageClasses().Create(ctx, sc, metav1.CreateOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("error occurred while creating new storageclass [%s]: %v", scName, err)
-	}
-	return newSC, nil
 }
 
 func createNameSpace(ctx context.Context, nsName string, k8sClient *kubernetes.Clientset) (*apiv1.Namespace, error) {
@@ -441,28 +381,6 @@ func deleteService(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpa
 	}
 	if !serviceDeleted {
 		return fmt.Errorf("service [%s] still exists", serviceName)
-	}
-	return nil
-}
-
-func deleteStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string) error {
-	_, err := getStorageClass(ctx, k8sClient, scName)
-	if err != nil {
-		if err == ResourceNotFound {
-			return fmt.Errorf("the storageClass [%s] does not exist", scName)
-		}
-		klog.Info("error occurred while getting storageClass [%s]: [%v]", scName, err)
-	}
-	err = k8sClient.StorageV1().StorageClasses().Delete(ctx, scName, metav1.DeleteOptions{})
-	if err != nil {
-		return fmt.Errorf("failed to delete service [%s]", scName)
-	}
-	scDeleted, err := waitForStorageClassDeleted(ctx, k8sClient, scName)
-	if err != nil {
-		return fmt.Errorf("error occurred while deleting storageClass [%s]: [%v]", scName, err)
-	}
-	if !scDeleted {
-		return fmt.Errorf("storageClass [%s] still exists", scName)
 	}
 	return nil
 }
