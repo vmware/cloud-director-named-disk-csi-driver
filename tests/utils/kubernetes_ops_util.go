@@ -51,9 +51,8 @@ func ExecCmdExample(client kubernetes.Interface, config *restclient.Config, name
 	)
 
 	exec, err := remotecommand.NewSPDYExecutor(config, "POST", req.URL())
-	//Todo: Wrap the error
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error occurred while executing command into the pod [%s]: [%v]", podName, err)
 	}
 	err = exec.Stream(remotecommand.StreamOptions{
 		Stdout: stdout,
@@ -61,7 +60,7 @@ func ExecCmdExample(client kubernetes.Interface, config *restclient.Config, name
 	})
 
 	if err != nil {
-		return "", fmt.Errorf("error occurred in %v", err)
+		return "", fmt.Errorf("error occurred while streaming the execution output: [%v]", err)
 	}
 
 	return stdout.String(), nil

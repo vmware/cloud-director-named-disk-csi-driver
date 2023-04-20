@@ -20,9 +20,6 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		tc            *testingsdk.TestClient
 		err           error
 		dynamicPVName string
-		//vcdDisk       *vcdtypes.Disk
-		//pv            *apiv1.PersistentVolume
-		//pvDeleted     bool
 	)
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
 		Host:         host,
@@ -39,7 +36,8 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 
 	ctx := context.TODO()
 
-	It("Should create the name space AND different storage classes", func() {
+	// step 1: create the testing nameSpace and xfs storage class
+	It("Should create the name space AND xfs storage classes", func() {
 		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
@@ -48,6 +46,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(xfsStorageClass).NotTo(BeNil())
 	})
 
+	// step 2: create the PVC and PV based on xfs storage class
 	It("should create PVC and PV using retain reclaim policy", func() {
 		By("should create the PVC successfully")
 		pvc, err := utils.CreatePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName, storageClassXfs, storageSize)
@@ -79,7 +78,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(pvFound).To(BeTrue())
 	})
 
-	//scenario 1: use 'Retain' retention policy. step2: install a deployment using the above PVC.
+	// step 3: install a deployment using the above PVC. Check the filesystem type the disk mounted
 	It("should install a deployment using the above PVC", func() {
 		By("should create a deployment successfully")
 		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
@@ -112,8 +111,9 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		}
 		podList, err := tc.Cs.CoreV1().Pods(testNameSpaceName).List(ctx, options)
 		Expect(err).NotTo(HaveOccurred())
-		By(podList.Items[0].Name)
-		//time.Sleep(1 * time.Minute)
+		Expect(podList).NotTo(BeNil())
+		By(fmt.Sprintf("find the pod [%s] of the deployment [%s]", podList.Items[0].Name, testDeploymentName))
+
 		output, err := utils.ExecCmdExample(tc.Cs, tc.Config, testNameSpaceName, podList.Items[0].Name, []string{"df -Th"})
 		Expect(err).NotTo(HaveOccurred())
 		fsTypeFound, err := utils.FindFsTypeWithMountPath(output, mountPath, "xfs")
@@ -121,7 +121,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(fsTypeFound).To(BeTrue())
 	})
 
-	//scenario 2: use 'Delete' retention policy. step3: verify the PV is not presented after PVC deleted.
+	//step 4: clean up the deployment, PVC/PV resource and the testing namespace
 	It("PV resource should get deleted after PVC is deleted in kubernetes", func() {
 		By("Should delete deployment successfully in Kubernetes")
 		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
