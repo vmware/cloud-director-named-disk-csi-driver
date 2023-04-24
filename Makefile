@@ -16,11 +16,7 @@ build-within-docker: vendor
 	go build -ldflags "-X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(version)" -o /build/vcloud/cloud-director-named-disk-csi-driver cmd/csi/main.go
 
 csi: $(GO_CODE)
-	docker build -f Dockerfile . -t cloud-director-named-disk-csi-driver:$(version)
-	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
-	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
-	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
-	touch out/$@
+	docker buildx build --platform linux/amd64 -f Dockerfile . -t quay.io/giantswarm/csi-cloud-director:1.2.0.$(GITCOMMIT)
 
 prod: csi prod-manifests update-gcr-images crs-artifacts-prod
 

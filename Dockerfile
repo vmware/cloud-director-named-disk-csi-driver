@@ -14,7 +14,7 @@ RUN ["make", "build-within-docker"]
 
 ########################################################
 
-FROM photonos-docker-local.artifactory.eng.vmware.com/photon4:4.0-GA
+FROM photon:4.0
 RUN tdnf install -y xfsprogs
 # udev is to get scsi_id, e2fsprogs is for mkfs.ext4
 RUN tdnf install -y e2fsprogs
