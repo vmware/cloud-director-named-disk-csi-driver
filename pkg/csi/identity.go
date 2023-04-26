@@ -1,21 +1,17 @@
 /*
-    Copyright 2021 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
+   Copyright 2021 VMware, Inc.
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package csi
 
 import (
 	"context"
+
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"k8s.io/klog"
-)
-
-const (
-	// Name is the name of this CSI plugin.
-	Name = "named-disk.csi.cloud-director.vmware.com"
 )
 
 type identityServer struct {
@@ -37,7 +33,7 @@ func (ids *identityServer) Probe(ctx context.Context, req *csi.ProbeRequest) (*c
 func (ids *identityServer) GetPluginInfo(ctx context.Context, req *csi.GetPluginInfoRequest) (*csi.GetPluginInfoResponse, error) {
 	klog.Infof("GetPluginInfo: called with args [%+v]", *req)
 	resp := &csi.GetPluginInfoResponse{
-		Name:          Name,
+		Name:          ids.Driver.name,
 		VendorVersion: version.Version,
 	}
 

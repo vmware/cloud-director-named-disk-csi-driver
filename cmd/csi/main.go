@@ -8,13 +8,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/config"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -23,6 +24,7 @@ import (
 )
 
 var (
+	driverName      string
 	endpointFlag    string
 	nodeIDFlag      string
 	cloudConfigFlag string
@@ -70,6 +72,7 @@ func main() {
 
 	cmd.Flags().AddGoFlagSet(flag.CommandLine)
 
+	cmd.PersistentFlags().StringVar(&driverName, "driver-name", "named-disk.csi.cloud-director.vmware.com", "driver name")
 	cmd.PersistentFlags().StringVar(&nodeIDFlag, "nodeid", "", "node id")
 
 	// add this flag to distinguish between node plugin and csi controller. Ensure RDE upgrade only happens in csi controller
@@ -92,8 +95,7 @@ func main() {
 }
 
 func runCommand() {
-
-	d, err := csi.NewDriver(nodeIDFlag, endpointFlag)
+	d, err := csi.NewDriver(driverName, nodeIDFlag, endpointFlag)
 	if err != nil {
 		panic(fmt.Errorf("unable to create new driver: [%v]", err))
 	}

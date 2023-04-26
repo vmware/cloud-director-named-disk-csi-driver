@@ -8,12 +8,13 @@ package csi
 import (
 	"context"
 	"fmt"
+	"net"
+	"os"
+
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	"net"
-	"os"
 
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"google.golang.org/grpc"
@@ -52,12 +53,12 @@ var (
 )
 
 // NewDriver creates new VCDDriver
-func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
+func NewDriver(name string, nodeID string, endpoint string) (*VCDDriver, error) {
 
-	klog.Infof("Driver: [%s] Version: [%s]", Name, version.Version)
+	klog.Infof("Driver: [%s] Version: [%s]", name, version.Version)
 
 	d := &VCDDriver{
-		name:     Name,
+		name:     name,
 		nodeID:   nodeID,
 		version:  version.Version,
 		endpoint: endpoint,
