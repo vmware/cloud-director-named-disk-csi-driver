@@ -22,4 +22,5 @@ metadata:
 provisioner: named-disk.csi.cloud-director.vmware.com
 reclaimPolicy: Delete
 parameters:
+  storageProfile: "dev"
   filesystem: "ext4"
