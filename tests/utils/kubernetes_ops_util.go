@@ -31,9 +31,6 @@ func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameS
 			}
 			return false, fmt.Errorf("unexpected error occurred while getting pvc [%s]", pvcName)
 		}
-		if err != nil {
-			return false, nil
-		}
 		if pvc != nil && pvc.Status.Phase == apiv1.ClaimBound {
 			ready = true
 		}
