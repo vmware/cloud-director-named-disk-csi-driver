@@ -78,6 +78,6 @@ integration-test: test
 	go test -tags="testing integration" -v github.com/vmware/cloud-director-named-disk-csi-driver/vcdclient -cover -count=1
 
 vendor:
-	go mod edit -go=1.17
-	go mod tidy -compat=1.17
+	go mod edit -go=1.19
+	go mod tidy -compat=1.19
 	go mod vendor
