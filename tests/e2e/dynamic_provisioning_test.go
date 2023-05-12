@@ -10,15 +10,18 @@ import (
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	apiv1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 const (
 	testNameSpaceName     = "provisioning-test-ns"
 	testRetainPVCName     = "test-retain-pvc"
 	testDeletePVCName     = "test-delete-pvc"
-	testDeploymentName    = "test-deploy-name"
+	testDeploymentName    = "test-deployment"
 	storageClassDelete    = "delete-storage-class"
 	storageClassRetain    = "retain-storage-class"
+	storageClassXfs       = "xfs-storage-class"
+	storageClassExt4      = "ext4"
 	storageSize           = "2Gi"
 	defaultStorageProfile = "*"
 	volumeName            = "deployment-pv"
@@ -53,10 +56,10 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
-		retainStorageClass, err := tc.CreateStorageClass(ctx, storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile)
+		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
-		deleteStorageClass, err := tc.CreateStorageClass(ctx, storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile)
+		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})
@@ -64,21 +67,21 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	//scenario 1: use 'Retain' retention policy. step1: create PVC and PV.
 	It("should create PVC and PV using retain reclaim policy", func() {
 		By("should create the PVC successfully")
-		pvc, err := tc.CreatePVC(ctx, testNameSpaceName, testRetainPVCName, storageClassRetain, storageSize)
+		pvc, err := utils.CreatePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName, storageClassRetain, storageSize)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pvc).NotTo(BeNil())
 
 		By("PVC status should be 'Bound'")
-		err = tc.WaitForPvcReady(ctx, testNameSpaceName, testRetainPVCName)
+		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PVC should be presented in kubernetes")
-		pvc, err = tc.GetPVC(ctx, testNameSpaceName, testRetainPVCName)
+		pvc, err = utils.GetPVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
 		dynamicPVName = pvc.Spec.VolumeName
 		Expect(dynamicPVName).NotTo(BeEmpty())
 
 		By(fmt.Sprintf("PV [%s] should be presented in Kubernetes", dynamicPVName))
-		pv, err := tc.GetPV(ctx, dynamicPVName)
+		pv, err := utils.GetPV(ctx, tc.Cs.(*kubernetes.Clientset), dynamicPVName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pv).NotTo(BeNil())
 
@@ -99,7 +102,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
 			Name: testDeploymentName,
 			Labels: map[string]string{
-				"app": "nginx",
+				"app": testDeploymentName,
 			},
 			ContainerParams: testingsdk.ContainerParams{
 				ContainerName:  "nginx",
@@ -116,7 +119,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(deployment).NotTo(BeNil())
 
 		By("PVC status should be 'bound'")
-		err = tc.WaitForPvcReady(ctx, testNameSpaceName, testRetainPVCName)
+		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Deployment should be ready")
@@ -131,11 +134,11 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should delete the PV successfully in Kubernetes")
-		err = tc.DeletePVC(ctx, testNameSpaceName, testRetainPVCName)
+		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By(fmt.Sprintf("PV [%s] should be presented in Kubernetes after PVC is deleted", dynamicPVName))
-		pv, err = tc.GetPV(ctx, dynamicPVName)
+		pv, err = utils.GetPV(ctx, tc.Cs.(*kubernetes.Clientset), dynamicPVName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pv).NotTo(BeNil())
 
@@ -153,11 +156,11 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	//scenario 1: use 'Retain' retention policy. step4: PV is still retained in RDE and VCD after PV is removed from kubernetes
 	It("PV should be retained in RDE and VCD after PV deletion in kubernetes", func() {
 		By("should delete the PV successfully in kubernetes")
-		err = tc.DeletePV(ctx, dynamicPVName)
+		err = utils.DeletePV(ctx, tc.Cs.(*kubernetes.Clientset), dynamicPVName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be not presented in kubernetes")
-		pv, err = tc.GetPV(ctx, dynamicPVName)
+		pv, err = utils.GetPV(ctx, tc.Cs.(*kubernetes.Clientset), dynamicPVName)
 		Expect(err).To(MatchError(testingsdk.ResourceNotFound))
 		Expect(pv).To(BeNil())
 
@@ -195,21 +198,21 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	//scenario 2: use 'Delete' retention policy. step1: create PVC and PV.
 	It("Should create PVC and PV using delete reclaim policy", func() {
 		By("should create the PVC successfully")
-		pvc, err := tc.CreatePVC(ctx, testNameSpaceName, testDeletePVCName, storageClassDelete, storageSize)
+		pvc, err := utils.CreatePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName, storageClassDelete, storageSize)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pvc).NotTo(BeNil())
 
 		By("PVC status should be 'Bound'")
-		err = tc.WaitForPvcReady(ctx, testNameSpaceName, testDeletePVCName)
+		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PVC should be presented in kubernetes")
-		pvc, err = tc.GetPVC(ctx, testNameSpaceName, testDeletePVCName)
+		pvc, err = utils.GetPVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
 		dynamicPVName = pvc.Spec.VolumeName
 		Expect(dynamicPVName).NotTo(BeEmpty())
 
 		By(fmt.Sprintf("PV [%s] should be presented in Kubernetes", dynamicPVName))
-		pv, err := tc.GetPV(ctx, dynamicPVName)
+		pv, err := utils.GetPV(ctx, tc.Cs.(*kubernetes.Clientset), dynamicPVName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pv).NotTo(BeNil())
 
@@ -230,7 +233,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
 			Name: testDeploymentName,
 			Labels: map[string]string{
-				"app": "nginx",
+				"app": testDeploymentName,
 			},
 			ContainerParams: testingsdk.ContainerParams{
 				ContainerName:  "nginx",
@@ -245,7 +248,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		}, testNameSpaceName)
 		Expect(deployment).NotTo(BeNil())
 		Expect(err).NotTo(HaveOccurred())
-		err = tc.WaitForPvcReady(ctx, testNameSpaceName, testDeletePVCName)
+		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
 		By("PVC status should be 'bound'")
 		err = tc.WaitForDeploymentReady(ctx, testNameSpaceName, testDeletePVCName)
@@ -260,7 +263,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should delete PVC successfully in Kubernetes")
-		err = tc.DeletePVC(ctx, testNameSpaceName, testDeletePVCName)
+		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should wait until Disk deleted within the time constraint")
@@ -268,7 +271,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be not presented in Kubernetes")
-		pvDeleted, err = tc.WaitForPVDeleted(ctx, dynamicPVName)
+		pvDeleted, err = utils.WaitForPVDeleted(ctx, tc.Cs.(*kubernetes.Clientset), dynamicPVName)
 		Expect(pvDeleted).To(BeTrue())
 		Expect(err).NotTo(HaveOccurred())
 
@@ -282,11 +285,11 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(found).To(BeFalse())
 
 		By("delete the retain storage class")
-		err = tc.DeleteStorageClass(ctx, storageClassRetain)
+		err = utils.DeleteStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("delete the delete storage class")
-		err = tc.DeleteStorageClass(ctx, storageClassDelete)
+		err = utils.DeleteStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("delete the test nameSpace")
