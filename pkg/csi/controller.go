@@ -8,6 +8,8 @@ package csi
 import (
 	"context"
 	"fmt"
+	"math"
+
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
@@ -16,7 +18,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"k8s.io/klog"
-	"math"
 )
 
 const (
@@ -27,7 +28,6 @@ const (
 
 const (
 	BusTypeParameter        = "busType"
-	BusSubTypeParameter     = "busSubType"
 	StorageProfileParameter = "storageProfile"
 	FileSystemParameter     = "filesystem"
 	EphemeralVolumeContext  = "csi.storage.k8s.io/ephemeral"
@@ -36,15 +36,8 @@ const (
 	VMFullNameAttribute = "vmID"
 	DiskUUIDAttribute   = "diskUUID"
 	FileSystemAttribute = "filesystem"
-)
-
-var (
-	// BusTypesFromValues is a map of different possible BusTypes from id to string
-	BusTypesFromValues = map[string]string{
-		"5":  "IDE",
-		"6":  "SCSI",
-		"20": "SATA",
-	}
+	DefaultFSType       = "ext4"
+	DefaultBusType      = "scsi_paravirtual"
 )
 
 type controllerServer struct {
@@ -97,7 +90,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 	}
 
 	volumeCapabilities := req.GetVolumeCapabilities()
-	if volumeCapabilities == nil || len(volumeCapabilities) == 0 {
+	if len(volumeCapabilities) == 0 { // should omit nil check; len() for []*github.com/container-storage-interface/spec/lib/go/csi.VolumeCapability is defined as zero (S1009)
 		return nil, status.Error(codes.InvalidArgument, "CreateVolume: VolumeCapabilities should be provided")
 	}
 	for _, volumeCapability := range volumeCapabilities {
@@ -117,39 +110,51 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 	klog.Infof("CreateVolume: requesting volume [%s] with size [%d] MiB, shareable [%v]",
 		diskName, sizeMB, shareable)
 
-	busType := vcdcsiclient.VCDBusTypeSCSI
-	busSubType := vcdcsiclient.VCDBusSubTypeVirtualSCSI
+	var (
+		storageProfile string
+		fsType         string
+		busType        string
+		tuple          vcdcsiclient.BusTuple
+		ok             bool
+	)
 
-	storageProfile, _ := req.Parameters[StorageProfileParameter]
+	if busType, ok = req.Parameters[BusTypeParameter]; !ok {
+		busType = DefaultBusType
+		klog.Infof("No parameter [%s] specified for raw disk [%s]. Hence defaulting to [%s].", BusTypeParameter, diskName, DefaultBusType)
+	}
 
-	disk, err := cs.DiskManager.CreateDisk(diskName, sizeMB, busType,
-		busSubType, cs.DiskManager.ClusterID, storageProfile, shareable)
+	tuple, ok = vcdcsiclient.BusTypesSet[busType]
+	if !ok {
+		return nil, fmt.Errorf("invalid busType: [%s]", busType)
+	}
 
+	if storageProfile, ok = req.Parameters[StorageProfileParameter]; !ok {
+		klog.Infof("No parameter [%s] specified for raw disk [%s]. ", StorageProfileParameter, diskName)
+	}
+
+	if fsType, ok = req.Parameters[FileSystemParameter]; !ok {
+		fsType = DefaultFSType
+		klog.Infof("No parameter [%s] specified for raw disk [%s]. Hence defaulting to [%s].", FileSystemParameter, diskName, DefaultFSType)
+	}
+
+	disk, err := cs.DiskManager.CreateDisk(diskName, sizeMB, tuple.BusType, tuple.BusSubType, "", storageProfile, shareable)
 	if err != nil {
 		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskCreateError, "", diskName, map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
 			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskCreateError, cs.DiskManager.ClusterID, rdeErr)
 		}
-		return nil, fmt.Errorf("unable to create disk [%s] with sise [%d]MB: [%v]",
-			diskName, sizeMB, err)
+		return nil, fmt.Errorf("unable to create disk [%s] with size [%d]MB: [%v]", diskName, sizeMB, err)
 	}
 	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskCreateError, "", diskName); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskCreateError, cs.DiskManager.ClusterID)
 	}
 	klog.Infof("Successfully created disk [%s] of size [%d]MB", diskName, sizeMB)
 
-	attributes := make(map[string]string)
-	attributes[BusTypeParameter] = BusTypesFromValues[disk.BusType]
-	attributes[BusSubTypeParameter] = disk.BusSubType
-	attributes[StorageProfileParameter] = disk.StorageProfile.Name
-	attributes[DiskIDAttribute] = disk.Id
-
-	fsType := ""
-	ok := false
-	if fsType, ok = req.Parameters[FileSystemParameter]; !ok {
-		fsType = "ext4"
-		klog.Infof("No FS specified for raw disk [%s]. Hence defaulting to [%s].", diskName, fsType)
+	attributes := map[string]string{
+		BusTypeParameter:        vcdcsiclient.BusSubTypesFromValues[disk.BusSubType], // BusSubType defines better the busType since SATA and NVME share the same ID=20
+		StorageProfileParameter: disk.StorageProfile.Name,
+		DiskIDAttribute:         disk.Id,
+		FileSystemParameter:     fsType,
 	}
-	attributes[FileSystemParameter] = fsType
 
 	resp := &csi.CreateVolumeResponse{
 		Volume: &csi.Volume{

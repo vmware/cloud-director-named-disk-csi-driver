@@ -3,6 +3,7 @@ package e2e
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	csiClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -31,7 +32,7 @@ var _ = Describe("CSI Storage Profile Test", func() {
 		OrgName:      org,
 		Username:     userName,
 		RefreshToken: refreshToken,
-		UserOrg:      "system",
+		UserOrg:      userOrg,
 		GetVdcClient: true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
@@ -80,7 +81,7 @@ var _ = Describe("CSI Storage Profile Test", func() {
 
 	It("should failed to create a PV with a size higher than quota", func() {
 		By("creating a disk with a size higher than quota")
-		err = utils.CreateDisk(tc.VcdClient, staticDisk, largeDiskSizeMB, storageProfileWithLimit)
+		err = utils.CreateDisk(tc.VcdClient, staticDisk, largeDiskSizeMB, csiClient.BusTypesSet[busType], storageProfileWithLimit)
 		Expect(err).To(HaveOccurred())
 
 		By("verifying the error as being a storage limit error")
