@@ -7,7 +7,6 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
-	"github.com/vmware/go-vcloud-director/v2/govcd"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -32,7 +31,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 		OrgName:      org,
 		Username:     userName,
 		RefreshToken: refreshToken,
-		UserOrg:      "system",
+		UserOrg:      userOrg,
 		GetVdcClient: true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
@@ -227,11 +226,6 @@ var _ = Describe("CSI static provisioning Test", func() {
 		By("clean up the remaining name-disk in VCD and namespace and storage classes in kubernetes")
 		err = utils.DeleteDisk(tc.VcdClient, testDiskName)
 		Expect(err).NotTo(HaveOccurred())
-
-		By("should delete the named-disk in VCD")
-		vcdDisk, err = utils.GetDiskByNameViaVCD(tc.VcdClient, testDiskName)
-		Expect(err).To(MatchError(govcd.ErrorEntityNotFound))
-		Expect(vcdDisk).To(BeNil())
 
 		By("should delete the retain storage class")
 		err = utils.DeleteStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain)

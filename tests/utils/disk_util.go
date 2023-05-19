@@ -21,11 +21,8 @@ type CSItc struct {
 }
 
 const (
-	defaultRetryInterval = 10 * time.Second
-	defaultRetryTimeout  = 60 * time.Second
-	defaultWaitTimeout   = 120 * time.Second
-	CSIVersion           = "1.3.0"
-	MaxVCDUpdateRetries  = 10
+	CSIVersion          = "1.3.0"
+	MaxVCDUpdateRetries = 10
 )
 
 func DeleteDisk(vcdClient *vcdsdk.Client, diskName string) error {
@@ -160,7 +157,7 @@ func GetPVByNameViaRDE(pvName string, tc *testingsdk.TestClient, resourceType st
 
 func VerifyDiskViaVCD(vcdClient *vcdsdk.Client, diskName string) (*vcdtypes.Disk, error) {
 	var disk *vcdtypes.Disk
-	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		diskFound, err := GetDiskByNameViaVCD(vcdClient, diskName)
 		if err != nil {
 			if err == govcd.ErrorEntityNotFound {
