@@ -13,7 +13,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"net/http"
 	"strings"
-	"time"
 )
 
 type CSItc struct {
@@ -175,7 +174,7 @@ func VerifyDiskViaVCD(vcdClient *vcdsdk.Client, diskName string) (*vcdtypes.Disk
 }
 
 func WaitDiskDeleteViaVCD(vcdClient *vcdsdk.Client, diskName string) error {
-	err := wait.PollImmediate(30*time.Second, 150*time.Second, func() (bool, error) {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		_, err := GetDiskByNameViaVCD(vcdClient, diskName)
 		if err != nil {
 			if err == govcd.ErrorEntityNotFound {
