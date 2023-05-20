@@ -7,7 +7,7 @@ csi_node_driver_registrar_version := v2.2.0
 csi_attacher_version := v3.2.1
 csi_provisioner_version := v2.2.2
 
-REGISTRY?="harbor-repo.vmware.com/vcloud"
+REGISTRY?="projects-stg.registry.vmware.com/vmware-cloud-director"
 
 .PHONY: build-within-docker vendor
 
@@ -78,6 +78,6 @@ integration-test: test
 	go test -tags="testing integration" -v github.com/vmware/cloud-director-named-disk-csi-driver/vcdclient -cover -count=1
 
 vendor:
-	go mod edit -go=1.17
-	go mod tidy -compat=1.17
+	go mod edit -go=1.19
+	go mod tidy -compat=1.19
 	go mod vendor

@@ -1,6 +1,6 @@
 module github.com/vmware/cloud-director-named-disk-csi-driver
 
-go 1.17
+go 1.19
 
 require (
 	github.com/akutz/gofsutil v0.1.2
