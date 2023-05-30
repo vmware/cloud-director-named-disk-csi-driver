@@ -1,3 +1,4 @@
+---
 kind: Pod
 apiVersion: v1
 metadata:
@@ -6,7 +7,7 @@ spec:
   volumes:
     - name: volume-to-debug
       persistentVolumeClaim:
-       claimName: my-pvc
+        claimName: my-pvc
   containers:
     - name: debugger
       image: busybox
@@ -14,4 +15,3 @@ spec:
       volumeMounts:
         - mountPath: "/data"
           name: volume-to-debug
----

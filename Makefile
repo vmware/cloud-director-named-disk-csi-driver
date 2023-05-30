@@ -7,7 +7,7 @@ csi_node_driver_registrar_version := v2.2.0
 csi_attacher_version := v3.2.1
 csi_provisioner_version := v2.2.2
 
-REGISTRY?="harbor-repo.vmware.com/vcloud"
+REGISTRY?="projects-stg.registry.vmware.com/vmware-cloud-director"
 
 .PHONY: build-within-docker vendor
 
