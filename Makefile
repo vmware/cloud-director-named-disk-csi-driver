@@ -42,9 +42,9 @@ crs-artifacts-dev:
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/bom.json.template > artifacts/bom.json
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/dependencies.txt.template > artifacts/dependencies.txt
-	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(GITCOMMIT)
-	docker tag csi-crs-airgapped:$(GITCOMMIT) $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
-	docker push $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
+	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(version).$(GITCOMMIT)
+	docker tag csi-crs-airgapped:$(version).$(GITCOMMIT) $(REGISTRY)/csi-crs-airgapped:$(version).$(GITCOMMIT)
+	docker push $(REGISTRY)/csi-crs-airgapped:$(version).$(GITCOMMIT)
 
 prod-manifests:
 	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
