@@ -13,6 +13,7 @@ var (
 	org          string
 	ovdc         string
 	userName     string
+	userOrg      string
 	refreshToken string
 )
 
@@ -20,6 +21,7 @@ func init() {
 	//Inputs needed: VCD site, org, ovdc, username, refreshToken, clusterId
 	flag.StringVar(&host, "host", "", "VCD host site to generate client")
 	flag.StringVar(&org, "org", "", "Cluster Org to generate client")
+	flag.StringVar(&userOrg, "userOrg", "", "User Org to generate client")
 	flag.StringVar(&ovdc, "ovdc", "", "Ovdc Name to generate client")
 	flag.StringVar(&userName, "userName", "", "Username for login to generate client")
 	flag.StringVar(&refreshToken, "refreshToken", "", "Refresh token of user to generate client")

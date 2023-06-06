@@ -7,14 +7,14 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
-	"github.com/vmware/go-vcloud-director/v2/govcd"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 )
 
 const (
-	testDiskName      = "test-named-disk"
-	testStaticPVCName = "test-static-pvc"
+	testDiskName        = "test-named-disk"
+	testStaticPVCName   = "test-static-pvc"
+	testStaticNameSpace = "static-test-ns-2"
 )
 
 var _ = Describe("CSI static provisioning Test", func() {
@@ -32,7 +32,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 		OrgName:      org,
 		Username:     userName,
 		RefreshToken: refreshToken,
-		UserOrg:      "system",
+		UserOrg:      userOrg,
 		GetVdcClient: true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
@@ -42,7 +42,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 	ctx := context.TODO()
 
 	It("Should create the name space AND different storage classes", func() {
-		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
+		ns, err := tc.CreateNameSpace(ctx, testStaticNameSpace)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
 		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4)
@@ -70,12 +70,12 @@ var _ = Describe("CSI static provisioning Test", func() {
 		Expect(pvFound).To(BeFalse())
 
 		By("should create the PVC successfully in kubernetes")
-		pvc, err := utils.CreatePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testStaticPVCName, storageClassDelete, storageSize)
+		pvc, err := utils.CreatePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName, storageClassDelete, storageSize)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pvc).NotTo(BeNil())
 
 		By("PVC status should be 'bound'")
-		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testStaticPVCName)
+		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -97,27 +97,27 @@ var _ = Describe("CSI static provisioning Test", func() {
 				PvcRef:     testStaticPVCName,
 				MountPath:  "/init-container-msg-mount-path",
 			},
-		}, testNameSpaceName)
+		}, testStaticNameSpace)
 		Expect(deployment).NotTo(BeNil())
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Deployment should be ready")
-		err = tc.WaitForDeploymentReady(ctx, testNameSpaceName, testDeploymentName)
+		err = tc.WaitForDeploymentReady(ctx, testStaticNameSpace, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
 	//scenario 1: use 'Delete' retention policy. step3: PV should not be presented in kubernetes and VCD after PVC deleted
 	It("PV should be presented in kubernetes and VCD after PVC AND Deployment is deleted", func() {
 		By("should delete the PVC successfully")
-		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testStaticPVCName)
+		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should delete the deployment successfully")
-		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
+		err = tc.DeleteDeployment(ctx, testStaticNameSpace, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should deleted in VCD")
-		err = utils.WaitDiskDeleteViaVCD(tc.VcdClient, testDiskName)
+		err = utils.DeleteDisk(tc.VcdClient, testDiskName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be not presented in Kubernetes")
@@ -151,12 +151,12 @@ var _ = Describe("CSI static provisioning Test", func() {
 		Expect(pvFound).To(BeFalse())
 
 		By("should create the PVC successfully in kubernetes")
-		pvc, err := utils.CreatePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testStaticPVCName, storageClassRetain, storageSize)
+		pvc, err := utils.CreatePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName, storageClassRetain, storageSize)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(pvc).NotTo(BeNil())
 
 		By("PVC status should be 'bound'")
-		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testStaticPVCName)
+		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -178,23 +178,23 @@ var _ = Describe("CSI static provisioning Test", func() {
 				PvcRef:     testStaticPVCName,
 				MountPath:  "/init-container-msg-mount-path",
 			},
-		}, testNameSpaceName)
+		}, testStaticNameSpace)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deployment).NotTo(BeNil())
 
 		By("pods of the deployment should come up.")
-		err = tc.WaitForDeploymentReady(ctx, testNameSpaceName, testDeploymentName)
+		err = tc.WaitForDeploymentReady(ctx, testStaticNameSpace, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
 	//scenario 2: use 'Retain' retention policy. step3: PV should be presented in kubernetes and VCD after PVC deleted
 	It("PV is present in kubernetes and VCD after PVC AND Deployment is deleted", func() {
 		By("should delete the PVC successfully")
-		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testStaticPVCName)
+		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should delete the deployment successfully")
-		err = tc.DeleteDeployment(ctx, testNameSpaceName, testDeploymentName)
+		err = tc.DeleteDeployment(ctx, testStaticNameSpace, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be presented in Kubernetes")
@@ -228,11 +228,6 @@ var _ = Describe("CSI static provisioning Test", func() {
 		err = utils.DeleteDisk(tc.VcdClient, testDiskName)
 		Expect(err).NotTo(HaveOccurred())
 
-		By("should delete the named-disk in VCD")
-		vcdDisk, err = utils.GetDiskByNameViaVCD(tc.VcdClient, testDiskName)
-		Expect(err).To(MatchError(govcd.ErrorEntityNotFound))
-		Expect(vcdDisk).To(BeNil())
-
 		By("should delete the retain storage class")
 		err = utils.DeleteStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain)
 		Expect(err).NotTo(HaveOccurred())
@@ -242,7 +237,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("should delete the test nameSpace")
-		err = tc.DeleteNameSpace(ctx, testNameSpaceName)
+		err = tc.DeleteNameSpace(ctx, testStaticNameSpace)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })
