@@ -13,7 +13,7 @@ REGISTRY?="projects-stg.registry.vmware.com/vmware-cloud-director"
 
 build-within-docker: vendor
 	mkdir -p /build/cloud-director-named-disk-csi-driver
-	go build -ldflags "-X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(version)" -o /build/vcloud/cloud-director-named-disk-csi-driver cmd/csi/main.go
+	CGO_ENABLED=0 go build -ldflags "-s -w -X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(version)" -o /build/vcloud/cloud-director-named-disk-csi-driver cmd/csi/main.go
 
 csi: $(GO_CODE)
 	docker build -f Dockerfile . -t cloud-director-named-disk-csi-driver:$(version)
