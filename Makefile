@@ -18,21 +18,21 @@ build-within-docker: vendor
 csi: $(GO_CODE)
 	docker build -f Dockerfile . -t cloud-director-named-disk-csi-driver:$(version)
 	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
-	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
+	docker tag cloud-director-named-disk-csi-driver:$(version) $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)-$(GITCOMMIT)
 	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)
 	touch out/$@
 
 prod: csi prod-manifests update-gcr-images crs-artifacts-prod
 
 dev: csi dev-manifests update-gcr-images crs-artifacts-dev
-	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version).$(GITCOMMIT)
+	docker push $(REGISTRY)/cloud-director-named-disk-csi-driver:$(version)-$(GITCOMMIT)
 
 # The below artifact commands will generate csi-node-crs-airgap.yaml.template, csi-controller-crs-airgap.yaml.template which are to be pushed each time images are made
 crs-artifacts-prod:
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-controller-crs-airgap.yaml.template > artifacts/csi-controller-crs-airgap.yaml.template
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/bom.json.template > artifacts/bom.json
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g"artifacts/dependencies.txt.template > artifacts/dependencies.txt
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-controller-crs-airgap.yaml.template > artifacts/csi-controller-crs-airgap.yaml.template
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/bom.json.template > artifacts/bom.json
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/dependencies.txt.template > artifacts/dependencies.txt
 	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(version)
 	docker tag csi-crs-airgapped:$(version) $(REGISTRY)/csi-crs-airgapped:$(version)
 	docker push $(REGISTRY)/csi-crs-airgapped:$(version)
@@ -42,15 +42,15 @@ crs-artifacts-dev:
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/bom.json.template > artifacts/bom.json
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/dependencies.txt.template > artifacts/dependencies.txt
-	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(GITCOMMIT)
-	docker tag csi-crs-airgapped:$(GITCOMMIT) $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
-	docker push $(REGISTRY)/csi-crs-airgapped:$(GITCOMMIT)
+	docker build -f ./artifacts/Dockerfile . -t csi-crs-airgapped:$(version)-$(GITCOMMIT)
+	docker tag csi-crs-airgapped:$(version)-$(GITCOMMIT) $(REGISTRY)/csi-crs-airgapped:$(version)-$(GITCOMMIT)
+	docker push $(REGISTRY)/csi-crs-airgapped:$(version)-$(GITCOMMIT)
 
 prod-manifests:
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
-	sed -e "s/\.__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller-crs.yaml.template > manifests/csi-controller-crs.yaml
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node.yaml.template > manifests/csi-node.yaml
+	sed -e "s/\-__GIT_COMMIT__//g" -e "s/__VERSION__/$(version)/g" manifests/csi-node-crs.yaml.template > manifests/csi-node-crs.yaml
 
 dev-manifests:
 	sed -e "s/__GIT_COMMIT__/$(GITCOMMIT)/g" -e "s/__VERSION__/$(version)/g" manifests/csi-controller.yaml.template > manifests/csi-controller.yaml
