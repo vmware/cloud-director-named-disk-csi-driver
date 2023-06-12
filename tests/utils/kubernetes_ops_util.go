@@ -22,7 +22,7 @@ const (
 )
 
 func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) error {
-	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		ready := false
 		pvc, err := GetPVC(ctx, k8sClient, nameSpace, pvcName)
 		if err != nil {
@@ -44,7 +44,7 @@ func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameS
 }
 
 func WaitForPVDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, pvName string) (bool, error) {
-	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		_, err := GetPV(ctx, k8sClient, pvName)
 		if err != nil {
 			if err == testingsdk.ResourceNotFound {
@@ -64,7 +64,7 @@ func WaitForPVDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, pvNa
 }
 
 func WaitForPVCDeleted(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) (bool, error) {
-	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		_, err := GetPVC(ctx, k8sClient, pvcName, nameSpace)
 		if err != nil {
 			if err == testingsdk.ResourceNotFound {
