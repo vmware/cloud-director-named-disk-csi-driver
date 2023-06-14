@@ -10,7 +10,7 @@ ADD . /go/src/github.com/vmware/cloud-director-named-disk-csi-driver
 WORKDIR /go/src/github.com/vmware/cloud-director-named-disk-csi-driver
 
 ENV GOPATH /go
-RUN make build-within-docker && \
+RUN make dockerfile-build && \
     chmod +x /build/vcloud/cloud-director-named-disk-csi-driver
 
 ########################################################
