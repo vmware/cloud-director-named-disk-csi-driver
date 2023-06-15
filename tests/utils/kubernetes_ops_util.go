@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
@@ -11,6 +12,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
+	restclient "k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/remotecommand"
 	"k8s.io/klog/v2"
 	"strings"
 	"time"
@@ -21,6 +25,47 @@ const (
 	defaultLongRetryTimeout  = 300 * time.Second
 )
 
+// ExecCmdExample ExecCmd exec command on specific pod and wait the command's output.
+func ExecCmdExample(client kubernetes.Interface, config *restclient.Config, nameSpace string, podName string,
+	command []string) (string, error) {
+	cmd := []string{
+		"/bin/sh",
+		"-c",
+	}
+	cmd = append(cmd, command...)
+	req := client.CoreV1().RESTClient().Post().Resource("pods").Name(podName).
+		Namespace(nameSpace).SubResource("exec")
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+
+	option := &apiv1.PodExecOptions{
+		Command: cmd,
+		Stdin:   false,
+		Stdout:  true,
+		Stderr:  true,
+		TTY:     true,
+	}
+	req.VersionedParams(
+		option,
+		scheme.ParameterCodec,
+	)
+
+	exec, err := remotecommand.NewSPDYExecutor(config, "POST", req.URL())
+	if err != nil {
+		return "", fmt.Errorf("error occurred while executing command into the pod [%s]: [%v]", podName, err)
+	}
+	err = exec.Stream(remotecommand.StreamOptions{
+		Stdout: stdout,
+		Stderr: stderr,
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("error occurred while streaming the execution output: [%v]", err)
+	}
+
+	return stdout.String(), nil
+}
+
 func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string) error {
 	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		ready := false
@@ -30,6 +75,9 @@ func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameS
 				return false, nil
 			}
 			return false, fmt.Errorf("unexpected error occurred while getting pvc [%s]", pvcName)
+		}
+		if err != nil {
+			return false, nil
 		}
 		if pvc != nil && pvc.Status.Phase == apiv1.ClaimBound {
 			ready = true
