@@ -35,10 +35,10 @@ SHELLCHECK ?= bin/shellcheck
 
 
 .PHONY: all
-all: vendor lint build dev
+all: vendor lint dev
 
 .PHONY: csi
-capvcd: vendor lint build docker-build-csi ## Run checks, and build csi docker image.
+capvcd: vendor lint docker-build-csi ## Run checks, and build csi docker image.
 
 ##@ General
 
@@ -107,20 +107,16 @@ integration-test: test
 ##@ Build
 
 .PHONY: build
-build: bin ## Build CSI binary.
-	go build -ldflags "-s -w -X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(VERSION)" -o bin/cloud-director-named-disk-csi-driver cmd/csi/main.go
-
-.PHONY: dockerfile-build
-dockerfile-build: ## Build CSI binary. To be used from within a Dockerfile
-	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=$(CGO) go build -ldflags "-s -w -X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(VERSION)" -o /build/vcloud/cloud-director-named-disk-csi-driver cmd/csi/main.go
+build: bin ## Build CSI binary. To be used from within a Dockerfile
+	GOOS=$(OS) GOARCH=$(ARCH) CGO_ENABLED=$(CGO) go build -ldflags "-s -w -X github.com/vmware/cloud-director-named-disk-csi-driver/version.Version=$(VERSION)" -o bin/cloud-director-named-disk-csi-driver cmd/csi/main.go
 
 .PHONY: docker-build-csi
-docker-build-csi: manifests
+docker-build-csi: manifests build
 	docker build  \
 		--platform $(PLATFORM) \
 		--file Dockerfile \
 		--tag $(REGISTRY)/$(CSI_IMG):$(VERSION) \
-		--build-arg VERSION=$(VERSION) \
+		--build-arg CSI_BUILD_DIR=bin \
 		.
 
 .PHONY: docker-build-artifacts
