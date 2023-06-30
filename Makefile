@@ -163,7 +163,7 @@ gcr-csi:
 	docker tag registry.k8s.io/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION) $(REGISTRY)/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
 
 .PHONY: docker-push-csi
-docker-push-cpi: # Push CSI image to registry.
+docker-push-csi: # Push CSI image to registry.
 	docker push $(REGISTRY)/$(CSI_IMG):$(VERSION)
 
 .PHONY: docker-push-artifacts
@@ -177,7 +177,7 @@ docker-push-gcr-csi: gcr-csi ## Publish GCR images to container registry.
 	docker push $(REGISTRY)/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
 
 .PHONY: docker-push
-docker-push: docker-push-cpi docker-push-artifacts docker-push-gcr-csi ## Push images to container registry.
+docker-push: docker-push-csi docker-push-artifacts docker-push-gcr-csi ## Push images to container registry.
 
 
 
