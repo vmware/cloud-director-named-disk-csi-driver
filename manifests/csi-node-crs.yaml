@@ -4,7 +4,6 @@ kind: ServiceAccount
 metadata:
   name: csi-vcd-node-sa
   namespace: kube-system
-
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -79,7 +78,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: projects-stg.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:main-branch.946348b
+          image: projects-stg.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:main-branch
           imagePullPolicy: IfNotPresent
           command :
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
