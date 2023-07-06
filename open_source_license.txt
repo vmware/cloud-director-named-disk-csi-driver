@@ -1,19 +1,8 @@
-open_source_licenses.txt
+open_source_license.txt
 
 cloud-director-named-disk-csi-driver 1.4 GA
 ======================================================================
-The following copyright statements and licenses apply to various open
-source software packages (or portions thereof) that are distributed with
-this VMware Product.
 
-The VMware Product may also include other VMware components, which may
-contain additional open source software packages. One or more such
-open_source_licenses.txt files may therefore accompany this VMware
-Product.
-
-The VMware Product that includes this file does not necessarily use all
-the open source software packages referred to below and may also only
-use portions of a given package.
 ==================== TABLE OF CONTENTS ====================
 
 The following is a listing of the open source components detailed in
@@ -30,8 +19,10 @@ SECTION 1: Apache License, V2.0
    >>> container-storage-interface_spec-v1.4.0
    >>> github.com/spf13/cobra-v1.1.3
    >>> google.golang.org/grpc-v1.38.0
+   >>> k8s.io/api-v0.22.1
+   >>> k8s.io/apimachinery-v0.22.1
    >>> k8s.io/component-base-v0.22.1
-   >>> k8s.io/klog/v2-v2.60.1
+   >>> k8s.io/klog/v2-v2.10.0
    >>> go-openapi-errors-0.20.2
 
 SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
@@ -42,6 +33,8 @@ SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
    >>> github.com/stretchr/testify-v1.7.0
    >>> google/uuid-v1.2.0
    >>> golang.org/x/oauth2-v0.0.0-20210819190943-2bc19b11175f
+   >>> github.com/onsi/ginkgo-v1.16.5
+   >>> github.com/onsi/gomega-v1.19.0
    >>> golang.org/x/sys-v0.5.0
    >>> golang.org/x/net-v0.7.0
 
@@ -268,67 +261,67 @@ APPENDIX. Standard License Files
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/cmd/helpers.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/cmd/root.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra.go
 
        Copyright (c) 2013 Steve Francia <spf@spf13.com>
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/main.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/command.go
 
        Copyright (c) 2013 Steve Francia <spf@spf13.com>
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/man_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/md_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/rest_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/util.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/yaml_docs.go
 
        Copyright 2016 French Ben
 
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        > BSD-3
 
@@ -336,13 +329,13 @@ APPENDIX. Standard License Files
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 15 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/README.md
 
        Copyright (c) 2020 Steve Francia <spf@spf13.com>
 
-       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 13 in 'LICENSE TEXT REFERENCE TABLE'
 
 
    >>> google.golang.org/grpc-v1.38.0
@@ -2157,7 +2150,7 @@ APPENDIX. Standard License Files
 
        Copyright 2019
 
-       See SECTION 13 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
 
        interop/server/server.go
 
@@ -3612,6 +3605,2810 @@ APPENDIX. Standard License Files
        See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
 
 
+   >>> k8s.io/api-v0.22.1
+
+       Copyright 2018 The Kubernetes Authors
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache2.0
+
+       admissionregistration/v1beta1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admissionregistration/v1beta1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admissionregistration/v1beta1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admissionregistration/v1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admissionregistration/v1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admissionregistration/v1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admission/v1beta1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admission/v1beta1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admission/v1beta1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admission/v1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admission/v1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       admission/v1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apiserverinternal/v1alpha1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apiserverinternal/v1alpha1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apiserverinternal/v1alpha1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1beta1/register.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1beta1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1beta2/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1beta2/register.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1beta2/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       apps/v1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authentication/v1beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authentication/v1beta1/register.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authentication/v1beta1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authentication/v1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authentication/v1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authentication/v1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authorization/v1beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authorization/v1beta1/register.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authorization/v1beta1/types.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authorization/v1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authorization/v1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authorization/v1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v1/register.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v2beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v2beta1/register.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v2beta1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v2beta2/doc.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v2beta2/register.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       autoscaling/v2beta2/types.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       batch/v1beta1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       batch/v1beta1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       batch/v1beta1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       batch/v1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       batch/v1/register.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       batch/v1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       certificates/v1beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       certificates/v1beta1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       certificates/v1beta1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       certificates/v1/doc.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       certificates/v1/register.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       certificates/v1/types.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       coordination/v1beta1/doc.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       coordination/v1beta1/register.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       coordination/v1beta1/types.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       coordination/v1/doc.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       coordination/v1/register.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       coordination/v1/types.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/annotation_key_constants.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/doc.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/lifecycle.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/objectreference.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/register.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/resource.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/taint.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/taint_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/toleration.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/toleration_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/types.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/types_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/well_known_labels.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       core/v1/well_known_taints.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1beta1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1beta1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1beta1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1beta1/well_known_labels.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       discovery/v1/well_known_labels.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       events/v1beta1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       events/v1beta1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       events/v1beta1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       events/v1/doc.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       events/v1/register.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       events/v1/types.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       extensions/v1beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       extensions/v1beta1/register.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       extensions/v1beta1/types.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       flowcontrol/v1alpha1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       flowcontrol/v1alpha1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       flowcontrol/v1alpha1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       flowcontrol/v1beta1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       flowcontrol/v1beta1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       flowcontrol/v1beta1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       imagepolicy/v1alpha1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       imagepolicy/v1alpha1/register.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       imagepolicy/v1alpha1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1beta1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1beta1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1beta1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1beta1/well_known_annotations.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       networking/v1/well_known_annotations.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1alpha1/doc.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1alpha1/register.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1alpha1/types.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1beta1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1beta1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1beta1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1/doc.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1/register.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node/v1/types.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       policy/v1beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       policy/v1beta1/register.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       policy/v1beta1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       policy/v1/doc.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       policy/v1/register.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       policy/v1/types.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1alpha1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1alpha1/register.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1alpha1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1beta1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1beta1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1beta1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rbac/v1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       roundtrip_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1alpha1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1alpha1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1alpha1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1beta1/doc.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1beta1/register.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1beta1/types.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1/doc.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1/register.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scheduling/v1/types.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1alpha1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1alpha1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1alpha1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1beta1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1beta1/register.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1beta1/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       storage/v1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+
+   >>> k8s.io/apimachinery-v0.22.1
+
+       Copyright 2018 The Kubernetes Authors
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache2.0
+
+       pkg/api/apitesting/codec.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/fuzzer/fuzzer.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/fuzzer/valuefuzz.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/fuzzer/valuefuzz_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/naming/naming.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/roundtrip/compatibility.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/roundtrip/fuzz_norace.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/roundtrip/fuzz_race.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/apitesting/roundtrip/roundtrip.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/equality/semantic.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/errors/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/errors/errors.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/errors/errors_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/conditions.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/conditions_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/errors.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/firsthit_restmapper.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/help.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/interfaces.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/lazy.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/meta.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/meta_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/multirestmapper.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/multirestmapper_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/priority.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/priority_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/restmapper.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/restmapper_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/table/table.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/meta/testrestmapper/test_restmapper.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/amount.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/amount_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/math.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/math_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/quantity_example_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/quantity.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/quantity_proto.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/quantity_proto_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/quantity_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/scale_int.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/scale_int_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/resource/suffix.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/fuzzer/fuzzer.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/scheme/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/scheme/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/scheme/register_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/scheme/roundtrip_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/validation/validation.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/internalversion/validation/validation_test.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1beta1/conversion.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1beta1/deepcopy.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1beta1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1beta1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1beta1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1beta1/validation/validation.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/controller_ref.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/controller_ref_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/conversion.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/conversion_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/deepcopy.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/duration.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/duration_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/group_version.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/group_version_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/helpers.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/helpers_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/labels.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/labels_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/meta.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/micro_time_fuzz.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/micro_time.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/micro_time_proto.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/micro_time_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/options_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/register.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/time_fuzz.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/time.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/time_proto.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/time_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/types.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/types_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/helpers.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/helpers_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/unstructured_conversion_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/unstructured.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/unstructured_list.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/unstructured_list_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/unstructuredscheme/scheme.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/unstructured/unstructured_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/validation/validation.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/validation/validation_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/meta/v1/watch.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/fuzzer/fuzzer.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/install/install.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/install/roundtrip_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/v1/conversion.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/v1/defaults.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/v1/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/v1/register.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/apis/testapigroup/v1/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/validation/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/validation/generic.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/validation/generic_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/validation/objectmeta.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/validation/objectmeta_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/validation/path/name.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/api/validation/path/name_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/converter.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/converter_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/deep_equal.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/helper.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/helper_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/queryparams/convert.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/queryparams/convert_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/conversion/queryparams/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/fields/doc.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/fields/fields.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/fields/fields_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/fields/requirements.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/fields/selector.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/fields/selector_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/labels/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/labels/labels.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/labels/labels_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/labels/selector.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/labels/selector_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/codec_check.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/codec.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/codec_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/conversion.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/converter.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/converter_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/embedded.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/embedded_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/error.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/extension.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/extension_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/helper.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/interfaces.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/local_scheme_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/mapper.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/mapper_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/negotiate.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/register.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/schema/group_version.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/schema/group_version_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/schema/interfaces.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/scheme_builder.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/scheme.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/scheme_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/codec_factory.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/codec_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/json/json.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/json/json_limit_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/json/json_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/json/meta.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/json/meta_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/negotiated_codec.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/protobuf/doc.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/protobuf/protobuf.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/protobuf/protobuf_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/recognizer/recognizer.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/recognizer/testing/recognizer_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/sparse_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/streaming/streaming.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/streaming/streaming_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/versioning/versioning.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/versioning/versioning_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/versioning/versioning_unstructured_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/yaml/meta.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/yaml/meta_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/yaml/yaml.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/serializer/yaml/yaml_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/swagger_doc_generator.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/swagger_doc_generator_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/testing/cacheable_object.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/testing/conversion.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/testing/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/testing/types.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/types.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/runtime/types_proto.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/selection/operator.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/test/api_meta_help_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/test/api_meta_meta_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/test/apis_meta_v1_unstructed_unstructure_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/test/runtime_helper_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/test/runtime_serializer_protobuf_protobuf_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/test/runtime_unversioned_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/test/util.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/types/doc.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/types/namespacedname.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/types/nodename.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/types/patch.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/types/uid.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/cache/expiring.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/cache/expiring_test.go
+
+       Copyright 2019 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/cache/lruexpirecache.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/cache/lruexpirecache_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/clock/clock.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/clock/clock_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/diff/diff.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/diff/diff_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/duration/duration.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/duration/duration_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/errors/doc.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/errors/errors.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/errors/errors_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/framer/framer.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/framer/framer_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/doc.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/httpstream.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/httpstream_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/spdy/connection.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/spdy/connection_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/spdy/roundtripper.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/spdy/roundtripper_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/spdy/upgrade.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/httpstream/spdy/upgrade_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/intstr/instr_fuzz.go
+
+       Copyright 2020 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/intstr/intstr.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/intstr/intstr_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/json/json.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/json/json_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/jsonmergepatch/patch.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/jsonmergepatch/patch_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/managedfields/extract.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/managedfields/extract_test.go
+
+       Copyright 2021 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/mergepatch/errors.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/mergepatch/util.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/mergepatch/util_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/naming/from_stack.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/naming/from_stack_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/http.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/http_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/interface.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/interface_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/port_range.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/port_range_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/port_split.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/port_split_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/util.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/net/util_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/proxy/dial.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/proxy/dial_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/proxy/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/proxy/transport.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/proxy/transport_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/proxy/upgradeaware.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/proxy/upgradeaware_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/rand/rand.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/rand/rand_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/remotecommand/constants.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/runtime/runtime.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/runtime/runtime_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/sets/set_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/sets/types/types.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/strategicpatch/errors.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/strategicpatch/meta.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/strategicpatch/patch.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/strategicpatch/patch_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/strategicpatch/testing/openapi.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/strategicpatch/types.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/uuid/uuid.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/validation/field/errors.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/validation/field/errors_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/validation/field/path.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/validation/field/path_test.go
+
+       Copyright 2015 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/validation/validation.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/validation/validation_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/version/doc.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/version/version.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/version/version_test.go
+
+       Copyright 2016 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/wait/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/waitgroup/doc.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/waitgroup/waitgroup.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/waitgroup/waitgroup_test.go
+
+       Copyright 2017 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/wait/wait.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/wait/wait_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/yaml/decoder.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/util/yaml/decoder_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/version/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/version/helpers.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/version/helpers_test.go
+
+       Copyright 2018 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/version/types.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/doc.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/filter.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/filter_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/mux.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/mux_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/streamwatcher.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/streamwatcher_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/watch.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pkg/watch/watch_test.go
+
+       Copyright 2014 The Kubernetes Authors
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       > BSD-3
+
+       third_party/forked/golang/json/fields.go
+
+       Copyright 2013 The Go Authors
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       third_party/forked/golang/reflect/deep_equal.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       third_party/forked/golang/reflect/deep_equal_test.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+
    >>> k8s.io/component-base-v0.22.1
 
        Found in: component-base-master/metrics/legacyregistry/registry.go
@@ -4331,117 +7128,15 @@ APPENDIX. Standard License Files
        See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
 
 
-   >>> k8s.io/klog/v2-v2.60.1
+   >>> k8s.io/klog/v2-v2.10.0
 
        > Apache2.0
-
-       contextual.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       contextual_test.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       exit.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       exit_test.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
 
        hack/verify-apidiff.sh
 
        Copyright 2020 The Kubernetes Authors
 
        See SECTION 7 in 'LICENSE TEXT REFERENCE TABLE'
-
-       imports.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/buffer/buffer.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/clock/clock.go
-
-       Copyright 2014 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/clock/testing/fake_clock.go
-
-       Copyright 2014 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/clock/testing/simple_interval_clock.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/serialize/keyvalues.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/serialize/keyvalues_test.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/severity/severity.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/test/mock.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/verbosity/helper_test.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/verbosity/verbosity.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/verbosity/verbosity_test.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       k8s_references.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
 
        klog_file.go
 
@@ -4455,12 +7150,6 @@ APPENDIX. Standard License Files
 
        See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
 
-       klogr.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
        klog_test.go
 
        Copyright 2013 Google Inc.
@@ -4472,72 +7161,6 @@ APPENDIX. Standard License Files
        Copyright 2020 The Kubernetes Authors
 
        See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       ktesting/example/example_test.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
-
-       ktesting/init/init.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       ktesting/options.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       ktesting/setup.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       ktesting/testinglogger.go
-
-       Copyright 2020 Intel Coporation
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       ktesting/testinglogger_test.go
-
-       Copyright 2020 Intel Coporation
-
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/output.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/output_helper.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/zapr.go
-
-       Copyright 2022 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       textlogger/options.go
-
-       Copyright 2021 The Kubernetes Authors
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
-
-       textlogger/textlogger.go
-
-       Copyright 2020 Intel Coporation
-
-       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
 
 
    >>> go-openapi-errors-0.20.2
@@ -6903,6 +9526,58 @@ APPENDIX. Standard License Files
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
 
+   >>> github.com/onsi/ginkgo-v1.16.5
+
+       Copyright (c) 2013-2014 Onsi Fakhouri
+
+       Permission is hereby granted, free of charge, to any person obtaining
+       a copy of this software and associated documentation files (the
+       "Software"), to deal in the Software without restriction, including
+       without limitation the rights to use, copy, modify, merge, publish,
+       distribute, sublicense, and/or sell copies of the Software, and to
+       permit persons to whom the Software is furnished to do so, subject to
+       the following conditions:
+
+       The above copyright notice and this permission notice shall be
+       included in all copies or substantial portions of the Software.
+
+       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+       EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+       MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+       NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+       LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+       OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+       WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+
+
+   >>> github.com/onsi/gomega-v1.19.0
+
+       Copyright (c) 2013-2014 Onsi Fakhouri
+
+       Permission is hereby granted, free of charge, to any person obtaining
+       a copy of this software and associated documentation files (the
+       "Software"), to deal in the Software without restriction, including
+       without limitation the rights to use, copy, modify, merge, publish,
+       distribute, sublicense, and/or sell copies of the Software, and to
+       permit persons to whom the Software is furnished to do so, subject to
+       the following conditions:
+
+       The above copyright notice and this permission notice shall be
+       included in all copies or substantial portions of the Software.
+
+       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+       EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+       MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+       NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+       LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+       OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+       WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
    >>> golang.org/x/sys-v0.5.0
 
        Copyright (c) 2009 The Go Authors. All rights reserved.
@@ -6993,12 +9668,12 @@ APPENDIX. Standard License Files
 
 -------------------- SECTION 1: Apache License, V2.0 --------------------
 
-Apache License
+Apache License 
 
-Version 2.0, January 2004
-http://www.apache.org/licenses/
+Version 2.0, January 2004 
+http://www.apache.org/licenses/ 
 
-TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION 
 
 1. Definitions.
 
@@ -7006,7 +9681,7 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 and distribution as defined by Sections 1 through 9 of this document.
 
 "Licensor" shall mean the copyright owner or entity authorized by the
-copyright owner that is granting the License.
+copyright owner that is granting the License.  
 
 "Legal Entity" shall mean the union of the acting entity and all other
 entities that control, are controlled by, or are under common control
@@ -7017,7 +9692,7 @@ of fifty percent (50%) or more of the outstanding shares, or (iii)
 beneficial ownership of such entity.
 
 "You" (or "Your") shall mean an individual or Legal Entity exercising
-permissions granted by this License.
+permissions granted by this License.  
 
 "Source" form shall mean the preferred form for making modifications,
 including but not limited to software source code, documentation source,
@@ -7026,12 +9701,12 @@ and configuration files.
 "Object" form shall mean any form resulting from mechanical transformation
 or translation of a Source form, including but not limited to compiled
 object code, generated documentation, and conversions to other media
-types.
+types.  
 
 "Work" shall mean the work of authorship, whether in Source or
 Object form, made available under the License, as indicated by a copyright
 notice that is included in or attached to the work (an example is provided
-in the Appendix below).
+in the Appendix below).  
 
 "Derivative Works" shall mean any work, whether in Source or Object form,
 that is based on (or derived from) the Work and for which the editorial
@@ -7166,7 +9841,7 @@ hold each Contributor harmless for any liability incurred by, or claims
 asserted against, such Contributor by reason of your accepting any such
 warranty or additional liability.
 
-END OF TERMS AND CONDITIONS
+END OF TERMS AND CONDITIONS 
 
 APPENDIX: How to apply the Apache License to your work.
 
@@ -7311,8 +9986,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 -------------------- SECTION 11 --------------------
-SPDX-License-Identifier: Apache-2.0
--------------------- SECTION 12 --------------------
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -7323,7 +9996,7 @@ SPDX-License-Identifier: Apache-2.0
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
--------------------- SECTION 13 --------------------
+-------------------- SECTION 12 --------------------
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
 *  You may obtain a copy of the License at
@@ -7335,29 +10008,8 @@ SPDX-License-Identifier: Apache-2.0
 *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
--------------------- SECTION 14 --------------------
+-------------------- SECTION 13 --------------------
 **AGPL**, **MIT**, **2-Clause BSD** or **3-Clause BSD**.
--------------------- SECTION 15 --------------------
+-------------------- SECTION 14 --------------------
 // Parts inspired by https://github.com/ryanuber/go-license
-
-
-
-======================================================================
-
-To the extent any open source components are licensed under the GPL
-and/or LGPL, or other similar licenses that require the source code
-and/or modifications to source code to be made available (as would be
-noted above), you may obtain a copy of the source code corresponding to
-the binaries for such open source components and modifications thereto,
-if any, (the "Source Files"), by downloading the Source Files from
-VMware's website at http://www.vmware.com/download/open_source.html, or
-by sending a request, with your name and address to: VMware, Inc., 3401
-Hillview Avenue, Palo Alto, CA 94304, United States of America. All such
-requests should clearly specify: OPEN SOURCE FILES REQUEST, Attention
-General Counsel. VMware shall mail a copy of the Source Files to you on
-a CD or equivalent physical medium. This offer to obtain a copy of the
-Source Files is valid for three years from the date you acquired this
-Software product. Alternatively, the Source Files may accompany the
-VMware product.
-
-[CLOUDDIRECTORNAMEDDISKCSIDRIVER14GARS032723]
+[CLOUDDIRECTORNAMEDDISKCSIDRIVER14GAAT070523]
