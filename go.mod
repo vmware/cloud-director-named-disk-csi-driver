@@ -12,7 +12,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230420174123-f285168de9e5
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230707210858-ca0b8d6f93ac
 	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.5.0
@@ -31,6 +31,7 @@ require (
 	github.com/antihax/optional v1.0.0 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195 // indirect
+	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v0.4.0 // indirect
