@@ -6,6 +6,8 @@ require (
 	github.com/akutz/gofsutil v0.1.2
 	github.com/container-storage-interface/spec v1.4.0
 	github.com/google/uuid v1.2.0
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.19.0
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
@@ -17,17 +19,12 @@ require (
 	google.golang.org/grpc v1.38.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
-	k8s.io/component-base v0.22.1
-	k8s.io/klog v1.0.0
-	k8s.io/klog/v2 v2.10.0
-)
-
-require (
-	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.19.0
 	k8s.io/api v0.22.1
 	k8s.io/apimachinery v0.22.1
 	k8s.io/client-go v0.22.1
+	k8s.io/component-base v0.22.1
+	k8s.io/klog v1.0.0
+	k8s.io/klog/v2 v2.10.0
 )
 
 require (
