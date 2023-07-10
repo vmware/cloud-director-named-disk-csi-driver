@@ -1,7 +1,20 @@
-open_source_license.txt
+open_source_licenses.txt
 
 cloud-director-named-disk-csi-driver 1.4 GA
 ======================================================================
+
+The following copyright statements and licenses apply to various open
+source software packages (or portions thereof) that are distributed with
+this VMware Product.
+
+The VMware Product may also include other VMware components, which may
+contain additional open source software packages. One or more such
+open_source_licenses.txt files may therefore accompany this VMware
+Product.
+
+The VMware Product that includes this file does not necessarily use all
+the open source software packages referred to below and may also only
+use portions of a given package.
 
 ==================== TABLE OF CONTENTS ====================
 
@@ -10,7 +23,6 @@ this document. This list is provided for your convenience; please read
 further if you wish to review the copyright notice(s) and the full text
 of the license associated with each component.
 
-
 SECTION 1: Apache License, V2.0
 
    >>> akutz_gofsutil-v0.1.2
@@ -18,12 +30,12 @@ SECTION 1: Apache License, V2.0
    >>> gopkg.in/yaml.v2-v2.4.0
    >>> container-storage-interface_spec-v1.4.0
    >>> github.com/spf13/cobra-v1.1.3
-   >>> google.golang.org/grpc-v1.38.0
    >>> k8s.io/api-v0.22.1
    >>> k8s.io/apimachinery-v0.22.1
    >>> k8s.io/component-base-v0.22.1
    >>> k8s.io/klog/v2-v2.10.0
    >>> go-openapi-errors-0.20.2
+   >>> google.golang.org/grpc-v1.53.0
 
 SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
 
@@ -31,10 +43,10 @@ SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
    >>> gopkg.in/yaml.v3-v3.0.0-20210107192922-496545a6307b
    >>> google.golang.org/protobuf-v1.26.0
    >>> github.com/stretchr/testify-v1.7.0
-   >>> google/uuid-v1.2.0
-   >>> golang.org/x/oauth2-v0.0.0-20210819190943-2bc19b11175f
    >>> github.com/onsi/ginkgo-v1.16.5
    >>> github.com/onsi/gomega-v1.19.0
+   >>> google/uuid-v1.3.0
+   >>> golang.org/x/oauth2-v0.4.0
    >>> golang.org/x/sys-v0.5.0
    >>> golang.org/x/net-v0.7.0
 
@@ -261,67 +273,67 @@ APPENDIX. Standard License Files
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/cmd/helpers.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/cmd/root.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra.go
 
        Copyright (c) 2013 Steve Francia <spf@spf13.com>
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/main.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/command.go
 
        Copyright (c) 2013 Steve Francia <spf@spf13.com>
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/man_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/md_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/rest_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/util.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/yaml_docs.go
 
        Copyright 2016 French Ben
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
 
        > BSD-3
 
@@ -329,3280 +341,13 @@ APPENDIX. Standard License Files
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/README.md
 
        Copyright (c) 2020 Steve Francia <spf@spf13.com>
 
-       See SECTION 13 in 'LICENSE TEXT REFERENCE TABLE'
-
-
-   >>> google.golang.org/grpc-v1.38.0
-
-       Copyright 2017 gRPC authors.
-
-       Licensed under the Apache License, Version 2.0 (the "License");
-       you may not use this file except in compliance with the License.
-       You may obtain a copy of the License at
-
-           http://www.apache.org/licenses/LICENSE-2.0
-
-       Unless required by applicable law or agreed to in writing, software
-       distributed under the License is distributed on an "AS IS" BASIS,
-       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-       See the License for the specific language governing permissions and
-       limitations under the License.
-
-       ADDITIONAL LICENSE INFORMATION
-
-       > Apache2.0
-
-       admin/admin.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       admin/admin_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       admin/test/admin_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       admin/test/utils.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       attributes/attributes.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       attributes/attributes_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       backoff/backoff.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       backoff.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/balancer.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/base/balancer.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/base/balancer_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/base/base.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer_conn_wrappers.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_config.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_config_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_picker.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_remote_balancer.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_test.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_test_util_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_util.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpclb_util_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/grpc_lb_v1/load_balancer.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/state/state.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/adaptive/adaptive.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/adaptive/adaptive_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/adaptive/lookback.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/adaptive/lookback_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/balancer.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/balancer_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/builder.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/cache/cache.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/cache/cache_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/client.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/client_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/config.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/config_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/keys/builder.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/keys/builder_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/picker.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/picker_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/proto/grpc_lookup_v1/rls_config.pb.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/proto/grpc_lookup_v1/rls.pb.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/rls/internal/testutils/fakeserver/fakeserver.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/roundrobin/roundrobin.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/roundrobin/roundrobin_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer_switching_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/weightedroundrobin/weightedroundrobin.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/weightedroundrobin/weightedwoundrobin_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/benchmain/main.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/benchmark.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/benchresult/main.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/client/main.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/flags/flags.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/flags/flags_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/latency/latency.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/latency/latency_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/primitives/code_string_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/primitives/context_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/primitives/primitives_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/primitives/safe_config_selector_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/primitives/syncmap_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/server/main.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/stats/curve.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/stats/histogram.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/stats/stats.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/worker/benchmark_client.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/worker/benchmark_server.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       benchmark/worker/main.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       binarylog/binarylog_end2end_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       binarylog/grpc_binarylog_v1/binarylog.pb.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       binarylog/sink.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       call.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       call_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/grpc_channelz_v1/channelz.pb.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/service/func_linux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/service/func_nonlinux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/service/service.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/service/service_sktopt_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/service/service_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/service/util_sktopt_386_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       channelz/service/util_sktopt_amd64_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       clientconn.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       clientconn_state_transition_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       clientconn_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       codec.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       codec_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       codes/codes.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       codes/codes_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       codes/code_string.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       connectivity/connectivity.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/alts.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/alts_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/authinfo/authinfo.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/authinfo/authinfo_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/common.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/aeadrekey.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/aeadrekey_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/aes128gcm.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/aes128gcmrekey.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/aes128gcmrekey_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/aes128gcm_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/common.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/counter.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/counter_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/record.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/record_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/conn/utils.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/handshaker/handshaker.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/handshaker/handshaker_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/handshaker/service/service.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/handshaker/service/service_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/proto/grpc_gcp/altscontext.pb.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/proto/grpc_gcp/handshaker.pb.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/proto/grpc_gcp/transport_security_common.pb.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/internal/testutil/testutil.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/utils.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/alts/utils_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/credentials.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/credentials_test.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/go12.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/google/google.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/google/google_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/google/xds.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/insecure/insecure.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/local/local.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/local/local_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/oauth/oauth.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/sts/sts.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/sts/sts_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/distributor.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/distributor_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/pemfile/builder.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/pemfile/builder_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/pemfile/watcher.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/pemfile/watcher_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/provider.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/store.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls/certprovider/store_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/tls.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/xds/xds_client_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/xds/xds.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       credentials/xds/xds_server_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       dialoptions.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       doc.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       encoding/encoding.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       encoding/gzip/gzip.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       encoding/proto/proto_benchmark_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       encoding/proto/proto.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       encoding/proto/proto_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       grpclog/component.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       grpclog/glogger/glogger.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       grpclog/grpclog.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       grpclog/logger.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       grpclog/loggerv2.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       grpclog/loggerv2_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       grpc_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       health/client.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       health/client_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       health/grpc_health_v1/health.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       health/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       health/server.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       health/server_internal_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       health/server_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interceptor.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/admin/admin.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/backoff/backoff.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/balancerload/load.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/balancer/stub/stub.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/binarylog.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/binarylog_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/binarylog_testutil.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/env_config.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/env_config_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/method_logger.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/method_logger_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/regexp_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/binarylog/sink.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/buffer/unbounded.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/buffer/unbounded_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/cache/timeoutCache.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/cache/timeoutCache_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/funcs.go
-
-       Copyright 2018
-
-       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/types.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/types_linux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/types_nonlinux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/util_linux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/util_nonlinux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/channelz/util_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/credentials.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/spiffe_appengine.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/spiffe.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/spiffe_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/syscallconn_appengine.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/syscallconn.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/syscallconn_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/util.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/util_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/xds/handshake_info.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/credentials/xds/handshake_info_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/envconfig/envconfig.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/googlecloud/googlecloud.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/googlecloud/googlecloud_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpclog/grpclog.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpclog/prefixLogger.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcrand/grpcrand.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcsync/event.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcsync/event_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpctest/example_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpctest/grpctest.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpctest/grpctest_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpctest/tlogger.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpctest/tlogger_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcutil/encode_duration.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcutil/encode_duration_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcutil/metadata.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcutil/method.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcutil/method_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcutil/target.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/grpcutil/target_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/hierarchy/hierarchy.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/hierarchy/hierarchy_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/internal.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/leakcheck/leakcheck.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/leakcheck/leakcheck_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/metadata/metadata.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/metadata/metadata_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/profiling/buffer/buffer_appengine.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/profiling/buffer/buffer.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/profiling/buffer/buffer_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/profiling/goid_modified.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/profiling/goid_regular.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/profiling/profiling.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/profiling/profiling_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/proto/grpc_service_config/example_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/proto/grpc_service_config/service_config.pb.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/resolver/config_selector.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/resolver/config_selector_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/resolver/dns/dns_resolver.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/resolver/dns/dns_resolver_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/resolver/dns/go113.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/resolver/passthrough/passthrough.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/resolver/unix/unix.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/serviceconfig/serviceconfig.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/serviceconfig/serviceconfig_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/status/status.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/stubserver/stubserver.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/syscall/syscall_linux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/syscall/syscall_nonlinux.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/testutils/channel.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/testutils/http_client.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/testutils/marshal_any.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/testutils/pipe_listener.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/testutils/pipe_listener_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/testutils/status_equal.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/testutils/status_equal_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/bdp_estimator.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/controlbuf.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/defaults.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/flowcontrol.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/handler_server.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/handler_server_test.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/http2_client.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/http2_server.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/http_util.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/http_util_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/keepalive_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/networktype/networktype.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/proxy.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/proxy_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/transport.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport/transport_test.go
-
-       Copyright 2014
-
-       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/wrr/edf.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/wrr/edf_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/wrr/random.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/wrr/wrr.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/wrr/wrr_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/xds/bootstrap.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/xds/env/env.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/xds_handshake_cluster.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/xds/string_matcher.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/xds/string_matcher_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/alts/client/client.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/alts/server/server.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/client/client.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpclb_fallback/client.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/benchmark_service.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/control.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/core/stats.pb.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/empty.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/messages.pb.go
-
-       Copyright 2015-2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/payloads.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/report_qps_scenario_service.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/stats.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/test.pb.go
-
-       Copyright 2015-2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/grpc_testing/worker_service.pb.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/http2/negative_http2_client.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/interop_test.sh
-
-       Copyright 2019
-
-       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/server/server.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/test_utils.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/xds/client/client.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/xds/client/Dockerfile
-
-       Copyright 2021
-
        See SECTION 10 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/xds/server/Dockerfile
-
-       Copyright 2021
-
-       See SECTION 10 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/xds/server/server.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       keepalive/keepalive.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       metadata/metadata.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       metadata/metadata_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       peer/peer.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       picker_wrapper.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       picker_wrapper_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       pickfirst.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       pickfirst_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       preloader.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/cmd/catapult.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/cmd/flags.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/cmd/local.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/cmd/main.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/cmd/remote.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/profiling.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/proto/service.pb.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/proto/service.proto
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       profiling/service/service.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_reflection_v1alpha/reflection.pb.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_reflection_v1alpha/reflection.proto
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/proto2_ext2.pb.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/proto2_ext2.proto
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/proto2_ext.pb.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/proto2_ext.proto
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/proto2.pb.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/proto2.proto
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/test.pb.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/grpc_testing/test.proto
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/serverreflection.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       reflection/serverreflection_test.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       regenerate.sh
-
-       Copyright 2020
-
-       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
-
-       resolver_conn_wrapper.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       resolver_conn_wrapper_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       resolver/dns/dns_resolver.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       resolver/manual/manual.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       resolver/passthrough/passthrough.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       resolver/resolver.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       rpc_util.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       rpc_util_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       server.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       server_test.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       service_config.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       serviceconfig/serviceconfig.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       service_config_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stats/handlers.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stats/stats.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stats/stats_test.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       status/status_ext_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       status/status.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       status/status_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stream.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stress/client/main.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stress/grpc_testing/metrics.pb.go
-
-       Copyright 2015-2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stress/grpc_testing/metrics.proto
-
-       Copyright 2015-2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stress/metrics_client/main.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       tap/tap.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/authority_test.go
-
-       Copyright 2020
-
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/balancer_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/bufconn/bufconn.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/bufconn/bufconn_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/channelz_linux_go110_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/channelz_test.go
-
-       Copyright 2018
-
-       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/codec_perf/perf.pb.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/codec_perf/perf.proto
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/context_canceled_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/creds_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       testdata/testdata.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/end2end_test.go
-
-       Copyright 2014
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/goaway_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/go_vet/vet.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/gracefulstop_test.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/grpc_testing/test.pb.go
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/grpc_testing/test.proto
-
-       Copyright 2017
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/healthcheck_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/insecure_creds_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/local_creds_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/race.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/rawConnWrapper.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/resolver_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/retry_test.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/servertester.go
-
-       Copyright 2016
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/server_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       test/stream_cleanup_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       trace.go
-
-       Copyright 2015
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       trace_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       version.go
-
-       Copyright 2018
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/csds/csds.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/csds/csds_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/googledirectpath/googlec2p.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/googledirectpath/googlec2p_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/googledirectpath/utils.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/balancer.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/balancergroup/balancergroup.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/balancergroup/balancergroup_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/balancergroup/balancerstateaggregator.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/balancergroup/testutils_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/cdsbalancer/cdsbalancer.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/cdsbalancer/cdsbalancer_security_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/cdsbalancer/cdsbalancer_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/cdsbalancer/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clusterimpl/balancer_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clusterimpl/clusterimpl.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clusterimpl/config.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clusterimpl/config_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clusterimpl/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clusterimpl/picker.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clustermanager/balancerstateaggregator.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clustermanager/clustermanager.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clustermanager/clustermanager_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clustermanager/config.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clustermanager/config_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/clustermanager/picker.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/config.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/eds.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/eds_impl.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/eds_impl_priority.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/eds_impl_priority_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/eds_impl_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/eds_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/eds_testutil.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/load_store_wrapper.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/util.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/util_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/xds_lrs_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/edsbalancer/xds_old.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/loadstore/load_store_wrapper.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/lrs/balancer.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/lrs/balancer_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/lrs/config.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/lrs/config_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/lrs/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/lrs/picker.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/orca/orca.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/orca/orca_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/balancer_child.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/balancer.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/balancer_priority.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/balancer_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/config.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/config_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/ignore_resolve_now.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/ignore_resolve_now_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/logging.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/utils.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/priority/utils_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/weightedtarget/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/weightedtarget/weightedaggregator/aggregator.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/weightedtarget/weightedtarget_config.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/weightedtarget/weightedtarget_config_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/weightedtarget/weightedtarget.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/balancer/weightedtarget/weightedtarget_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/bootstrap/bootstrap.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/bootstrap/bootstrap_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/bootstrap/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/callback.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/cds_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/client.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/client_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/dump.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/eds_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/errors.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/filter_chain.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/filter_chain_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/lds_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/load/reporter.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/loadreport.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/load/store.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/load/store_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/rds_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/requests_counter.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/requests_counter_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/singleton.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/tests/client_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/tests/dump_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/tests/loadreport_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/transport_helper.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/ack_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/cds_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/client.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/client_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/eds_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/lds_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/loadreport.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v2/rds_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v3/client.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/v3/loadreport.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/watchers_cluster_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/watchers_endpoints_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/watchers.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/watchers_listener_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/watchers_route_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/client/xds.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/httpfilter/fault/fault.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/httpfilter/fault/fault_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/httpfilter/httpfilter.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/httpfilter/router/router.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/internal.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/internal_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/logging.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/matcher.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/matcher_header.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/matcher_header_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/matcher_path.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/matcher_path_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/matcher_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/serviceconfig.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/serviceconfig_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/watch_service.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/watch_service_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/xds_resolver.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/resolver/xds_resolver_test.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/server/conn_wrapper.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/server/listener_wrapper.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/server/listener_wrapper_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/balancer.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/balancer_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/e2e/bootstrap.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/e2e/clientresources.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/e2e/server.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/fakeclient/client.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/fakeserver/server.go
-
-       Copyright 2019
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/local_listener.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/protos.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/testutils/wrr.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/test/xds_client_integration_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/test/xds_integration_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/test/xds_server_integration_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/test/xds_server_serving_mode_test.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/internal/version/version.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/server.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/server_options.go
-
-       Copyright 2021
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/server_test.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
-
-       xds/xds.go
-
-       Copyright 2020
-
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
 
 
    >>> k8s.io/api-v0.22.1
@@ -6394,19 +3139,19 @@ APPENDIX. Standard License Files
 
        Copyright 2013 The Go Authors
 
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
 
        third_party/forked/golang/reflect/deep_equal.go
 
        Copyright 2009 The Go Authors
 
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
 
        third_party/forked/golang/reflect/deep_equal_test.go
 
        Copyright 2009 The Go Authors
 
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
 
 
    >>> k8s.io/component-base-v0.22.1
@@ -7136,19 +3881,19 @@ APPENDIX. Standard License Files
 
        Copyright 2020 The Kubernetes Authors
 
-       See SECTION 7 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
 
        klog_file.go
 
        Copyright 2013 Google Inc.
 
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
        klog.go
 
        Copyright 2013 Google Inc.
 
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
        klog_test.go
 
@@ -7160,7 +3905,7 @@ APPENDIX. Standard License Files
 
        Copyright 2020 The Kubernetes Authors
 
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
 
    >>> go-openapi-errors-0.20.2
@@ -7180,6 +3925,2463 @@ APPENDIX. Standard License Files
        // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
        // See the License for the specific language governing permissions and
        // limitations under the License.
+
+
+   >>> google.golang.org/grpc-v1.53.0
+
+       Copyright 2017 gRPC authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+           http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache2.0
+
+       admin/admin.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       attributes/attributes.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authz/grpc_authz_server_interceptors.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authz/rbac_translator.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       backoff/backoff.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       backoff.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/balancer.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/base/balancer.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/base/base.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/conn_state_evaluator.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer_conn_wrappers.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/grpclb_config.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/grpclb.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/grpclb_picker.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/grpclb_remote_balancer.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/grpclb_util.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/grpc_lb_v1/load_balancer_grpc.pb.go
+
+       Copyright 2015 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/grpc_lb_v1/load_balancer.pb.go
+
+       Copyright 2015 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/grpclb/state/state.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/balancer.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/cache.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/child_policy.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/config.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/control_channel.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/internal/adaptive/adaptive.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/internal/adaptive/lookback.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/internal/keys/builder.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/rls/picker.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/roundrobin/roundrobin.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/weightedroundrobin/weightedroundrobin.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/weightedtarget/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/weightedtarget/weightedaggregator/aggregator.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/weightedtarget/weightedtarget_config.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       balancer/weightedtarget/weightedtarget.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/benchmain/main.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/benchmark.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/benchresult/main.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/client/main.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/flags/flags.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/latency/latency.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/server/main.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/stats/curve.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/stats/histogram.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/stats/stats.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/worker/benchmark_client.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/worker/benchmark_server.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       benchmark/worker/main.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       binarylog/grpc_binarylog_v1/binarylog.pb.go
+
+       Copyright 2018 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       binarylog/sink.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       call.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       channelz/channelz.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       channelz/grpc_channelz_v1/channelz_grpc.pb.go
+
+       Copyright 2018 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       channelz/grpc_channelz_v1/channelz.pb.go
+
+       Copyright 2018 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       channelz/service/func_linux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       channelz/service/func_nonlinux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       channelz/service/service.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       clientconn.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       codec.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       codes/codes.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       codes/code_string.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       connectivity/connectivity.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/alts.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/authinfo/authinfo.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/common.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/conn/aeadrekey.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/conn/aes128gcm.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/conn/aes128gcmrekey.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/conn/common.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/conn/counter.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/conn/record.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/conn/utils.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/handshaker/handshaker.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/handshaker/service/service.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/proto/grpc_gcp/altscontext.pb.go
+
+       Copyright 2018 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/proto/grpc_gcp/handshaker_grpc.pb.go
+
+       Copyright 2018 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/proto/grpc_gcp/handshaker.pb.go
+
+       Copyright 2018 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/proto/grpc_gcp/transport_security_common.pb.go
+
+       Copyright 2018 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/internal/testutil/testutil.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/alts/utils.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/credentials.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/google/google.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/google/xds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/insecure/insecure.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/local/local.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/oauth/oauth.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/sts/sts.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/tls/certprovider/distributor.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/tls/certprovider/pemfile/builder.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/tls/certprovider/pemfile/watcher.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/tls/certprovider/provider.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/tls/certprovider/store.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/tls.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       credentials/xds/xds.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       dialoptions.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       doc.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       encoding/encoding.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       encoding/gzip/gzip.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       encoding/proto/proto.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       grpclog/component.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       grpclog/glogger/glogger.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       grpclog/grpclog.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       grpclog/logger.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       grpclog/loggerv2.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       health/client.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       health/grpc_health_v1/health_grpc.pb.go
+
+       Copyright 2015 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       health/grpc_health_v1/health.pb.go
+
+       Copyright 2015 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       health/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       health/server.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interceptor.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/admin/admin.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/backoff/backoff.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/balancer/gracefulswitch/gracefulswitch.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/balancergroup/balancergroup.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/balancergroup/balancerstateaggregator.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/balancerload/load.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/balancer/stub/stub.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/binarylog/binarylog.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/binarylog/binarylog_testutil.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/binarylog/env_config.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/binarylog/method_logger.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/binarylog/sink.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/buffer/unbounded.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/cache/timeoutCache.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/funcs.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/id.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/types.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/types_linux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/types_nonlinux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/util_linux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/channelz/util_nonlinux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/credentials/credentials.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/credentials/spiffe.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/credentials/syscallconn.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/credentials/util.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/credentials/xds/handshake_info.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/envconfig/envconfig.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/envconfig/observability.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/envconfig/xds.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/googlecloud/googlecloud.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/googlecloud/manufacturer.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/googlecloud/manufacturer_linux.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/googlecloud/manufacturer_windows.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpclog/grpclog.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpclog/prefixLogger.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcrand/grpcrand.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcsync/event.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcsync/oncefunc.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpctest/grpctest.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpctest/tlogger.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcutil/compressor.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcutil/encode_duration.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcutil/grpcutil.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcutil/metadata.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcutil/method.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/grpcutil/regex.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/hierarchy/hierarchy.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/internal.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/leakcheck/leakcheck.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/metadata/metadata.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/pretty/pretty.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/profiling/buffer/buffer.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/profiling/goid_modified.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/profiling/goid_regular.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/profiling/profiling.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/proto/grpc_lookup_v1/rls_config.pb.go
+
+       Copyright 2020 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/proto/grpc_lookup_v1/rls_grpc.pb.go
+
+       Copyright 2020 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/proto/grpc_lookup_v1/rls.pb.go
+
+       Copyright 2020 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/resolver/config_selector.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/resolver/dns/dns_resolver.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/resolver/passthrough/passthrough.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/resolver/unix/unix.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/serviceconfig/serviceconfig.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/status/status.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/stubserver/stubserver.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/syscall/syscall_linux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/syscall/syscall_nonlinux.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/balancer.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/channel.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/fakegrpclb/server.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/http_client.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/local_listener.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/marshal_any.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/parse_url.go
+
+       Copyright 2023 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/pickfirst/pickfirst.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/pipe_listener.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/restartable_listener.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/rls/fake_rls_server.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/roundrobin/roundrobin.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/status_equal.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/wrappers.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/wrr.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/xds/bootstrap/bootstrap.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/xds/e2e/bootstrap.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/xds/e2e/clientresources.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/xds/e2e/logging.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/xds/e2e/server.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/xds/e2e/setup_certs.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/testutils/xds/e2e/setup_management_server.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/bdp_estimator.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/controlbuf.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/defaults.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/flowcontrol.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/handler_server.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/http2_client.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/http2_server.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/http_util.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/networktype/networktype.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/proxy.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport/transport.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/wrr/edf.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/wrr/random.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/wrr/wrr.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/xds_handshake_cluster.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/xds/matcher/matcher_header.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/xds/matcher/string_matcher.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/xds/rbac/matchers.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/xds/rbac/rbac_engine.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/alts/client/client.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/alts/server/server.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/client/client.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 1 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/fake_grpclb/fake_grpclb.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpclb_fallback/client_linux.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/benchmark_service_grpc.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/benchmark_service.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/control.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/core/stats.pb.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/empty.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/messages.pb.go
+
+       Copyright 2015-2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/payloads.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/report_qps_scenario_service_grpc.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/report_qps_scenario_service.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/stats.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/worker_service_grpc.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/grpc_testing/worker_service.pb.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/http2/negative_http2_client.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/server/server.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/xds/client/client.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/xds/client/Dockerfile
+
+       Copyright 2021 gRPC
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/xds_federation/client.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/xds/server/Dockerfile
+
+       Copyright 2021 gRPC
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       interop/xds/server/server.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       keepalive/keepalive.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       metadata/metadata.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       NOTICE.txt
+
+       Copyright 2014 gRPC
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       orca/call_metric_recorder.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       orca/internal/internal.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       orca/orca.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       orca/producer.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       orca/service.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       peer/peer.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       picker_wrapper.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       pickfirst.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       preloader.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/cmd/catapult.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/cmd/flags.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/cmd/local.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/cmd/main.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/cmd/remote.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/profiling.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/proto/service_grpc.pb.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/proto/service.pb.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/proto/service.proto
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       profiling/service/service.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_reflection_v1alpha/reflection_grpc.pb.go
+
+       Copyright 2016 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_reflection_v1alpha/reflection.pb.go
+
+       Copyright 2016 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_reflection_v1/reflection_grpc.pb.go
+
+       Copyright 2016 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_reflection_v1/reflection.pb.go
+
+       Copyright 2016 The gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing_not_regenerate/dynamic.pb.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing_not_regenerate/dynamic.proto
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing_not_regenerate/testv3.pb.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing_not_regenerate/testv3.proto
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing/proto2_ext2.pb.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing/proto2_ext2.proto
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing/proto2_ext.pb.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing/proto2_ext.proto
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing/proto2.pb.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/grpc_testing/proto2.proto
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       reflection/serverreflection.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       regenerate.sh
+
+       Copyright 2020 gRPC
+
+       See SECTION 7 in 'LICENSE TEXT REFERENCE TABLE'
+
+       resolver_conn_wrapper.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       resolver/dns/dns_resolver.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       resolver/manual/manual.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       resolver/map.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       resolver/passthrough/passthrough.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       resolver/resolver.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       rpc_util.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       server.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       service_config.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       serviceconfig/serviceconfig.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stats/handlers.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stats/stats.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       status/status.go
+
+       Copyright 2017 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stream.go
+
+       Copyright 2014 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stress/client/main.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stress/grpc_testing/metrics_grpc.pb.go
+
+       Copyright 2015-2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stress/grpc_testing/metrics.pb.go
+
+       Copyright 2015-2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stress/grpc_testing/metrics.proto
+
+       Copyright 2015-2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stress/metrics_client/main.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       tap/tap.go
+
+       Copyright 2016 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       trace.go
+
+       Copyright 2015 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       version.go
+
+       Copyright 2018 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/bootstrap/bootstrap.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/csds/csds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/googledirectpath/googlec2p.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/googledirectpath/utils.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/balancer.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/cdsbalancer/cdsbalancer.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/cdsbalancer/cluster_handler.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/cdsbalancer/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterimpl/clusterimpl.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterimpl/config.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterimpl/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterimpl/picker.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clustermanager/balancerstateaggregator.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clustermanager/clustermanager.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clustermanager/config.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clustermanager/picker.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterresolver/clusterresolver.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterresolver/configbuilder_childname.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterresolver/configbuilder.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterresolver/config.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterresolver/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterresolver/resource_resolver_dns.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/clusterresolver/resource_resolver.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/loadstore/load_store_wrapper.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/outlierdetection/balancer.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/outlierdetection/callcounter.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/outlierdetection/config.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/outlierdetection/logging.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/outlierdetection/subconn_wrapper.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/priority/balancer_child.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/priority/balancer.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/priority/balancer_priority.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/priority/config.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/priority/ignore_resolve_now.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/priority/logging.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/priority/utils.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/ringhash/config.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/ringhash/logging.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/ringhash/picker.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/ringhash/ring.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/ringhash/ringhash.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/balancer/ringhash/util.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/clusterspecifier/cluster_specifier.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/clusterspecifier/rls/rls.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/httpfilter/fault/fault.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/httpfilter/httpfilter.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/httpfilter/rbac/rbac.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/httpfilter/router/router.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/internal.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/resolver/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/resolver/serviceconfig.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/resolver/watch_service.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/resolver/xds_resolver.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/server/conn_wrapper.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/server/listener_wrapper.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/server/rds_handler.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/testutils/fakeclient/client.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/testutils/fakeserver/server.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/testutils/protos.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/testutils/testutils.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/attributes.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/authority.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/bootstrap/bootstrap.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/bootstrap/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/bootstrap/template.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/callback_serializer.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/client.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/clientimpl_authority.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/clientimpl_dump.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/clientimpl.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/clientimpl_loadreport.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/clientimpl_watchers.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/client_new.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/load/reporter.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/load/store.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/logging.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/requests_counter.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/singleton.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/transport/loadreport.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/transport/transport.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/cluster_resource_type.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/endpoints_resource_type.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/errors.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/filter_chain.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/listener_resource_type.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/matcher.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/matcher_path.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/name.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/resource_type.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/route_config_resource_type.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/type_cds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/type_eds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/type.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/type_lds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/type_rds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/unmarshal_cds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/unmarshal_eds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/unmarshal.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/unmarshal_lds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/unmarshal_rds.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/xdsresource/version/version.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/server.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/server_options.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/xds.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
 
 -------------------- SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES --------------------
@@ -8989,543 +8191,6 @@ APPENDIX. Standard License Files
        MIT.LICENSE
 
 
-   >>> google/uuid-v1.2.0
-
-
-
-   >>> golang.org/x/oauth2-v0.0.0-20210819190943-2bc19b11175f
-
-       Copyright (c) 2009 The Go Authors. All rights reserved.
-
-       Redistribution and use in source and binary forms, with or without
-       modification, are permitted provided that the following conditions are
-       met:
-
-          * Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-          * Redistributions in binary form must reproduce the above
-       copyright notice, this list of conditions and the following disclaimer
-       in the documentation and/or other materials provided with the
-       distribution.
-          * Neither the name of Google Inc. nor the names of its
-       contributors may be used to endorse or promote products derived from
-       this software without specific prior written permission.
-
-       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-       A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-       OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-       ADDITIONAL LICENSE INFORMATION
-
-       > BSD-3
-
-       amazon/amazon.go
-
-       Copyright 2017 The oauth2 Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       authhandler/authhandler.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       authhandler/authhandler_test.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       bitbucket/bitbucket.go
-
-       Copyright 2015 The oauth2 Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       cern/cern.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       clientcredentials/clientcredentials.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       clientcredentials/clientcredentials_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       endpoints/endpoints.go
-
-       Copyright 2019 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       endpoints/endpoints_test.go
-
-       Copyright 2019 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       example_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       facebook/facebook.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       fitbit/fitbit.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       foursquare/foursquare.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       github/github.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       gitlab/gitlab.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/appengine_gen1.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/appengine_gen2_flex.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/appengine.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/default.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/doc.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/downscope/downscoping.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/downscope/tokenbroker_test.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/example_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/google.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/google_test.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/aws.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/aws_test.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/basecredentials.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/basecredentials_test.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/clientauth.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/clientauth_test.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/err.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/err_test.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/filecredsource.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/filecredsource_test.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/impersonate.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/impersonate_test.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/sts_exchange.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/sts_exchange_test.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/urlcredsource.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/urlcredsource_test.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/jwt.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/jwt_test.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/sdk.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/sdk_test.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       heroku/heroku.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       hipchat/hipchat.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       instagram/instagram.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/client_appengine.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/doc.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/oauth2.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/token.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/token_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jira/jira.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jira/jira_test.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jws/jws.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jws/jws_test.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jwt/example_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jwt/jwt.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jwt/jwt_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       kakao/kakao.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       LICENSE
-
-       Copyright (c) 2009 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       linkedin/linkedin.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       mailchimp/mailchimp.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       mailru/mailru.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       mediamath/mediamath.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       microsoft/microsoft.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       nokiahealth/nokiahealth.go
-
-       Copyright 2018 The oauth2 Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       oauth2_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       odnoklassniki/odnoklassniki.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       paypal/paypal.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       slack/slack.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       spotify/spotify.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stackoverflow/stackoverflow.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       token.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       token_test.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       transport.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       twitch/twitch.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       uber/uber.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       vk/vk.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       yahoo/yahoo.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       yandex/yandex.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-
    >>> github.com/onsi/ginkgo-v1.16.5
 
        Copyright (c) 2013-2014 Onsi Fakhouri
@@ -9576,6 +8241,432 @@ APPENDIX. Standard License Files
        OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
        WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+
+   >>> google/uuid-v1.3.0
+
+       > BSD-3
+
+       uuid-1.3.0/LICENSE
+
+       Copyright (c) 2009,2014 Google Inc. All rights reserved.
+
+       Redistribution and use in source and binary forms, with or without
+       modification, are permitted provided that the following conditions are
+       met:
+
+          * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+          * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following disclaimer
+       in the documentation and/or other materials provided with the
+       distribution.
+          * Neither the name of Google Inc. nor the names of its
+       contributors may be used to endorse or promote products derived from
+       this software without specific prior written permission.
+
+
+
+
+   >>> golang.org/x/oauth2-v0.4.0
+
+       Copyright (c) 2009 The Go Authors. All rights reserved.
+
+       Redistribution and use in source and binary forms, with or without
+       modification, are permitted provided that the following conditions are
+       met:
+
+          * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+          * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following disclaimer
+       in the documentation and/or other materials provided with the
+       distribution.
+          * Neither the name of Google Inc. nor the names of its
+       contributors may be used to endorse or promote products derived from
+       this software without specific prior written permission.
+
+       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+       A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+       OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > BSD-3
+
+       amazon/amazon.go
+
+       Copyright 2017 The oauth2 Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       authhandler/authhandler.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       bitbucket/bitbucket.go
+
+       Copyright 2015 The oauth2 Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       cern/cern.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       clientcredentials/clientcredentials.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       endpoints/endpoints.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       facebook/facebook.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       fitbit/fitbit.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       foursquare/foursquare.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       github/github.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       gitlab/gitlab.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/appengine_gen1.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/appengine_gen2_flex.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/appengine.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/default.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/doc.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/downscope/downscoping.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/error.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/google.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/aws.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/basecredentials.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/clientauth.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/err.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/executablecredsource.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/filecredsource.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/impersonate.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/sts_exchange.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/internal/externalaccount/urlcredsource.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/jwt.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       google/sdk.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       heroku/heroku.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       hipchat/hipchat.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       instagram/instagram.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/client_appengine.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/doc.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/oauth2.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/token.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       internal/transport.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jira/jira.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jws/jws.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       jwt/jwt.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       kakao/kakao.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       LICENSE
+
+       Copyright (c) 2009 The Go Authors
+
+       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
+
+       linkedin/linkedin.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       mailchimp/mailchimp.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       mailru/mailru.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       mediamath/mediamath.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       microsoft/microsoft.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       nokiahealth/nokiahealth.go
+
+       Copyright 2018 The oauth2 Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       odnoklassniki/odnoklassniki.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       paypal/paypal.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       slack/slack.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       spotify/spotify.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       stackoverflow/stackoverflow.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       token.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       transport.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       twitch/twitch.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       uber/uber.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       vk/vk.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       yahoo/yahoo.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       yandex/yandex.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
 
 
    >>> golang.org/x/sys-v0.5.0
@@ -9894,9 +8985,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -------------------- SECTION 3 --------------------
-Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
--------------------- SECTION 4 --------------------
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -9922,10 +9010,10 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--------------------- SECTION 5 --------------------
+-------------------- SECTION 4 --------------------
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
--------------------- SECTION 6 --------------------
+-------------------- SECTION 5 --------------------
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -9937,7 +9025,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
--------------------- SECTION 7 --------------------
+-------------------- SECTION 6 --------------------
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -9949,7 +9037,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
--------------------- SECTION 8 --------------------
+-------------------- SECTION 7 --------------------
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -9961,19 +9049,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
--------------------- SECTION 9 --------------------
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
--------------------- SECTION 10 --------------------
+-------------------- SECTION 8 --------------------
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -9985,7 +9061,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
--------------------- SECTION 11 --------------------
+-------------------- SECTION 9 --------------------
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9996,20 +9072,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
--------------------- SECTION 12 --------------------
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
--------------------- SECTION 13 --------------------
+-------------------- SECTION 10 --------------------
 **AGPL**, **MIT**, **2-Clause BSD** or **3-Clause BSD**.
--------------------- SECTION 14 --------------------
+-------------------- SECTION 11 --------------------
 // Parts inspired by https://github.com/ryanuber/go-license
-[CLOUDDIRECTORNAMEDDISKCSIDRIVER14GAAT070523]
+
+
+
+======================================================================
+
+To the extent any open source components are licensed under the GPL
+and/or LGPL, or other similar licenses that require the source code
+and/or modifications to source code to be made available (as would be
+noted above), you may obtain a copy of the source code corresponding to
+the binaries for such open source components and modifications thereto,
+if any, (the "Source Files"), by downloading the Source Files from
+VMware's website at http://www.vmware.com/download/open_source.html, or
+by sending a request, with your name and address to: VMware, Inc., 3401
+Hillview Avenue, Palo Alto, CA 94304, United States of America. All such
+requests should clearly specify: OPEN SOURCE FILES REQUEST, Attention
+General Counsel. VMware shall mail a copy of the Source Files to you on
+a CD or equivalent physical medium. This offer to obtain a copy of the
+Source Files is valid for three years from the date you acquired this
+Software product. Alternatively, the Source Files may accompany the
+VMware product.
+
+[CLOUDDIRECTORNAMEDDISKCSIDRIVER14GAHM071023]
