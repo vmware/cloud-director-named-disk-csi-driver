@@ -88,7 +88,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 			},
 			ContainerParams: testingsdk.ContainerParams{
 				ContainerName:  "nginx",
-				ContainerImage: "nginx:1.14.2",
+				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
 			VolumeParams: testingsdk.VolumeParams{

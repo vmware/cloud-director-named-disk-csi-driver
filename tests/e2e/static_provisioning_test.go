@@ -89,7 +89,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 			},
 			ContainerParams: testingsdk.ContainerParams{
 				ContainerName:  "nginx",
-				ContainerImage: "nginx:1.14.2",
+				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
 			VolumeParams: testingsdk.VolumeParams{
@@ -108,16 +108,17 @@ var _ = Describe("CSI static provisioning Test", func() {
 
 	//scenario 1: use 'Delete' retention policy. step3: PV should not be presented in kubernetes and VCD after PVC deleted
 	It("PV should be presented in kubernetes and VCD after PVC AND Deployment is deleted", func() {
-		By("should delete the PVC successfully")
-		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
-		Expect(err).NotTo(HaveOccurred())
-
+		// We should delete the Deployment first as it has a dependency on the PVC.
 		By("should delete the deployment successfully")
 		err = tc.DeleteDeployment(ctx, testStaticNameSpace, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
 
-		By("PV should deleted in VCD")
-		err = utils.DeleteDisk(tc.VcdClient, testDiskName)
+		By("should delete the PVC successfully")
+		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("should wait until Disk deleted within the time constraint")
+		err = utils.WaitDiskDeleteViaVCD(tc.VcdClient, testDiskName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be not presented in Kubernetes")
@@ -127,6 +128,11 @@ var _ = Describe("CSI static provisioning Test", func() {
 		pv, err = utils.GetPV(ctx, tc.Cs.(*kubernetes.Clientset), testDiskName)
 		Expect(err).To(HaveOccurred())
 		Expect(pv).To(BeNil())
+
+		By("PV should not be shown in RDE")
+		pvFound, err := utils.GetPVByNameViaRDE(testDiskName, tc, "named-disk")
+		Expect(err).To(MatchError(testingsdk.ResourceNotFound))
+		Expect(pvFound).To(BeFalse())
 	})
 
 	//scenario 2: use 'Retain' retention policy. step1: create VCD named-disk and PV.
@@ -170,7 +176,7 @@ var _ = Describe("CSI static provisioning Test", func() {
 			},
 			ContainerParams: testingsdk.ContainerParams{
 				ContainerName:  "nginx",
-				ContainerImage: "nginx:1.14.2",
+				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
 			VolumeParams: testingsdk.VolumeParams{
@@ -189,12 +195,13 @@ var _ = Describe("CSI static provisioning Test", func() {
 
 	//scenario 2: use 'Retain' retention policy. step3: PV should be presented in kubernetes and VCD after PVC deleted
 	It("PV is present in kubernetes and VCD after PVC AND Deployment is deleted", func() {
-		By("should delete the PVC successfully")
-		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
-		Expect(err).NotTo(HaveOccurred())
-
+		// We should delete the Deployment first as it has a dependency on the PVC.
 		By("should delete the deployment successfully")
 		err = tc.DeleteDeployment(ctx, testStaticNameSpace, testDeploymentName)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("should delete the PVC successfully")
+		err = utils.DeletePVC(ctx, tc.Cs.(*kubernetes.Clientset), testStaticNameSpace, testStaticPVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("PV should be presented in Kubernetes")
