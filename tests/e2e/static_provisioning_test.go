@@ -88,7 +88,9 @@ var _ = Describe("CSI static provisioning Test", func() {
 				"app": "nginx",
 			},
 			ContainerParams: testingsdk.ContainerParams{
-				ContainerName:  "nginx",
+				ContainerName: "nginx",
+				// When running the tests locally, projects-stg may be unavailable outside of VMware.
+				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
 				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
@@ -175,7 +177,9 @@ var _ = Describe("CSI static provisioning Test", func() {
 				"app": "nginx",
 			},
 			ContainerParams: testingsdk.ContainerParams{
-				ContainerName:  "nginx",
+				ContainerName: "nginx",
+				// When running the tests locally, projects-stg may be unavailable outside of VMware.
+				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
 				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
