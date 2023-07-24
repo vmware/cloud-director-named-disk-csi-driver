@@ -22,7 +22,7 @@ import (
 
 const (
 	defaultLongRetryInterval = 20 * time.Second
-	defaultLongRetryTimeout  = 300 * time.Second
+	defaultLongRetryTimeout  = 600 * time.Second
 )
 
 // ExecCmdExample ExecCmd exec command on specific pod and wait the command's output.

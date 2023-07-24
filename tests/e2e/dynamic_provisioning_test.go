@@ -105,8 +105,10 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 				"app": testDeploymentName,
 			},
 			ContainerParams: testingsdk.ContainerParams{
-				ContainerName:  "nginx",
-				ContainerImage: "nginx:1.14.2",
+				ContainerName: "nginx",
+				// When running the tests locally, projects-stg may be unavailable outside of VMware.
+				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
+				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
 			VolumeParams: testingsdk.VolumeParams{
@@ -230,14 +232,17 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 
 	//scenario 2: use 'Delete' retention policy. step2: install a deployment using the above PVC.
 	It("Should create Deployment using delete reclaim policy", func() {
+		By("Creating a deployment with delete policy in storage class")
 		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
 			Name: testDeploymentName,
 			Labels: map[string]string{
 				"app": testDeploymentName,
 			},
 			ContainerParams: testingsdk.ContainerParams{
-				ContainerName:  "nginx",
-				ContainerImage: "nginx:1.14.2",
+				ContainerName: "nginx",
+				// When running the tests locally, projects-stg may be unavailable outside of VMware.
+				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
+				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
 			VolumeParams: testingsdk.VolumeParams{
@@ -248,12 +253,14 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		}, testNameSpaceName)
 		Expect(deployment).NotTo(BeNil())
 		Expect(err).NotTo(HaveOccurred())
+
+		By("PVC status should be 'bound'")
 		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
-		By("PVC status should be 'bound'")
+
+		By("Deployment should be ready")
 		err = tc.WaitForDeploymentReady(ctx, testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
-		By("Deployment should be ready")
 	})
 
 	//scenario 2: use 'Delete' retention policy. step3: verify the PV is not presented after PVC deleted.
