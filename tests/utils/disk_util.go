@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	csiClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
@@ -15,13 +16,13 @@ import (
 	"strings"
 )
 
-type CSItc struct {
-	tc *testingsdk.TestClient
-}
-
 const (
 	CSIVersion          = "1.3.0"
 	MaxVCDUpdateRetries = 10
+)
+
+var (
+	VcdResourceSetNotFound = errors.New("vcdResourceSet field not found in status->[csi] of RDE")
 )
 
 func DeleteDisk(vcdClient *vcdsdk.Client, diskName string) error {
@@ -136,7 +137,10 @@ func CreateDisk(vcdClient *vcdsdk.Client, diskName string, diskSizeMB int64, sto
 func GetPVByNameViaRDE(pvName string, tc *testingsdk.TestClient, resourceType string) (bool, error) {
 	resourceSet, err := testingsdk.GetVCDResourceSet(context.TODO(), tc.VcdClient, tc.ClusterId, vcdsdk.ComponentCSI)
 	if err != nil {
-		return false, fmt.Errorf("error occurred while getting resource set in cluster [%s]", tc.ClusterId)
+		if strings.Contains(err.Error(), VcdResourceSetNotFound.Error()) {
+			return false, testingsdk.ResourceNotFound
+		}
+		return false, fmt.Errorf("error occurred while getting resource set in cluster [%s]: [%v]", tc.ClusterId, err)
 	}
 	updatedVcdResourceSet := make([]vcdsdk.VCDResource, 0)
 	for _, resource := range resourceSet {
