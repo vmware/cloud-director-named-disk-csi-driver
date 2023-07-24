@@ -87,8 +87,10 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 				"app": testDeploymentName,
 			},
 			ContainerParams: testingsdk.ContainerParams{
-				ContainerName:  "nginx",
-				ContainerImage: "nginx:1.14.2",
+				ContainerName: "nginx",
+				// When running the tests locally, projects-stg may be unavailable outside of VMware.
+				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
+				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
 				ContainerPort:  80,
 			},
 			VolumeParams: testingsdk.VolumeParams{
