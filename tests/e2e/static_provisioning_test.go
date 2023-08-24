@@ -9,6 +9,7 @@ import (
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
+	"os"
 )
 
 const (
@@ -82,26 +83,16 @@ var _ = Describe("CSI static provisioning Test", func() {
 	//scenario 1: use 'Delete' retention policy. step2: install a deployment using the above PVC.
 	It("should create a deployment using a PVC connected to the above PV", func() {
 		By("should create the deployment successfully")
-		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
-			Name: testDeploymentName,
-			Labels: map[string]string{
-				"app": "nginx",
-			},
-			ContainerParams: testingsdk.ContainerParams{
-				ContainerName: "nginx",
-				// When running the tests locally, projects-stg may be unavailable outside of VMware.
-				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
-				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
-				ContainerPort:  80,
-			},
-			VolumeParams: testingsdk.VolumeParams{
-				VolumeName: testDiskName,
-				PvcRef:     testStaticPVCName,
-				MountPath:  "/init-container-msg-mount-path",
-			},
-		}, testStaticNameSpace)
-		Expect(deployment).NotTo(BeNil())
-		Expect(err).NotTo(HaveOccurred())
+		useAirgap := os.Getenv("AIRGAP")
+		if useAirgap != "" {
+			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.AirgappedImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(deployment).NotTo(BeNil())
+		} else {
+			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.StagingImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(deployment).NotTo(BeNil())
+		}
 
 		By("Deployment should be ready")
 		err = tc.WaitForDeploymentReady(ctx, testStaticNameSpace, testDeploymentName)
@@ -171,26 +162,16 @@ var _ = Describe("CSI static provisioning Test", func() {
 	//scenario 2: use 'Retain' retention policy. step2: install a deployment using the above PVC.
 	It("should create a deployment using a PVC connected to the above PV", func() {
 		By("deployment should be created successfully")
-		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
-			Name: testDeploymentName,
-			Labels: map[string]string{
-				"app": "nginx",
-			},
-			ContainerParams: testingsdk.ContainerParams{
-				ContainerName: "nginx",
-				// When running the tests locally, projects-stg may be unavailable outside of VMware.
-				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
-				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
-				ContainerPort:  80,
-			},
-			VolumeParams: testingsdk.VolumeParams{
-				VolumeName: testDiskName,
-				PvcRef:     testStaticPVCName,
-				MountPath:  "/init-container-msg-mount-path",
-			},
-		}, testStaticNameSpace)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(deployment).NotTo(BeNil())
+		useAirgap := os.Getenv("AIRGAP")
+		if useAirgap != "" {
+			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.AirgappedImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(deployment).NotTo(BeNil())
+		} else {
+			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.StagingImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(deployment).NotTo(BeNil())
+		}
 
 		By("pods of the deployment should come up.")
 		err = tc.WaitForDeploymentReady(ctx, testStaticNameSpace, testDeploymentName)
