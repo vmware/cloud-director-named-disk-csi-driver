@@ -226,11 +226,11 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		By("Creating a deployment with delete policy in storage class")
 		useAirgap := os.Getenv("AIRGAP")
 		if useAirgap != "" {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, utils.AirgappedImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
+			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, volumeName, utils.AirgappedImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(deployment).NotTo(BeNil())
 		} else {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, utils.StagingImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
+			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, volumeName, utils.StagingImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(deployment).NotTo(BeNil())
 		}
