@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
+	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	stov1 "k8s.io/api/storage/v1"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
@@ -23,6 +24,12 @@ import (
 const (
 	defaultLongRetryInterval = 20 * time.Second
 	defaultLongRetryTimeout  = 600 * time.Second
+
+	AirgappedImage            = "core.harbor.10.89.98.101.nip.io/airgapped/nginx:1.14.2"
+	StagingImage              = "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2"
+	NginxDeploymentVolumeName = "nginx-deployment-volume"
+	InitContainerMountPath    = "/init-container-msg-mount-path"
+	DataMountPath             = "/data"
 )
 
 // ExecCmdExample ExecCmd exec command on specific pod and wait the command's output.
@@ -379,4 +386,25 @@ func DeleteStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, sc
 		return fmt.Errorf("storageClass [%s] still exists", scName)
 	}
 	return nil
+}
+
+func CreateDeployment(ctx context.Context, tc *testingsdk.TestClient, deploymentName, volumeName, containerImage, pvcRefName, mountPath, ns string) (*appsv1.Deployment, error) {
+	return tc.CreateDeployment(ctx, &testingsdk.DeployParams{
+		Name: deploymentName,
+		Labels: map[string]string{
+			"app": deploymentName,
+		},
+		ContainerParams: testingsdk.ContainerParams{
+			ContainerName: "nginx",
+			// When running the tests locally, projects-stg may be unavailable outside of VMware.
+			// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
+			ContainerImage: containerImage,
+			ContainerPort:  80,
+		},
+		VolumeParams: testingsdk.VolumeParams{
+			VolumeName: volumeName,
+			PvcRef:     pvcRefName,
+			MountPath:  mountPath,
+		},
+	}, ns)
 }
