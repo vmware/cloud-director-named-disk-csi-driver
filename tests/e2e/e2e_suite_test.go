@@ -46,7 +46,8 @@ var _ = BeforeSuite(func() {
 	Expect(refreshToken).NotTo(BeZero(), "Please make sure --refreshToken WaitFor set correctly.")
 	Expect(rdeId).NotTo(BeZero(), "Please make sure --rdeId WaitFor set correctly.")
 
-	if os.Getenv("AIRGAP") != "" {
+	useAirgap := os.Getenv("AIRGAP")
+	if useAirgap != "" {
 		ContainerImage = airgappedImage
 	} else {
 		ContainerImage = stagingImage
