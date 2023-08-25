@@ -11,7 +11,6 @@ import (
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
-	"os"
 )
 
 const (
@@ -100,16 +99,9 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	//scenario 1: use 'Retain' retention policy. step2: install a deployment using the above PVC.
 	It("should install a deployment using the above PVC", func() {
 		By("should create a deployment successfully")
-		useAirgap := os.Getenv("AIRGAP")
-		if useAirgap != "" {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, utils.AirgappedImage, testRetainPVCName, utils.InitContainerMountPath, testNameSpaceName)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		} else {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, utils.StagingImage, testRetainPVCName, utils.InitContainerMountPath, testNameSpaceName)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		}
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, ContainerImage, testRetainPVCName, utils.InitContainerMountPath, testNameSpaceName)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deployment).NotTo(BeNil())
 
 		By("PVC status should be 'bound'")
 		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName)
@@ -224,16 +216,9 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	//scenario 2: use 'Delete' retention policy. step2: install a deployment using the above PVC.
 	It("Should create Deployment using delete reclaim policy", func() {
 		By("Creating a deployment with delete policy in storage class")
-		useAirgap := os.Getenv("AIRGAP")
-		if useAirgap != "" {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, volumeName, utils.AirgappedImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		} else {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, volumeName, utils.StagingImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		}
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, volumeName, ContainerImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deployment).NotTo(BeNil())
 
 		By("PVC status should be 'bound'")
 		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)

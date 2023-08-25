@@ -10,7 +10,6 @@ import (
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"os"
 )
 
 const xfsFsType = "xfs"
@@ -82,16 +81,9 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	// step 3: install a deployment using the above PVC. Check the filesystem type the disk mounted
 	It("should install a deployment using the above PVC", func() {
 		By("should create a deployment successfully")
-		useAirgap := os.Getenv("AIRGAP")
-		if useAirgap != "" {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, utils.AirgappedImage, testDeletePVCName, utils.DataMountPath, testNameSpaceName)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		} else {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, utils.StagingImage, testDeletePVCName, utils.DataMountPath, testNameSpaceName)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		}
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, ContainerImage, testDeletePVCName, utils.DataMountPath, testNameSpaceName)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deployment).NotTo(BeNil())
 
 		By("PVC status should be 'bound'")
 		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)

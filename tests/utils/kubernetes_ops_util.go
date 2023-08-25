@@ -25,8 +25,6 @@ const (
 	defaultLongRetryInterval = 20 * time.Second
 	defaultLongRetryTimeout  = 600 * time.Second
 
-	AirgappedImage            = "core.harbor.10.89.98.101.nip.io/airgapped/nginx:1.14.2"
-	StagingImage              = "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2"
 	NginxDeploymentVolumeName = "nginx-deployment-volume"
 	InitContainerMountPath    = "/init-container-msg-mount-path"
 	DataMountPath             = "/data"

@@ -9,7 +9,6 @@ import (
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
-	"os"
 )
 
 const (
@@ -83,16 +82,9 @@ var _ = Describe("CSI static provisioning Test", func() {
 	//scenario 1: use 'Delete' retention policy. step2: install a deployment using the above PVC.
 	It("should create a deployment using a PVC connected to the above PV", func() {
 		By("should create the deployment successfully")
-		useAirgap := os.Getenv("AIRGAP")
-		if useAirgap != "" {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.AirgappedImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		} else {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.StagingImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		}
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, ContainerImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deployment).NotTo(BeNil())
 
 		By("Deployment should be ready")
 		err = tc.WaitForDeploymentReady(ctx, testStaticNameSpace, testDeploymentName)
@@ -162,16 +154,9 @@ var _ = Describe("CSI static provisioning Test", func() {
 	//scenario 2: use 'Retain' retention policy. step2: install a deployment using the above PVC.
 	It("should create a deployment using a PVC connected to the above PV", func() {
 		By("deployment should be created successfully")
-		useAirgap := os.Getenv("AIRGAP")
-		if useAirgap != "" {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.AirgappedImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		} else {
-			deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, utils.StagingImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deployment).NotTo(BeNil())
-		}
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, testDiskName, ContainerImage, testStaticPVCName, utils.InitContainerMountPath, testStaticNameSpace)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(deployment).NotTo(BeNil())
 
 		By("pods of the deployment should come up.")
 		err = tc.WaitForDeploymentReady(ctx, testStaticNameSpace, testDeploymentName)
