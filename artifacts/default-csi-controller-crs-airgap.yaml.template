@@ -139,7 +139,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: __REGISTRY__/cloud-director-named-disk-csi-driver:__VERSION__.__GIT_COMMIT__
+          image: __REGISTRY__/cloud-director-named-disk-csi-driver:__VERSION__
           imagePullPolicy: IfNotPresent
           command:
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver

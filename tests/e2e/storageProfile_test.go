@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
@@ -31,12 +32,18 @@ var _ = Describe("CSI Storage Profile Test", func() {
 		OrgName:      org,
 		Username:     userName,
 		RefreshToken: refreshToken,
-		UserOrg:      "system",
+		UserOrg:      userOrg,
 		GetVdcClient: true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
 	Expect(tc).NotTo(BeNil())
 	Expect(&tc.Cs).NotTo(BeNil())
+
+	BeforeEach(func() {
+		if !tc.VcdClient.VCDAuthConfig.IsSysAdmin {
+			Skip(fmt.Sprintf("Skipping StorageProfile tests as StorageProfile tests are expected to be ran by sysadmin and [%s:%s] is not a sysadmin user", userName, userOrg))
+		}
+	})
 
 	It("should find the storage profile", func() {
 		By("ensuring that admin org exists")

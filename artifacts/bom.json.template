@@ -1,6 +1,6 @@
 {
 	"name":"csi-crs-airgapped",
-	"version":"__VERSION__.__GIT_COMMIT__",
+	"version":"__VERSION__",
 	"components": {
 		"manifests":[
 			{
@@ -18,7 +18,7 @@
 		"dependencies": [
 			{
 				"name":"cloud-director-named-disk-csi-driver",
-				"version":"__VERSION__.__GIT_COMMIT__",
+				"version":"__VERSION__",
 				"imageRepository":"__REGISTRY__"
 			},{
 				"name":"sig-storage/csi-node-driver-registrar",
