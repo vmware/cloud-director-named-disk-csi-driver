@@ -81,26 +81,10 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	// step 3: install a deployment using the above PVC. Check the filesystem type the disk mounted
 	It("should install a deployment using the above PVC", func() {
 		By("should create a deployment successfully")
-		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
-			Name: testDeploymentName,
-			Labels: map[string]string{
-				"app": testDeploymentName,
-			},
-			ContainerParams: testingsdk.ContainerParams{
-				ContainerName: "nginx",
-				// When running the tests locally, projects-stg may be unavailable outside of VMware.
-				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
-				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
-				ContainerPort:  80,
-			},
-			VolumeParams: testingsdk.VolumeParams{
-				VolumeName: "nginx-deployment-volume",
-				PvcRef:     testDeletePVCName,
-				MountPath:  "/data",
-			},
-		}, testNameSpaceName)
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, ContainerImage, testDeletePVCName, utils.DataMountPath, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deployment).NotTo(BeNil())
+
 		By("PVC status should be 'bound'")
 		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
