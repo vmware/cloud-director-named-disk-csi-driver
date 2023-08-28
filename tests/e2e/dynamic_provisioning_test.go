@@ -99,24 +99,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	//scenario 1: use 'Retain' retention policy. step2: install a deployment using the above PVC.
 	It("should install a deployment using the above PVC", func() {
 		By("should create a deployment successfully")
-		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
-			Name: testDeploymentName,
-			Labels: map[string]string{
-				"app": testDeploymentName,
-			},
-			ContainerParams: testingsdk.ContainerParams{
-				ContainerName: "nginx",
-				// When running the tests locally, projects-stg may be unavailable outside of VMware.
-				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
-				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
-				ContainerPort:  80,
-			},
-			VolumeParams: testingsdk.VolumeParams{
-				VolumeName: "nginx-deployment-volume",
-				PvcRef:     testRetainPVCName,
-				MountPath:  "/init-container-msg-mount-path",
-			},
-		}, testNameSpaceName)
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, ContainerImage, testRetainPVCName, utils.InitContainerMountPath, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deployment).NotTo(BeNil())
 
@@ -233,33 +216,16 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	//scenario 2: use 'Delete' retention policy. step2: install a deployment using the above PVC.
 	It("Should create Deployment using delete reclaim policy", func() {
 		By("Creating a deployment with delete policy in storage class")
-		deployment, err := tc.CreateDeployment(ctx, &testingsdk.DeployParams{
-			Name: testDeploymentName,
-			Labels: map[string]string{
-				"app": testDeploymentName,
-			},
-			ContainerParams: testingsdk.ContainerParams{
-				ContainerName: "nginx",
-				// When running the tests locally, projects-stg may be unavailable outside of VMware.
-				// Please use nginx:1.14.2 as the ContainerImage if projects-stg is unavailable or giving ImagePullBackoffError.
-				ContainerImage: "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2",
-				ContainerPort:  80,
-			},
-			VolumeParams: testingsdk.VolumeParams{
-				VolumeName: volumeName,
-				PvcRef:     testDeletePVCName,
-				MountPath:  "/init-container-msg-mount-path",
-			},
-		}, testNameSpaceName)
-		Expect(deployment).NotTo(BeNil())
+		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, volumeName, ContainerImage, testDeletePVCName, utils.InitContainerMountPath, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
+		Expect(deployment).NotTo(BeNil())
 
 		By("PVC status should be 'bound'")
 		err = utils.WaitForPvcReady(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testDeletePVCName)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Deployment should be ready")
-		err = tc.WaitForDeploymentReady(ctx, testNameSpaceName, testDeletePVCName)
+		err = tc.WaitForDeploymentReady(ctx, testNameSpaceName, testDeploymentName)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
