@@ -12,7 +12,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230725213727-e8d9efd4acf0
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230828194304-402fc20a64a9
 	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
 	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.5.0
@@ -53,6 +53,7 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/peterhellberg/link v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/sethvargo/go-password v0.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
