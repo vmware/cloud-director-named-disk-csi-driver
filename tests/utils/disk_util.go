@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	csiClient "github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
@@ -13,19 +14,15 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"net/http"
 	"strings"
-	"time"
 )
 
-type CSItc struct {
-	tc *testingsdk.TestClient
-}
-
 const (
-	defaultRetryInterval = 10 * time.Second
-	defaultRetryTimeout  = 60 * time.Second
-	defaultWaitTimeout   = 120 * time.Second
-	CSIVersion           = "1.3.0"
-	MaxVCDUpdateRetries  = 10
+	CSIVersion          = "1.3.0"
+	MaxVCDUpdateRetries = 10
+)
+
+var (
+	VcdResourceSetNotFound = errors.New("vcdResourceSet field not found in status->[csi] of RDE")
 )
 
 func DeleteDisk(vcdClient *vcdsdk.Client, diskName string) error {
@@ -140,7 +137,10 @@ func CreateDisk(vcdClient *vcdsdk.Client, diskName string, diskSizeMB int64, sto
 func GetPVByNameViaRDE(pvName string, tc *testingsdk.TestClient, resourceType string) (bool, error) {
 	resourceSet, err := testingsdk.GetVCDResourceSet(context.TODO(), tc.VcdClient, tc.ClusterId, vcdsdk.ComponentCSI)
 	if err != nil {
-		return false, fmt.Errorf("error occurred while getting resource set in cluster [%s]", tc.ClusterId)
+		if strings.Contains(err.Error(), VcdResourceSetNotFound.Error()) {
+			return false, testingsdk.ResourceNotFound
+		}
+		return false, fmt.Errorf("error occurred while getting resource set in cluster [%s]: [%v]", tc.ClusterId, err)
 	}
 	updatedVcdResourceSet := make([]vcdsdk.VCDResource, 0)
 	for _, resource := range resourceSet {
@@ -160,7 +160,7 @@ func GetPVByNameViaRDE(pvName string, tc *testingsdk.TestClient, resourceType st
 
 func VerifyDiskViaVCD(vcdClient *vcdsdk.Client, diskName string) (*vcdtypes.Disk, error) {
 	var disk *vcdtypes.Disk
-	err := wait.PollImmediate(defaultRetryInterval, defaultRetryTimeout, func() (bool, error) {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		diskFound, err := GetDiskByNameViaVCD(vcdClient, diskName)
 		if err != nil {
 			if err == govcd.ErrorEntityNotFound {
@@ -178,7 +178,7 @@ func VerifyDiskViaVCD(vcdClient *vcdsdk.Client, diskName string) (*vcdtypes.Disk
 }
 
 func WaitDiskDeleteViaVCD(vcdClient *vcdsdk.Client, diskName string) error {
-	err := wait.PollImmediate(30*time.Second, 150*time.Second, func() (bool, error) {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
 		_, err := GetDiskByNameViaVCD(vcdClient, diskName)
 		if err != nil {
 			if err == govcd.ErrorEntityNotFound {

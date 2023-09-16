@@ -123,7 +123,8 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 	storageProfile, _ := req.Parameters[StorageProfileParameter]
 
 	disk, err := cs.DiskManager.CreateDisk(diskName, sizeMB, busType,
-		busSubType, "", storageProfile, shareable)
+		busSubType, cs.DiskManager.ClusterID, storageProfile, shareable)
+
 	if err != nil {
 		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskCreateError, "", diskName, map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
 			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskCreateError, cs.DiskManager.ClusterID, rdeErr)

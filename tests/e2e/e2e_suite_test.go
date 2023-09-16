@@ -4,6 +4,7 @@ import (
 	"flag"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"os"
 	"testing"
 )
 
@@ -13,13 +14,22 @@ var (
 	org          string
 	ovdc         string
 	userName     string
+	userOrg      string
 	refreshToken string
+
+	ContainerImage string
+)
+
+const (
+	airgappedImage = "core.harbor.10.89.98.101.nip.io/airgapped/nginx:1.14.2"
+	stagingImage   = "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2"
 )
 
 func init() {
 	//Inputs needed: VCD site, org, ovdc, username, refreshToken, clusterId
 	flag.StringVar(&host, "host", "", "VCD host site to generate client")
 	flag.StringVar(&org, "org", "", "Cluster Org to generate client")
+	flag.StringVar(&userOrg, "userOrg", "", "User Org to generate client")
 	flag.StringVar(&ovdc, "ovdc", "", "Ovdc Name to generate client")
 	flag.StringVar(&userName, "userName", "", "Username for login to generate client")
 	flag.StringVar(&refreshToken, "refreshToken", "", "Refresh token of user to generate client")
@@ -35,6 +45,13 @@ var _ = BeforeSuite(func() {
 	Expect(userName).NotTo(BeZero(), "Please make sure --userName WaitFor set correctly.")
 	Expect(refreshToken).NotTo(BeZero(), "Please make sure --refreshToken WaitFor set correctly.")
 	Expect(rdeId).NotTo(BeZero(), "Please make sure --rdeId WaitFor set correctly.")
+
+	useAirgap := os.Getenv("AIRGAP")
+	if useAirgap != "" {
+		ContainerImage = airgappedImage
+	} else {
+		ContainerImage = stagingImage
+	}
 })
 
 func TestCSIAutomation(t *testing.T) {

@@ -3,9 +3,10 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient"
+	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient_36_0"
 	"k8s.io/klog"
 )
 
@@ -195,4 +196,30 @@ func addToVCDResourceSet(component string, componentName string, componentVersio
 	componentMap[vcdsdk.ComponentStatusFieldVCDResourceSet] = componentStatus.VCDResourceSet
 
 	return statusMap, nil
+}
+
+func ConvertMapToCSIStatus(csiStatusMap map[string]interface{}) (*vcdtypes.CSIStatus, error) {
+	var csiStatus vcdtypes.CSIStatus
+	entityByteArr, err := json.Marshal(&csiStatusMap)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal entity map: [%v]", err)
+	}
+	err = json.Unmarshal(entityByteArr, &csiStatus)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal entity byte array to CSI entity: [%v]", err)
+	}
+	return &csiStatus, nil
+}
+
+func ConvertCSIStatusToMap(csiStatus *vcdtypes.CSIStatus) (map[string]interface{}, error) {
+	var csiStatusMap map[string]interface{}
+	entityByteArr, err := json.Marshal(&csiStatus)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal CSI entity to byte array: [%v]", err)
+	}
+	err = json.Unmarshal(entityByteArr, &csiStatusMap)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal CSI entity data to a map: [%v]", err)
+	}
+	return csiStatusMap, nil
 }

@@ -1,0 +1,38 @@
+{
+	"name":"csi-crs-airgapped",
+	"version":"__VERSION__",
+	"components": {
+		"manifests":[
+			{
+				"name": "csi-driver-airgap.yaml",
+				"url": ""
+			},{
+				"name": "csi-node-crs-airgap.yaml.template",
+				"url": ""
+			},{
+				"name": "csi-controller-crs-airgap.yaml.template",
+				"url": ""
+			}
+		],
+		"binaries": [],
+		"dependencies": [
+			{
+				"name":"cloud-director-named-disk-csi-driver",
+				"version":"__VERSION__",
+				"imageRepository":"__REGISTRY__"
+			},{
+				"name":"sig-storage/csi-node-driver-registrar",
+				"version":"v2.2.0",
+				"imageRepository":"registry.k8s.io"
+			},{
+				"name":"sig-storage/csi-attacher",
+				"version":"v3.2.1",
+				"imageRepository":"registry.k8s.io"
+			},{
+				"name":"sig-storage/csi-provisioner",
+				"version":"v2.2.2",
+				"imageRepository":"registry.k8s.io"
+			}
+		]
+	}
+}

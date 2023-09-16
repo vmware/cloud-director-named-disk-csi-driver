@@ -5,8 +5,11 @@ The version of the VMware Cloud Director API and Installation that are compatibl
 
 | CSI Version | CSE Version | VMware Cloud Director API | VMware Cloud Director Installation | Notes | Kubernetes Versions | docs |
 | :---------: | :---------: | :-----------------------: | :--------------------------------: | :----: | :----------------------- | :--: |
+| main | 4.1.z | 36.0+ | 10.3.3.4+ |<ul><li>Support for packaging CSI CRS in a container for CSE airgap workflow</li><li>Testing Framework added</li><li>Run CSI only on Control-plane Nodes</li><li>Change CSI controller from stateful-set to deployment</li><li>Support newer capvcdCluster RDE version</li><li>Fix issues in XFS mount (support XFS)</li><li>Set description of named disks as ClusterID</li><li>upgrade golang version to 1.19</li><li>optimize image size of CSI container image</li></ul>|<ul><li>1.25</li><li>1.24</li><li>1.23</li><li>1.22</li><li>1.21</li></ul>|[CSI `main` docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/main)|
+| 1.3.2 | 4.0.z | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Add XFS filesystem support (Fixes [#122](https://github.com/vmware/cloud-director-named-disk-csi-driver/issues/122)) </li><li>Updated CSI container registry references to use 'registry.k8s.io' ([k8s.gcr.io freeze announcement](https://kubernetes.io/blog/2023/02/06/k8s-gcr-io-freeze-announcement)) </li></ul>|<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.3.z docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.3.z)|
 | 1.3.1 | 4.0.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Fixed issue where CSI failed to mount persistent volume to node if SCSI Buses inside node are not rescanned </li></ul> |<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.3.z docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.3.z)|
 | 1.3.0 | 4.0.0 | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Support for fsGroup</li><li>Support for volume metrics</li><li>Added secret-based way to get cluster-id for CRS</li></ul> |<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.3.z docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.3.z)|
+| 1.2.1 | 3.1.x | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Add XFS filesystem support (Fixes [#122](https://github.com/vmware/cloud-director-named-disk-csi-driver/issues/122)) </li><li>Updated CSI container registry references to use 'registry.k8s.io' ([k8s.gcr.io freeze announcement](https://kubernetes.io/blog/2023/02/06/k8s-gcr-io-freeze-announcement)) </li></ul>|<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.2.x docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.2.x)|
 | 1.2.0 | 3.1.x | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Add support for Kubernetes 1.22</li><li>Small VCD url parsing fixes</li></ul> |<ul><li>1.22</li><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.2.x docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.2.x)|
 | 1.1.1 | 3.1.x | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Fixed refresh-token based authentication issue observed when VCD cells are fronted by a load balancer (Fixes #26).</ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.1.x docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.1.x)|
 | 1.1.0 | 3.1.x | 36.0+ | 10.3.1+ <br/>(10.3.1 needs hot-patch to prevent VCD cell crashes in multi-cell environments) |<ul><li>Remove legacy Kubernetes dependencies.</li><li>Support for CAPVCD RDEs.</li></ul> |<ul><li>1.21</li><li>1.20</li><li>1.19</li></ul>|[CSI 1.1.x docs](https://github.com/vmware/cloud-director-named-disk-csi-driver/tree/1.1.x)|
@@ -19,6 +22,16 @@ This extension is intended to be installed into a Kubernetes cluster installed w
 This driver is in a GA state and will be supported in production.
 
 Note: This driver is not impacted by the Apache Log4j open source component vulnerability.
+
+## CSI Feature matrix
+| Feature | Support Scope |
+| :---------: | :----------------------- |
+| Storage Type | Independent Shareable Named Disks of VCD |
+|Provisioning|<ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>|
+|Access Modes|<ul><li>ReadOnlyMany</li><li>ReadWriteOnce</li></ul>|
+|Volume|Block|
+|VolumeMode|<ul><li>FileSystem</li></ul>|
+|Topology|<ul><li>Static Provisioning: reuses VCD topology capabilities</li><li>Dynamic Provisioning: places disk in the OVDC of the `ClusterAdminUser` based on the StorageProfile specified.</li></ul>|
 
 ## Terminology
 1. VCD: VMware Cloud Director
@@ -50,20 +63,26 @@ The container logs can be obtained using the command `kubectl logs -n kube-syste
 
 To stop logging the HTTP requests and responses from VCD, the following command can be executed -
 ```shell
-kubectl set env -n kube-system StatefulSet/csi-vcd-controllerplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
+kubectl set env -n kube-system Deployment/csi-vcd-controllerplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
 kubectl set env -n kube-system DaemonSet/csi-vcd-nodeplugin -c vcd-csi-plugin GOVCD_LOG_ON_SCREEN-
 ```
 
-**NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller StatefulSet and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.**
-## CSI Feature matrix
-| Feature | Support Scope |
-| :---------: | :----------------------- |
-| Storage Type | Independent Shareable Named Disks of VCD |
-|Provisioning|<ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>|
-|Access Modes|<ul><li>ReadOnlyMany</li><li>ReadWriteOnce</li></ul>|
-|Volume|Block|
-|VolumeMode|<ul><li>FileSystem</li></ul>|
-|Topology|<ul><li>Static Provisioning: reuses VCD topology capabilities</li><li>Dynamic Provisioning: places disk in the OVDC of the `ClusterAdminUser` based on the StorageProfile specified.</li></ul>|
+**NOTE: Please make sure to collect the logs before and after enabling the wire log. The above commands update the CSI controller Deployment and CSI node-plugin DaemonSet, which creates a new CSI pods. The logs present in the old pods will be lost.**
+### Upgrade CSI
+
+To perform an upgrade of the Container Storage Interface (CSI) from versions v1.2.0, v1.2.1, v1.3.0, v1.3.1, and v1.3.2, it is recommended to follow the following steps:
+1. Remove the current StatefulSet:
+```shell
+kubectl delete statefulset -n kube-system csi-vcd-controllerplugin
+```
+2. Apply the CSI 1.4 Controller CRS:
+```shell
+kubectl apply -f https://github.com/vmware/cloud-director-named-disk-csi-driver/blob/1.4.z/manifests/csi-controller-crs.yaml
+```
+**NOTE:**
+
+1. These steps ensure a successful upgrade of CSI to the latest version (v1.4.0) and guarantee that the new CSI Deployment is properly installed within the Kubernetes environment.
+2. it is recommended not to manually delete any Persistent Volumes (PVs) or Persistent Volume Claims (PVCs) associated with a StatefulSet.
 
 ## Contributing
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on how to contribute.
