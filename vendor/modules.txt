@@ -136,6 +136,9 @@ github.com/peterhellberg/link
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
+# github.com/sethvargo/go-password v0.2.0
+## explicit; go 1.14
+github.com/sethvargo/go-password/password
 # github.com/sirupsen/logrus v1.8.1
 ## explicit; go 1.13
 github.com/sirupsen/logrus
@@ -151,7 +154,7 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230703212902-9bacb3b0c6eb
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230918183351-1c774142c67d
 ## explicit; go 1.19
 github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk
 github.com/vmware/cloud-provider-for-cloud-director/pkg/util
