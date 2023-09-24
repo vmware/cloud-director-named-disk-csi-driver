@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc/status"
 	"k8s.io/klog"
 	"math"
+	"strings"
 )
 
 const (
@@ -29,11 +30,15 @@ const (
 	BusTypeParameter        = "busType"
 	BusSubTypeParameter     = "busSubType"
 	StorageProfileParameter = "storageProfile"
+	VDCNameParameter        = "ovdcName"
+	VDCIDParameter          = "ovdcID"
 	FileSystemParameter     = "filesystem"
 	EphemeralVolumeContext  = "csi.storage.k8s.io/ephemeral"
 
 	DiskIDAttribute     = "diskID"
 	VMFullNameAttribute = "vmID"
+	OVDCNameAttribute   = "ovdcName"
+	OVDCIDAttribute     = "ovdcID"
 	DiskUUIDAttribute   = "diskUUID"
 	FileSystemAttribute = "filesystem"
 )
@@ -79,6 +84,86 @@ func (cs *controllerServer) isDiskShareable(volumeCapabilities []*csi.VolumeCapa
 	return false
 }
 
+// AMK multiAZ TODO: single-instance this into common-core
+func getOrgByName(client *vcdsdk.Client, orgName string) (*govcd.Org, error) {
+	org, err := client.VCDClient.GetOrgByName(orgName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get org by name [%s]: [%v]", orgName, err)
+	}
+	if org == nil || org.Org == nil {
+		return nil, fmt.Errorf("found nil org when getting org by name [%s]", orgName)
+	}
+	return org, nil
+}
+
+func getOvdcByID(client *vcdsdk.Client, orgName string, ovdcID string) (*govcd.Vdc, error) {
+	org, err := getOrgByName(client, orgName)
+	if err != nil {
+		return nil, fmt.Errorf("error occurred when getting ovdc by ID [%s]: [%v]", ovdcID, err)
+	}
+	ovdc, err := org.GetVDCById(ovdcID, true)
+	if err != nil {
+		if err == govcd.ErrorEntityNotFound {
+			return nil, err
+		}
+		return nil, fmt.Errorf("fail to get ovdc by ID [%s]: [%v]", ovdcID, err)
+	}
+	if ovdc == nil || ovdc.Vdc == nil {
+		return nil, fmt.Errorf("found nil ovdc when getting org by ID [%s]", ovdcID)
+	}
+	return ovdc, nil
+}
+
+func getOvdcByName(client *vcdsdk.Client, orgName string, ovdcName string) (*govcd.Vdc, error) {
+	org, err := getOrgByName(client, orgName)
+	if err != nil {
+		return nil, fmt.Errorf("error occurred when getting ovdc by Name [%s]: [%v]", ovdcName, err)
+	}
+	ovdc, err := org.GetVDCByName(ovdcName, true)
+	if err != nil {
+		if err == govcd.ErrorEntityNotFound {
+			return nil, err
+		}
+		return nil, fmt.Errorf("fail to get ovdc by Name [%s]: [%v]", ovdcName, err)
+	}
+	if ovdc == nil || ovdc.Vdc == nil {
+		return nil, fmt.Errorf("found nil ovdc when getting org by Name [%s]", ovdcName)
+	}
+	return ovdc, nil
+}
+
+func (cs *controllerServer) UpdateOVDC(_ context.Context, ovdcName string, ovdcID string) error {
+	var ovdc *govcd.Vdc = nil
+	var err error
+	switch {
+	case ovdcID != "":
+		klog.Infof("Will use OVDC specified using id [%s]", ovdcID)
+		if ovdc, err = getOvdcByID(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, ovdcID); err != nil {
+			return fmt.Errorf("unable to get OVDC from ID [%s] in org [%s]: [%v]",
+				ovdcID, cs.DiskManager.VCDClient.ClusterOrgName, err)
+		}
+		cs.DiskManager.VCDClient.VDC = ovdc
+		return nil
+
+	case ovdcName != "":
+		klog.Infof("Will use OVDC specified using name [%s]", ovdcName)
+		if ovdc, err = getOvdcByName(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, ovdcName); err != nil {
+			return fmt.Errorf("unable to get OVDC from Name [%s] in org [%s]: [%v]",
+				ovdcName, cs.DiskManager.VCDClient.ClusterOrgName, err)
+		}
+		cs.DiskManager.VCDClient.VDC = ovdc
+		return nil
+
+	case cs.DiskManager.VCDClient.VDC != nil:
+		klog.Infof("Will use OVDC specified in non-AZ mode [%s:%s]", cs.DiskManager.VCDClient.VDC.Vdc.Name,
+			cs.DiskManager.VCDClient.VDC.Vdc.ID)
+		return nil
+
+	default:
+		return fmt.Errorf("VDC should be specified either in single-OVDC or AZ modes")
+	}
+}
+
 func (cs *controllerServer) CreateVolume(ctx context.Context,
 	req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error) {
 	if req == nil {
@@ -122,12 +207,19 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 
 	storageProfile, _ := req.Parameters[StorageProfileParameter]
 
+	ovdcName, _ := req.Parameters[VDCNameParameter]
+	ovdcID, _ := req.Parameters[VDCIDParameter]
+	if err := cs.UpdateOVDC(ctx, ovdcName, ovdcID); err != nil {
+		return nil, fmt.Errorf("error in updating OVDC from parameters [%#v]: [%v]", req.Parameters, err)
+	}
+
 	disk, err := cs.DiskManager.CreateDisk(diskName, sizeMB, busType,
 		busSubType, cs.DiskManager.ClusterID, storageProfile, shareable)
-
 	if err != nil {
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskCreateError, "", diskName, map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
-			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskCreateError, cs.DiskManager.ClusterID, rdeErr)
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskCreateError, "", diskName,
+			map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v",
+				util.DiskCreateError, cs.DiskManager.ClusterID, rdeErr)
 		}
 		return nil, fmt.Errorf("unable to create disk [%s] with sise [%d]MB: [%v]",
 			diskName, sizeMB, err)
@@ -141,6 +233,8 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 	attributes[BusTypeParameter] = BusTypesFromValues[disk.BusType]
 	attributes[BusSubTypeParameter] = disk.BusSubType
 	attributes[StorageProfileParameter] = disk.StorageProfile.Name
+	attributes[VDCNameParameter] = cs.DiskManager.VCDClient.VDC.Vdc.Name
+	attributes[VDCIDParameter] = cs.DiskManager.VCDClient.VDC.Vdc.ID
 	attributes[DiskIDAttribute] = disk.Id
 
 	fsType := ""
@@ -191,6 +285,85 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	return &csi.DeleteVolumeResponse{}, nil
 }
 
+func CreateVAppNamePrefix(clusterName string, ovdcID string) (string, error) {
+	parts := strings.Split(ovdcID, ":")
+	if len(parts) != 4 {
+		// urn:vcloud:org:<uuid>
+		return "", fmt.Errorf("invalid URN format for OVDC: [%s]", ovdcID)
+	}
+
+	return fmt.Sprintf("%s_%s", clusterName, parts[3]), nil
+}
+
+func (cs *controllerServer) SearchVMAcrossVDCs(vmName string, vmId string) (*govcd.VM, string, error) {
+
+	orgName := cs.DiskManager.VCDClient.ClusterOrgName
+	org, err := cs.DiskManager.VCDClient.VCDClient.GetOrgByName(orgName)
+	if err != nil {
+		return nil, "", fmt.Errorf("unable to get org by name [%s]: [%v]", orgName, err)
+	}
+
+	ovdcList, err := org.QueryOrgVdcList()
+	if err != nil {
+		return nil, "", fmt.Errorf("unable to get list of OVDCs from org [%s]: [%v]", orgName, err)
+	}
+
+	clusterName := cs.VAppName
+	for _, ovdcRecordType := range ovdcList {
+		klog.Infof("Looking for VM [name:%s],[ID:%s] of cluster [%s] in OVDC [%s]",
+			vmName, vmId, clusterName, ovdcRecordType.Name)
+		vdc, err := org.GetVDCByName(ovdcRecordType.Name, false)
+		if err != nil {
+			klog.Infof("unable to query VDC [%s] in Org [%s] by name: [%v]",
+				ovdcRecordType.Name, orgName, err)
+			continue
+		}
+		vAppNamePrefix, err := CreateVAppNamePrefix(clusterName, vdc.Vdc.ID)
+		if err != nil {
+			klog.Infof("Unable to create a vApp name prefix for cluster [%s] in OVDC [%s] with OVDC ID [%s]: [%v]",
+				clusterName, vdc.Vdc.Name, vdc.Vdc.ID, err)
+			continue
+		}
+		klog.Infof("Looking for vApps with a prefix of [%s]", vAppNamePrefix)
+		vAppList := vdc.GetVappList()
+		// check if the VM exists in any cluster-vApps in this OVDC
+		for _, vApp := range vAppList {
+			if strings.HasPrefix(vApp.Name, vAppNamePrefix) {
+				// check if VM exists
+				klog.Infof("Looking for VM [name:%s],[id:%s] in vApp [%s] in OVDC [%s] in cluster [%s]",
+					vmName, vmId, vApp.Name, vdc.Vdc.Name, clusterName)
+				vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, orgName, vdc.Vdc.Name)
+				if err != nil {
+					return nil, "", fmt.Errorf("error creating VDCManager object for VDC [%s]: [%v]",
+						vdc.Vdc.Name, err)
+				}
+				var vm *govcd.VM = nil
+				if vmName != "" {
+					vm, err = vdcManager.FindVMByName(vApp.Name, vmName)
+				} else if vmId != "" {
+					vm, err = vdcManager.FindVMByUUID(vApp.Name, vmId)
+				} else {
+					return nil, "", fmt.Errorf("either vm name [%s] or ID [%s] should be passed", vmName, vmId)
+				}
+				if err != nil {
+					klog.Infof("Could not find VM [%s] in vApp [%s] of Cluster [%s] in OVDC [%s]: [%v]",
+						vmName, vApp.Name, clusterName, vdc.Vdc.Name, err)
+					continue
+				}
+
+				// If we reach here, we found the VM
+				klog.Infof("Found VM [%s] in vApp [%s] of Cluster [%s] in OVDC [%s]: [%v]",
+					vmName, vApp.Name, clusterName, vdc.Vdc.Name, err)
+				return vm, vdc.Vdc.Name, nil
+			}
+		}
+		klog.Infof("Could not find VM [%s] of cluster [%s] in OVDC [%s]",
+			vmName, clusterName, ovdcRecordType.Name)
+	}
+
+	return nil, "", govcd.ErrorEntityNotFound
+}
+
 func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	req *csi.ControllerPublishVolumeRequest) (*csi.ControllerPublishVolumeResponse, error) {
 
@@ -227,22 +400,24 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 			"ControllerPublishVolume: Volume capability does not have mount capabilities set")
 	}
 
-	klog.Infof("Getting node details for [%s]", nodeID)
-	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
+	klog.Infof("Getting VM details for [%s]", nodeID)
+	vm, ovdcName, err := cs.SearchVMAcrossVDCs(nodeID, "") // nodeID is actually node Name
 	if err != nil {
-		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+		return nil, status.Errorf(codes.NotFound, "unable to find VM for node [%s]: [%v]", nodeID, err)
 	}
-	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
-	if err != nil {
-		return nil, fmt.Errorf("unable to find VM for node [%s]: [%v]", nodeID, err)
+
+	if err := cs.UpdateOVDC(ctx, ovdcName, ""); err != nil {
+		return nil, fmt.Errorf("error in updating OVDC from ovdcName [%s]: [%v]", ovdcName, err)
 	}
 
 	klog.Infof("Getting disk details for [%s]", diskName)
 	disk, err := cs.DiskManager.GetDiskByName(diskName)
 	if err != nil {
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskQueryError, "", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
-			diskName, err)}); rdeErr != nil {
-			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, cs.DiskManager.ClusterID, rdeErr)
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskQueryError, "", diskName,
+			map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
+				diskName, err)}); rdeErr != nil {
+			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v",
+				util.DiskQueryError, cs.DiskManager.ClusterID, rdeErr)
 		}
 		return nil, fmt.Errorf("unable to find disk [%s]: [%v]", diskName, err)
 	}
@@ -254,15 +429,18 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	klog.Infof("Attaching volume [%s] to node [%s]", diskName, nodeID)
 	err = cs.DiskManager.AttachVolume(vm, disk)
 	if err != nil {
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskAttachError, "", diskName, map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
-			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskAttachError, cs.DiskManager.ClusterID, rdeErr)
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskAttachError, "", diskName,
+			map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskAttachError,
+				cs.DiskManager.ClusterID, rdeErr)
 		}
 		if err == govcd.ErrorEntityNotFound {
 			return nil, status.Errorf(codes.NotFound, "could not provision disk [%s] in vcd", diskName)
 		}
 		return nil, err
 	}
-	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskAttachError, "", diskName); removeErrorRdeErr != nil {
+	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskAttachError, "",
+		diskName); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskAttachError, cs.DiskManager.ClusterID)
 	}
 	klog.Infof("Successfully attached volume %s to node %s ", diskName, nodeID)
@@ -273,6 +451,8 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 			DiskIDAttribute:     diskName,
 			DiskUUIDAttribute:   disk.UUID,
 			FileSystemAttribute: mountDetails.FsType,
+			OVDCNameAttribute:   ovdcName,
+			OVDCIDAttribute:     cs.DiskManager.VCDClient.VDC.Vdc.ID,
 		},
 	}, nil
 }
@@ -301,20 +481,22 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 			"ControllerUnpublishVolume: Volume ID must be provided")
 	}
 
-	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
+	klog.Infof("Getting VM details for [%s]", nodeID)
+	vm, ovdcName, err := cs.SearchVMAcrossVDCs(nodeID, "") // nodeID is actually node Name
 	if err != nil {
-		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+		return nil, status.Errorf(codes.NotFound, "unable to find VM for node [%s]: [%v]", nodeID, err)
 	}
-	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
-	if err != nil {
-		return nil, status.Errorf(codes.NotFound,
-			"Could not find VM with nodeID [%s] from which to detach [%s]", nodeID, volumeID)
+
+	if err := cs.UpdateOVDC(ctx, ovdcName, ""); err != nil {
+		return nil, fmt.Errorf("error in updating OVDC from ovdcName [%s]: [%v]", ovdcName, err)
 	}
 
 	err = cs.DiskManager.DetachVolume(vm, volumeID)
 	if err != nil {
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskDetachError, "", volumeID, map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
-			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskDetachError, cs.DiskManager.ClusterID, rdeErr)
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskDetachError, "", volumeID,
+			map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskDetachError,
+				cs.DiskManager.ClusterID, rdeErr)
 		}
 		if err == govcd.ErrorEntityNotFound {
 			return nil, status.Errorf(codes.NotFound, "Volume [%s] does not exist", volumeID)
@@ -322,8 +504,10 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 
 		return nil, err
 	}
-	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskDetachError, "", volumeID); removeErrorRdeErr != nil {
-		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskDetachError, cs.DiskManager.ClusterID)
+	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskDetachError, "",
+		volumeID); removeErrorRdeErr != nil {
+		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskDetachError,
+			cs.DiskManager.ClusterID)
 	}
 	klog.Infof("Volume [%s] unpublished successfully", volumeID)
 

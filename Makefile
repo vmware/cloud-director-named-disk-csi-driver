@@ -38,7 +38,7 @@ SHELLCHECK ?= bin/shellcheck
 all: vendor lint dev
 
 .PHONY: csi
-capvcd: vendor lint docker-build-csi ## Run checks, and build csi docker image.
+csi: vendor lint docker-build-csi ## Run checks, and build csi docker image.
 
 ##@ General
 

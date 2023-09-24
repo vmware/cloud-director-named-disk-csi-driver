@@ -315,9 +315,8 @@ func (vdc *VdcManager) FindVMByName(VAppName string, vmName string) (*govcd.VM, 
 		return nil, fmt.Errorf("vmName mandatory for FindVMByName")
 	}
 
-	client := vdc.Client
 	klog.Infof("Trying to find vm [%s] in vApp [%s] by name", vmName, VAppName)
-	vApp, err := client.VDC.GetVAppByName(VAppName, true)
+	vApp, err := vdc.Vdc.GetVAppByName(VAppName, true)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find vApp [%s] by name: [%v]", VAppName, err)
 	}
@@ -340,7 +339,7 @@ func (vdc *VdcManager) FindVMByUUID(VAppName string, vcdVmUUID string) (*govcd.V
 	klog.Infof("Trying to find vm [%s] in vApp [%s] by UUID", vcdVmUUID, VAppName)
 	vmUUID := strings.TrimPrefix(vcdVmUUID, VCDVMIDPrefix)
 
-	vApp, err := vdc.Client.VDC.GetVAppByName(VAppName, true)
+	vApp, err := vdc.Vdc.GetVAppByName(VAppName, true)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find vApp [%s] by name: [%v]", VAppName, err)
 	}
@@ -883,7 +882,7 @@ func (vdc *VdcManager) AddNewVM(vmNamePrefix string, VAppName string, vmNum int,
 }
 
 func (vdc *VdcManager) DeleteVM(VAppName, vmName string) error {
-	vApp, err := vdc.Client.VDC.GetVAppByName(VAppName, true)
+	vApp, err := vdc.Vdc.GetVAppByName(VAppName, true)
 	if err != nil {
 		return fmt.Errorf("unable to find vApp from name [%s]: [%v]", VAppName, err)
 	}
@@ -915,7 +914,7 @@ func (vdc *VdcManager) GetVAppNameFromVMName(VAppName string, vmName string) (st
 }
 
 func (vdc *VdcManager) WaitForGuestScriptCompletion(VAppName, vmName string) error {
-	vApp, err := vdc.Client.VDC.GetVAppByName(VAppName, true)
+	vApp, err := vdc.Vdc.GetVAppByName(VAppName, true)
 	if err != nil {
 		return fmt.Errorf("unable to get vApp [%s] from Vdc [%s]: [%v]",
 			VAppName, vdc.Client.ClusterOVDCName, err)

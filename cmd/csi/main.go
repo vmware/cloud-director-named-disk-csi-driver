@@ -126,6 +126,8 @@ func runCommand() {
 		time.Sleep(waitTime)
 	}
 
+	getVdcClient := cloudConfig.VCD.VDC != "" // get VDC client only if it is passed
+
 	vcdClient, err := vcdsdk.NewVCDClientFromSecrets(
 		cloudConfig.VCD.Host,
 		cloudConfig.VCD.Org,
@@ -135,7 +137,7 @@ func runCommand() {
 		cloudConfig.VCD.Secret,
 		cloudConfig.VCD.RefreshToken,
 		true,
-		true,
+		getVdcClient,
 	)
 	if err != nil {
 		panic(fmt.Errorf("unable to initiate vcd client: [%v]", err))

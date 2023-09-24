@@ -12,8 +12,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230828194304-402fc20a64a9
-	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20230926180439-48858caf0c96
+	github.com/vmware/go-vcloud-director/v2 v2.21.0
 	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.5.0
 	google.golang.org/grpc v1.53.0

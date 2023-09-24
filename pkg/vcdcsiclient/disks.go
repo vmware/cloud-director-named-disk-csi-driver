@@ -242,7 +242,7 @@ func (diskManager *DiskManager) govcdGetDiskById(diskId string, refresh bool) (*
 // On success, returns a pointer to the Disk list and a nil error
 // On failure, returns a nil pointer and an error
 func (diskManager *DiskManager) govcdGetDisksByName(diskName string, refresh bool) (*[]vcdtypes.Disk, error) {
-	klog.Infof("Get Disk By Name: %s\n", diskName)
+	klog.Infof("Get Disk By Name: [%s] in VDC [%s]\n", diskName, diskManager.VCDClient.VDC.Vdc.Name)
 	var diskList []vcdtypes.Disk
 	if refresh {
 		err := diskManager.VCDClient.VDC.Refresh()
