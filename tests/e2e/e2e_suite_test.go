@@ -21,7 +21,7 @@ var (
 )
 
 const (
-	airgappedImage = "core.harbor.10.89.98.101.nip.io/airgapped/nginx:1.14.2"
+	airgappedImage = "harbor.10.221.134.246.nip.io/airgapped/nginx:1.14.2"
 	stagingImage   = "projects-stg.registry.vmware.com/vmware-cloud-director/nginx:1.14.2"
 )
 
