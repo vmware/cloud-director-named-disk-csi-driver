@@ -9,17 +9,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient_36_0"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"k8s.io/klog"
-	"net/http"
-	"strings"
-	"time"
+
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 )
 
 type DiskManager struct {
@@ -160,6 +162,23 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 
 		diskParams.Disk.StorageProfile = &types.Reference{
 			HREF: storageReference.HREF,
+		}
+
+		storageProfileData, err := diskManager.VCDClient.VCDClient.GetStorageProfileByHref(storageReference.HREF)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get storage profile [%s] for disk [%s] by HREF [%s]",
+				storageProfile, diskName, storageReference.HREF)
+		}
+
+		if storageProfileData.IopsSettings != nil {
+			if storageProfileData.IopsSettings.Enabled {
+				// If storageProfile Max IOPS per Gb is set
+				iops := storageProfileData.IopsSettings.DiskIopsPerGbMax * d.SizeMb / 1024
+				if iops == 0 {
+					iops = storageProfileData.IopsSettings.DiskIopsMax
+				}
+				d.Iops = iops
+			}
 		}
 	}
 
