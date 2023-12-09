@@ -13,7 +13,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
 	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20231106193352-8393493c09e0
-	github.com/vmware/go-vcloud-director/v2 v2.14.0-rc.3
+	github.com/vmware/go-vcloud-director/v2 v2.21.0
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sys v0.13.0
 	google.golang.org/grpc v1.56.3

@@ -146,7 +146,7 @@ func waitForStorageClassDeleted(ctx context.Context, k8sClient *kubernetes.Clien
 			if testingsdk.IsRetryableError(err) {
 				return false, nil
 			}
-			return false, fmt.Errorf("unexpected error occurred while getting storage class [%s]")
+			return false, fmt.Errorf("unexpected error occurred while getting storage class [%s]", scName)
 		}
 		return false, nil
 	})

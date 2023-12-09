@@ -18,6 +18,15 @@ const (
 	fsTypeXFS = "xfs"
 )
 
+// AddrOf is a generic function to return the address of a variable
+// Note. It is mainly meant for converting literal values to pointers (e.g. `addrOf(true)`)
+// and not getting the address of a variable (e.g. `addrOf(variable)`)
+// Adapted from https://github.com/vmware/go-vcloud-director/blob/9837630a1496b5082d83c19984ccf893c673e2f3/govcd/api.go#L696
+// since it is not exported.
+func AddrOf[T any](variable T) *T {
+	return &variable
+}
+
 // ParseEndpoint will parse endpoints and return the scheme and addr for the same
 func ParseEndpoint(ep string) (string, string, error) {
 	u, err := url.Parse(ep)
