@@ -120,7 +120,7 @@ func GetOldPVsFromRDE(statusMap map[string]interface{}, rdeId string) ([]string,
 	pvInterfaces, ok := statusMap[OldPersistentVolumeKey]
 
 	if !ok {
-		klog.Info("key [%s] not found in the status section of RDE [%s]", OldPersistentVolumeKey, rdeId)
+		klog.Infof("key [%s] not found in the status section of RDE [%s]", OldPersistentVolumeKey, rdeId)
 		return make([]string, 0), nil
 	}
 	if pvInterfaces == nil {

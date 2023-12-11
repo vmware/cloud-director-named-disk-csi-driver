@@ -332,7 +332,7 @@ func (ns *nodeService) NodePublishVolume(ctx context.Context,
 		hostMountDir, podMountDir, mountFlags)
 	if err = gofsutil.BindMount(ctx, hostMountDir, podMountDir, mountFlags...); err != nil {
 		return nil, status.Error(codes.Internal,
-			fmt.Sprintf("unable to format and mount dir [%s] at path [%s] with fs [%s] and flags [%v]: [%v]",
+			fmt.Sprintf("unable to format and mount dir [%s] at path [%s] with flags [%v]: [%v]",
 				hostMountDir, podMountDir, mountFlags, err))
 	}
 	klog.Infof("Mounted dir [%s] at path [%s] with options [%v]", hostMountDir, podMountDir, mountFlags)

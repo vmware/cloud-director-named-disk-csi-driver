@@ -76,6 +76,8 @@ func queryFieldsOnDemand(queryType string) ([]string, error) {
 			"numberOfStorageProfiles", "usedNetworksInVdc", "numberOfVMs", "numberOfRunningVMs", "numberOfDeployedVApps",
 			"numberOfDeployedUnmanagedVApps", "isThinProvisioned", "isFastProvisioned", "networkProviderType",
 			"cpuOverheadMhz", "isVCEnabled", "memoryReservedMB", "cpuReservedMhz", "storageOverheadMB", "memoryOverheadMB", "vc"}
+		taskFields = []string{"href", "id", "type", "org", "orgName", "name", "operationFull", "message", "startDate",
+			"endDate", "status", "progress", "ownerName", "object", "objectType", "objectName", "serviceNamespace"}
 		fieldsOnDemand = map[string][]string{
 			types.QtVappTemplate:      vappTemplatefields,
 			types.QtAdminVappTemplate: vappTemplatefields,
@@ -93,6 +95,8 @@ func queryFieldsOnDemand(queryType string) ([]string, error) {
 			types.QtAdminVapp:         vappFields,
 			types.QtOrgVdc:            orgVdcFields,
 			types.QtAdminOrgVdc:       orgVdcFields,
+			types.QtTask:              taskFields,
+			types.QtAdminTask:         taskFields,
 		}
 	)
 
@@ -156,6 +160,21 @@ func addResults(queryType string, cumulativeResults, newResults Results) (Result
 	case types.QtAdminOrgVdc:
 		cumulativeResults.Results.OrgVdcAdminRecord = append(cumulativeResults.Results.OrgVdcAdminRecord, newResults.Results.OrgVdcAdminRecord...)
 		size = len(newResults.Results.OrgVdcAdminRecord)
+	case types.QtTask:
+		cumulativeResults.Results.TaskRecord = append(cumulativeResults.Results.TaskRecord, newResults.Results.TaskRecord...)
+		size = len(newResults.Results.TaskRecord)
+	case types.QtAdminTask:
+		cumulativeResults.Results.AdminTaskRecord = append(cumulativeResults.Results.AdminTaskRecord, newResults.Results.AdminTaskRecord...)
+		size = len(newResults.Results.AdminTaskRecord)
+	case types.QtNetworkPool:
+		cumulativeResults.Results.NetworkPoolRecord = append(cumulativeResults.Results.NetworkPoolRecord, newResults.Results.NetworkPoolRecord...)
+		size = len(newResults.Results.NetworkPoolRecord)
+	case types.QtProviderVdcStorageProfile:
+		cumulativeResults.Results.ProviderVdcStorageProfileRecord = append(cumulativeResults.Results.ProviderVdcStorageProfileRecord, newResults.Results.ProviderVdcStorageProfileRecord...)
+		size = len(newResults.Results.ProviderVdcStorageProfileRecord)
+	case types.QtResourcePool:
+		cumulativeResults.Results.ResourcePoolRecord = append(cumulativeResults.Results.ResourcePoolRecord, newResults.Results.ResourcePoolRecord...)
+		size = len(newResults.Results.ResourcePoolRecord)
 
 	default:
 		return Results{}, 0, fmt.Errorf("query type %s not supported", queryType)
@@ -166,6 +185,11 @@ func addResults(queryType string, cumulativeResults, newResults Results) (Result
 
 // cumulativeQuery runs a paginated query and collects all elements until the total number of records is retrieved
 func (client *Client) cumulativeQuery(queryType string, params, notEncodedParams map[string]string) (Results, error) {
+	return client.cumulativeQueryWithHeaders(queryType, params, notEncodedParams, nil)
+}
+
+// cumulativeQueryWithHeaders is the same as cumulativeQuery() but let you add headers to the query
+func (client *Client) cumulativeQueryWithHeaders(queryType string, params, notEncodedParams map[string]string, headers map[string]string) (Results, error) {
 	var supportedQueryTypes = []string{
 		types.QtVappTemplate,
 		types.QtAdminVappTemplate,
@@ -183,6 +207,11 @@ func (client *Client) cumulativeQuery(queryType string, params, notEncodedParams
 		types.QtAdminVapp,
 		types.QtOrgVdc,
 		types.QtAdminOrgVdc,
+		types.QtTask,
+		types.QtAdminTask,
+		types.QtResourcePool,
+		types.QtNetworkPool,
+		types.QtProviderVdcStorageProfile,
 	}
 	// Make sure the query type is supported
 	// We need to check early, as queries that would return less than 25 items (default page size) would succeed,
@@ -198,7 +227,7 @@ func (client *Client) cumulativeQuery(queryType string, params, notEncodedParams
 		return Results{}, fmt.Errorf("[cumulativeQuery] query type %s not supported", queryType)
 	}
 
-	result, err := client.QueryWithNotEncodedParams(params, notEncodedParams)
+	result, err := client.QueryWithNotEncodedParamsWithHeaders(params, notEncodedParams, headers)
 	if err != nil {
 		return Results{}, err
 	}
@@ -221,7 +250,7 @@ func (client *Client) cumulativeQuery(queryType string, params, notEncodedParams
 		page++
 		notEncodedParams["page"] = fmt.Sprintf("%d", page)
 		var size int
-		newResult, err := client.QueryWithNotEncodedParams(params, notEncodedParams)
+		newResult, err := client.QueryWithNotEncodedParamsWithHeaders(params, notEncodedParams, headers)
 		if err != nil {
 			return Results{}, err
 		}
