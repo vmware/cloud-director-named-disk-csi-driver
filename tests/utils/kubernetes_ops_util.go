@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
@@ -93,6 +94,37 @@ func WaitForPvcReady(ctx context.Context, k8sClient *kubernetes.Clientset, nameS
 		}
 		return true, nil
 	})
+	return err
+}
+
+func WaitForPvcSizeUpdated(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string,
+	newSize resource.Quantity) error {
+	err := wait.PollImmediate(defaultLongRetryInterval, defaultLongRetryTimeout, func() (bool, error) {
+		ready := false
+		pvc, err := GetPVC(ctx, k8sClient, nameSpace, pvcName)
+		if err != nil {
+			fmt.Printf("error getting PVC [%s/%s]: [%v]", nameSpace, pvcName, err)
+			if testingsdk.IsRetryableError(err) {
+				return false, nil
+			}
+			return false, fmt.Errorf("unexpected error occurred while getting pvc [%s]", pvcName)
+		}
+		if pvc != nil && pvc.Status.Phase == apiv1.ClaimBound {
+			ready = true
+		}
+		if !ready {
+			fmt.Printf("pvc %s is not bound\n", pvc.Name)
+			return false, nil
+		}
+
+		fmt.Printf("PVC [%s/%s] size is [%v]\n", nameSpace, pvcName, pvc.Spec.Resources.Requests.Storage())
+		if pvc.Spec.Resources.Requests.Storage().Cmp(newSize) == 0 {
+			return true, nil
+		}
+
+		return false, nil
+	})
+
 	return err
 }
 
@@ -242,6 +274,28 @@ func CreatePV(ctx context.Context, k8sClient *kubernetes.Clientset, persistentVo
 	return newPV, nil
 }
 
+func IncreasePVCSize(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string,
+	additionalSize resource.Quantity) (*apiv1.PersistentVolumeClaim, error) {
+	if pvcName == "" {
+		return nil, testingsdk.ResourceNameNull
+	}
+	if nameSpace == "" {
+		nameSpace = apiv1.NamespaceDefault
+	}
+
+	pvc, err := k8sClient.CoreV1().PersistentVolumeClaims(nameSpace).Get(ctx, pvcName, metav1.GetOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("unable to get PVC [%s] in namespace [%s]: [%v]", pvcName, nameSpace, err)
+	}
+
+	newSize := pvc.Spec.Resources.Requests["storage"]
+	newSize.Add(additionalSize)
+	pvc.Spec.Resources.Requests["storage"] = newSize
+	fmt.Printf("newPVC [%s/%s] size to be updated is [%v]\n", nameSpace, pvcName, pvc.Spec.Resources.Requests.Storage())
+
+	return k8sClient.CoreV1().PersistentVolumeClaims(nameSpace).Update(ctx, pvc, metav1.UpdateOptions{})
+}
+
 func CreatePVC(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace string, pvcName string, storageClass string, storageSize string) (*apiv1.PersistentVolumeClaim, error) {
 	if pvcName == "" {
 		return nil, testingsdk.ResourceNameNull
@@ -275,7 +329,9 @@ func CreatePVC(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace s
 	return newPVC, nil
 }
 
-func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string, reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, storageProfile string, fsType string) (*stov1.StorageClass, error) {
+func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string,
+	reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, storageProfile string,
+	fsType string, allowVolumeExpansion bool) (*stov1.StorageClass, error) {
 	if scName == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
@@ -286,8 +342,9 @@ func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, sc
 				"storageclass.kubernetes.io/is-default-class": "false",
 			},
 		},
-		ReclaimPolicy: &reclaimPolicy,
-		Provisioner:   "named-disk.csi.cloud-director.vmware.com",
+		ReclaimPolicy:        &reclaimPolicy,
+		AllowVolumeExpansion: util.AddrOf(allowVolumeExpansion),
+		Provisioner:          "named-disk.csi.cloud-director.vmware.com",
 		Parameters: map[string]string{
 			"storageProfile": storageProfile,
 			"filesystem":     fsType,

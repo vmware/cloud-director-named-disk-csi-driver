@@ -10,6 +10,7 @@ import (
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	apiv1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -25,6 +26,8 @@ const (
 	storageSize           = "2Gi"
 	defaultStorageProfile = "*"
 	volumeName            = "deployment-pv"
+
+	ONEGIG = 1 << 30
 )
 
 var _ = Describe("CSI dynamic provisioning Test", func() {
@@ -56,10 +59,12 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
-		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4)
+		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain,
+			apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4, true)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
-		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4)
+		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete,
+			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4, false)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})
@@ -96,7 +101,22 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(pvFound).To(BeTrue())
 	})
 
-	//scenario 1: use 'Retain' retention policy. step2: install a deployment using the above PVC.
+	//scenario 1: use 'Retain' retention policy. step2: expand volume (OFFLINE Expansion).
+	It("should OFFLINE EXPAND above PVC since volumeExpansion is enabled", func() {
+		By("should expand a PVC successfully")
+		pvc, err := utils.IncreasePVCSize(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName,
+			resource.MustParse("1Gi"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(pvc).NotTo(BeNil())
+		fmt.Printf("PVC [%s/%s] updated size is [%v]\n", testNameSpaceName, testRetainPVCName, pvc.Spec.Resources.Requests.Storage())
+
+		By("PVC size should be updated")
+		err = utils.WaitForPvcSizeUpdated(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName,
+			resource.MustParse("3Gi"))
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	//scenario 1: use 'Retain' retention policy. step3: install a deployment using the above PVC.
 	It("should install a deployment using the above PVC", func() {
 		By("should create a deployment successfully")
 		deployment, err := utils.CreateDeployment(ctx, tc, testDeploymentName, utils.NginxDeploymentVolumeName, ContainerImage, testRetainPVCName, utils.InitContainerMountPath, testNameSpaceName)
@@ -109,6 +129,21 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 
 		By("Deployment should be ready")
 		err = tc.WaitForDeploymentReady(ctx, testNameSpaceName, testDeploymentName)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	//scenario 1: use 'Retain' retention policy. step4: expand volume (ONLINE Expansion).
+	It("should ONLINE EXPAND above PVC since volumeExpansion is enabled", func() {
+		By("should expand a PVC successfully")
+		pvc, err := utils.IncreasePVCSize(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName,
+			resource.MustParse("1Gi"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(pvc).NotTo(BeNil())
+		fmt.Printf("PVC [%s/%s] updated size is [%v]\n", testNameSpaceName, testRetainPVCName, pvc.Spec.Resources.Requests.Storage())
+
+		By("PVC size should be updated")
+		err = utils.WaitForPvcSizeUpdated(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName,
+			resource.MustParse("4Gi"))
 		Expect(err).NotTo(HaveOccurred())
 	})
 

@@ -45,10 +45,12 @@ var _ = Describe("CSI static provisioning Test", func() {
 		ns, err := tc.CreateNameSpace(ctx, testStaticNameSpace)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
-		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain, apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4)
+		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain,
+			apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4, false)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
-		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4)
+		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete,
+			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4, false)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})
