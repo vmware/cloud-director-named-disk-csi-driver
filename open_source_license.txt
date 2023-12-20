@@ -1,20 +1,7 @@
-open_source_licenses.txt
+open_source_license.txt
 
-cloud-director-named-disk-csi-driver 1.4 GA
+Kubernetes Container Storage Driver for VMware Cloud Director 1.5.0 GA
 ======================================================================
-
-The following copyright statements and licenses apply to various open
-source software packages (or portions thereof) that are distributed with
-this VMware Product.
-
-The VMware Product may also include other VMware components, which may
-contain additional open source software packages. One or more such
-open_source_licenses.txt files may therefore accompany this VMware
-Product.
-
-The VMware Product that includes this file does not necessarily use all
-the open source software packages referred to below and may also only
-use portions of a given package.
 
 ==================== TABLE OF CONTENTS ====================
 
@@ -34,21 +21,21 @@ SECTION 1: Apache License, V2.0
    >>> k8s.io/apimachinery-v0.22.1
    >>> k8s.io/component-base-v0.22.1
    >>> k8s.io/klog/v2-v2.10.0
+   >>> gopkg.in/yaml.v3-v3.0.0
    >>> go-openapi-errors-0.20.2
-   >>> google.golang.org/grpc-v1.53.0
+   >>> google.golang.org/grpc-v1.52.0
 
 SECTION 2: BSD-STYLE, MIT-STYLE, OR SIMILAR STYLE LICENSES
 
    >>> github.com/spf13/pflag-v1.0.5
-   >>> gopkg.in/yaml.v3-v3.0.0-20210107192922-496545a6307b
    >>> google.golang.org/protobuf-v1.26.0
    >>> github.com/stretchr/testify-v1.7.0
    >>> github.com/onsi/ginkgo-v1.16.5
    >>> github.com/onsi/gomega-v1.19.0
    >>> google/uuid-v1.3.0
-   >>> golang.org/x/oauth2-v0.4.0
-   >>> golang.org/x/sys-v0.5.0
    >>> golang.org/x/net-v0.7.0
+   >>> golang.org/x/oauth2-v0.7.0
+   >>> golang.org/x/sys-v0.13.0
 
 
 APPENDIX. Standard License Files
@@ -273,67 +260,67 @@ APPENDIX. Standard License Files
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/cmd/helpers.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/cmd/root.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra.go
 
        Copyright (c) 2013 Steve Francia <spf@spf13.com>
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/main.go
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/command.go
 
        Copyright (c) 2013 Steve Francia <spf@spf13.com>
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/man_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/md_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/rest_docs.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/util.go
 
        Copyright 2015 Red Hat Inc.
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/doc/yaml_docs.go
 
        Copyright 2016 French Ben
 
-       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 14 in 'LICENSE TEXT REFERENCE TABLE'
 
        > BSD-3
 
@@ -341,13 +328,13 @@ APPENDIX. Standard License Files
 
        Copyright (c) 2015 Steve Francia <spf@spf13.com>
 
-       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 16 in 'LICENSE TEXT REFERENCE TABLE'
 
        cobra-master/cobra/README.md
 
        Copyright (c) 2020 Steve Francia <spf@spf13.com>
 
-       See SECTION 10 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 15 in 'LICENSE TEXT REFERENCE TABLE'
 
 
    >>> k8s.io/api-v0.22.1
@@ -3881,7 +3868,7 @@ APPENDIX. Standard License Files
 
        Copyright 2020 The Kubernetes Authors
 
-       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 7 in 'LICENSE TEXT REFERENCE TABLE'
 
        klog_file.go
 
@@ -3908,6 +3895,143 @@ APPENDIX. Standard License Files
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
 
+   >>> gopkg.in/yaml.v3-v3.0.0
+
+       License : Apache 2.0
+
+       ADDITIONAL LICENSE INFORMATION
+
+       > Apache2.0
+
+       decode.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       decode_test.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       encode.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       encode_test.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       example_embedded_test.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       LICENSE
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 12 in 'LICENSE TEXT REFERENCE TABLE'
+
+       node_test.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       NOTICE
+
+       Copyright 2011-2016 Canonical Ltd.
+
+       See SECTION 2 in 'LICENSE TEXT REFERENCE TABLE'
+
+       resolve.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       sorter.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       suite_test.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       yaml.go
+
+       Copyright (c) 2011-2019 Canonical Ltd
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       > MIT
+
+       apic.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+
+       emitterc.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+
+       LICENSE
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 11 in 'LICENSE TEXT REFERENCE TABLE'
+
+       parserc.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+
+       readerc.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+
+       scannerc.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+
+       writerc.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+
+       yamlh.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 9 in 'LICENSE TEXT REFERENCE TABLE'
+
+       yamlprivateh.go
+
+       Copyright (c) 2006-2010 Kirill Simonov
+
+       See SECTION 6 in 'LICENSE TEXT REFERENCE TABLE'
+
+
    >>> go-openapi-errors-0.20.2
 
        Found in: errors-0.20.2/middleware_test.go
@@ -3927,7 +4051,7 @@ APPENDIX. Standard License Files
        // limitations under the License.
 
 
-   >>> google.golang.org/grpc-v1.53.0
+   >>> google.golang.org/grpc-v1.52.0
 
        Copyright 2017 gRPC authors.
 
@@ -4037,6 +4161,12 @@ APPENDIX. Standard License Files
 
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
+       balancer/grpclb/grpclbstate/state.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
        balancer/grpclb/grpclb_util.go
 
        Copyright 2016 gRPC
@@ -4052,12 +4182,6 @@ APPENDIX. Standard License Files
        balancer/grpclb/grpc_lb_v1/load_balancer.pb.go
 
        Copyright 2015 The gRPC
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
-       balancer/grpclb/state/state.go
-
-       Copyright 2020 gRPC
 
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
@@ -5045,12 +5169,6 @@ APPENDIX. Standard License Files
 
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
-       internal/testutils/parse_url.go
-
-       Copyright 2023 gRPC
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
-
        internal/testutils/pickfirst/pickfirst.go
 
        Copyright 2022 gRPC
@@ -5379,19 +5497,13 @@ APPENDIX. Standard License Files
 
        Copyright 2021 gRPC
 
-       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
-
-       interop/xds_federation/client.go
-
-       Copyright 2014 gRPC
-
-       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 13 in 'LICENSE TEXT REFERENCE TABLE'
 
        interop/xds/server/Dockerfile
 
        Copyright 2021 gRPC
 
-       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 13 in 'LICENSE TEXT REFERENCE TABLE'
 
        interop/xds/server/server.go
 
@@ -5625,7 +5737,7 @@ APPENDIX. Standard License Files
 
        Copyright 2020 gRPC
 
-       See SECTION 7 in 'LICENSE TEXT REFERENCE TABLE'
+       See SECTION 10 in 'LICENSE TEXT REFERENCE TABLE'
 
        resolver_conn_wrapper.go
 
@@ -6185,6 +6297,12 @@ APPENDIX. Standard License Files
 
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
+       xds/internal/xdsclient/clientimpl_validator.go
+
+       Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
        xds/internal/xdsclient/clientimpl_watchers.go
 
        Copyright 2020 gRPC
@@ -6194,6 +6312,54 @@ APPENDIX. Standard License Files
        xds/internal/xdsclient/client_new.go
 
        Copyright 2022 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/controller.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/loadreport.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/transport.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/version/v2/client.go
+
+       Copyright 2019 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/version/v2/loadreport.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/version/v3/client.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/version/v3/loadreport.go
+
+       Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/controller/version/version.go
+
+       Copyright 2021 gRPC
 
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
@@ -6212,6 +6378,36 @@ APPENDIX. Standard License Files
        xds/internal/xdsclient/logging.go
 
        Copyright 2020 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/pubsub/dump.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/pubsub/interface.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/pubsub/pubsub.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/pubsub/update.go
+
+       Copyright 2021 gRPC
+
+       See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
+
+       xds/internal/xdsclient/pubsub/watch.go
+
+       Copyright 2021 gRPC
 
        See SECTION 5 in 'LICENSE TEXT REFERENCE TABLE'
 
@@ -6481,10 +6677,6 @@ APPENDIX. Standard License Files
        string_slice_test.go
 
        Copyright 2009 The Go Authors.
-
-
-   >>> gopkg.in/yaml.v3-v3.0.0-20210107192922-496545a6307b
-
 
 
    >>> google.golang.org/protobuf-v1.26.0
@@ -8268,7 +8460,7 @@ APPENDIX. Standard License Files
 
 
 
-   >>> golang.org/x/oauth2-v0.4.0
+   >>> golang.org/x/net-v0.7.0
 
        Copyright (c) 2009 The Go Authors. All rights reserved.
 
@@ -8298,378 +8490,40 @@ APPENDIX. Standard License Files
        (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-       ADDITIONAL LICENSE INFORMATION
 
-       > BSD-3
 
-       amazon/amazon.go
-
-       Copyright 2017 The oauth2 Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       authhandler/authhandler.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       bitbucket/bitbucket.go
-
-       Copyright 2015 The oauth2 Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       cern/cern.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       clientcredentials/clientcredentials.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       endpoints/endpoints.go
-
-       Copyright 2019 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       facebook/facebook.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       fitbit/fitbit.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       foursquare/foursquare.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       github/github.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       gitlab/gitlab.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/appengine_gen1.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/appengine_gen2_flex.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/appengine.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/default.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/doc.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/downscope/downscoping.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/error.go
-
-       Copyright 2022 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/google.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/aws.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/basecredentials.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/clientauth.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/err.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/executablecredsource.go
-
-       Copyright 2022 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/filecredsource.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/impersonate.go
-
-       Copyright 2021 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/sts_exchange.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/internal/externalaccount/urlcredsource.go
-
-       Copyright 2020 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/jwt.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       google/sdk.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       heroku/heroku.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       hipchat/hipchat.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       instagram/instagram.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/client_appengine.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/doc.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/oauth2.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/token.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       internal/transport.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jira/jira.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jws/jws.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       jwt/jwt.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       kakao/kakao.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       LICENSE
-
-       Copyright (c) 2009 The Go Authors
-
-       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
-
-       linkedin/linkedin.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       mailchimp/mailchimp.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       mailru/mailru.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       mediamath/mediamath.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       microsoft/microsoft.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       nokiahealth/nokiahealth.go
-
-       Copyright 2018 The oauth2 Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       odnoklassniki/odnoklassniki.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       paypal/paypal.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       slack/slack.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       spotify/spotify.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       stackoverflow/stackoverflow.go
-
-       Copyright 2018 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       token.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       transport.go
-
-       Copyright 2014 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       twitch/twitch.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       uber/uber.go
-
-       Copyright 2016 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       vk/vk.go
-
-       Copyright 2015 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       yahoo/yahoo.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-       yandex/yandex.go
-
-       Copyright 2017 The Go Authors
-
-       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
-
-
-   >>> golang.org/x/sys-v0.5.0
+   >>> golang.org/x/oauth2-v0.7.0
+
+       Copyright (c) 2009 The Go Authors. All rights reserved.
+
+       Redistribution and use in source and binary forms, with or without
+       modification, are permitted provided that the following conditions are
+       met:
+
+          * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+          * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following disclaimer
+       in the documentation and/or other materials provided with the
+       distribution.
+          * Neither the name of Google Inc. nor the names of its
+       contributors may be used to endorse or promote products derived from
+       this software without specific prior written permission.
+
+       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+       A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+       OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+   >>> golang.org/x/sys-v0.13.0
 
        Copyright (c) 2009 The Go Authors. All rights reserved.
 
@@ -8722,37 +8576,1629 @@ APPENDIX. Standard License Files
        rights granted to you under this License for this implementation of Go
        shall terminate as of the date such litigation is filed.
 
+       ADDITIONAL LICENSE INFORMATION
 
-   >>> golang.org/x/net-v0.7.0
+       > BSD-3
 
-       Copyright (c) 2009 The Go Authors. All rights reserved.
+       golang.org/x/sys@v0.13.0/cpu/asm_aix_ppc64.s
 
-       Redistribution and use in source and binary forms, with or without
-       modification, are permitted provided that the following conditions are
-       met:
+       Copyright 2018 The Go Authors
 
-          * Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-          * Redistributions in binary form must reproduce the above
-       copyright notice, this list of conditions and the following disclaimer
-       in the documentation and/or other materials provided with the
-       distribution.
-          * Neither the name of Google Inc. nor the names of its
-       contributors may be used to endorse or promote products derived from
-       this software without specific prior written permission.
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
 
-       THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-       "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-       LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-       A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-       OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-       SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-       LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-       DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-       THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-       (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-       OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+       golang.org/x/sys@v0.13.0/cpu/byteorder.go
 
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_aix.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_arm64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_arm64.s
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_arm.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_gc_arm64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_gccgo_arm64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_gccgo_s390x.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_gccgo_x86.c
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_gccgo_x86.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_gc_s390x.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_gc_x86.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_linux_arm64.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_linux_arm.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_linux.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_linux_mips64x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_linux_noinit.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_linux_ppc64x.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_linux_s390x.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_loong64.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_mips64x.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_mipsx.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_netbsd_arm64.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_openbsd_arm64.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_openbsd_arm64.s
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_other_arm64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_other_arm.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_other_mips64x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_other_ppc64x.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_other_riscv64.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_ppc64x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_riscv64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_s390x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_s390x.s
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_wasm.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_x86.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_x86.s
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_zos.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/cpu_zos_s390x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/endian_big.go
+
+       Copyright 2023 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/endian_little.go
+
+       Copyright 2023 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/hwcap_linux.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/parse.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/proc_cpuinfo_linux.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/runtime_auxv.go
+
+       Copyright 2023 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/runtime_auxv_go121.go
+
+       Copyright 2023 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/syscall_aix_gccgo.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/cpu/syscall_aix_ppc64_gc.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/execabs/execabs.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/execabs/execabs_go118.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/execabs/execabs_go119.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/asm_plan9_386.s
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/asm_plan9_amd64.s
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/asm_plan9_arm.s
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/asm.s
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/dir_plan9.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/env_plan9.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/errors_plan9.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/mkall.sh
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/mkerrors.sh
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/mksyscall.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/mksysnum_plan9.sh
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/pwd_go15_plan9.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/pwd_plan9.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/race0.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/race.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/str.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/syscall.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/plan9/syscall_plan9.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/affinity_linux.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/aliases.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_aix_ppc64.s
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_bsd_386.s
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_bsd_amd64.s
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_bsd_arm64.s
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_bsd_arm.s
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_bsd_ppc64.s
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_bsd_riscv64.s
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_386.s
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_amd64.s
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_arm64.s
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_arm.s
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_loong64.s
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_mips64x.s
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_mipsx.s
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_ppc64x.s
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_riscv64.s
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_linux_s390x.s
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_openbsd_mips64.s
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_solaris_amd64.s
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/asm_zos_s390x.s
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/bluetooth_linux.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/cap_freebsd.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/constants.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_aix_ppc64.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_aix_ppc.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_darwin.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_dragonfly.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_freebsd.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_linux.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_netbsd.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_openbsd.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dev_zos.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/dirent.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/endian_big.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/endian_little.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/env_unix.go
+
+       Copyright 2010 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/epoll_zos.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/fcntl_darwin.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/fcntl.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/fcntl_linux_32bit.go
+
+       Copyright 2014 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/fdset.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/fstatfs_zos.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/gccgo_c.c
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/gccgo.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/gccgo_linux_amd64.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ifreq_linux.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/internal/mkmerge/mkmerge.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ioctl_linux.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ioctl_signed.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ioctl_unsigned.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ioctl_zos.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/linux/mkall.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/linux/mksysnum.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/linux/types.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mkall.sh
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mkasm.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mkerrors.sh
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mkpost.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mksyscall_aix_ppc64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mksyscall_aix_ppc.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mksyscall.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mksyscall_solaris.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mksysctl_openbsd.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mksysnum.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mmap_nomremap.go
+
+       Copyright 2023 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/mremap.go
+
+       Copyright 2023 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/pagesize_unix.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/pledge_openbsd.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ptrace_darwin.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ptrace_ios.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/race0.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/race.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/readdirent_getdents.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/readdirent_getdirentries.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/sockcmsg_dragonfly.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/sockcmsg_linux.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/sockcmsg_unix.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/sockcmsg_unix_other.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_aix.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_aix_ppc64.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_aix_ppc.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_bsd.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_darwin_amd64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_darwin_arm64.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_darwin.go
+
+       Copyright 2009,2010 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_darwin_libSystem.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_dragonfly_amd64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_dragonfly.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_freebsd_386.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_freebsd_amd64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_freebsd_arm64.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_freebsd_arm.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_freebsd.go
+
+       Copyright 2009,2010 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_freebsd_riscv64.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_hurd_386.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_hurd.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_illumos.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_386.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_alarm.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_amd64_gc.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_amd64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_arm64.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_arm.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_gc_386.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_gc_arm.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_gccgo_386.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_gccgo_arm.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_gc.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_loong64.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_mips64x.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_mipsx.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_ppc64x.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_ppc.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_riscv64.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_s390x.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_linux_sparc64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_netbsd_386.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_netbsd_amd64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_netbsd_arm64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_netbsd_arm.go
+
+       Copyright 2013 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_netbsd.go
+
+       Copyright 2009,2010 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_386.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_amd64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_arm64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_arm.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd.go
+
+       Copyright 2009,2010 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_libc.go
+
+       Copyright 2022 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_mips64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_ppc64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_openbsd_riscv64.go
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_solaris_amd64.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_solaris.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_unix_gc.go
+
+       Copyright 2016 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_unix_gc_ppc64x.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_unix.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/syscall_zos_s390x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/sysvshm_linux.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/sysvshm_unix.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/sysvshm_unix_other.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/timestruct.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/types_aix.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/types_darwin.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/types_dragonfly.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/types_freebsd.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/types_netbsd.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/types_openbsd.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/types_solaris.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/unveil_openbsd.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/xattr_bsd.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/zerrors_zos_s390x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/zsysnum_zos_s390x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/unix/ztypes_zos_s390x.go
+
+       Copyright 2020 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/aliases.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/dll_windows.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/empty.s
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/env_windows.go
+
+       Copyright 2010 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/eventlog.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/exec_windows.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/memory_windows.go
+
+       Copyright 2017 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/mkerrors.bash
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/mkknownfolderids.bash
+
+       Copyright 2019 The Go Authors
+
+       See SECTION 8 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/mksyscall.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/mkwinsyscall/mkwinsyscall.go
+
+       Copyright 2013 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/race0.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/race.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/registry/key.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/registry/mksyscall.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/registry/syscall.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/registry/value.go
+
+       Copyright 2015 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/security_windows.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/service.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/setupapi_windows.go
+
+       Copyright 2021 The Go Authors
+
+       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/str.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/debug/log.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/debug/service.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/eventlog/install.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/eventlog/log.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/example/beep.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/example/install.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/example/main.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/example/manage.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/example/service.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/mgr/config.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/mgr/mgr.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/mgr/recovery.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/mgr/service.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/security.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/svc/service.go
+
+       Copyright 2012 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/syscall.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/syscall_windows.go
+
+       Copyright 2009 The Go Authors
+
+       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/types_windows_386.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/types_windows_amd64.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/types_windows_arm64.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/types_windows_arm.go
+
+       Copyright 2018 The Go Authors
+
+       See SECTION 4 in 'LICENSE TEXT REFERENCE TABLE'
+
+       golang.org/x/sys@v0.13.0/windows/types_windows.go
+
+       Copyright 2011 The Go Authors
+
+       See SECTION 3 in 'LICENSE TEXT REFERENCE TABLE'
 
 
 ==================== APPENDIX. Standard License Files ====================
@@ -8985,31 +10431,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -------------------- SECTION 3 --------------------
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-   * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-   * Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 -------------------- SECTION 4 --------------------
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -9026,6 +10449,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -------------------- SECTION 6 --------------------
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is furnished to do
+// so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+-------------------- SECTION 7 --------------------
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -9037,7 +10478,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
--------------------- SECTION 7 --------------------
+-------------------- SECTION 8 --------------------
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+-------------------- SECTION 9 --------------------
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is furnished to do
+// so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+-------------------- SECTION 10 --------------------
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -9049,7 +10511,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
--------------------- SECTION 8 --------------------
+-------------------- SECTION 11 --------------------
+are still covered by their original MIT license, with the additional
+-------------------- SECTION 12 --------------------
+All the remaining project files are covered by the Apache license:
+-------------------- SECTION 13 --------------------
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -9061,7 +10527,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
--------------------- SECTION 9 --------------------
+-------------------- SECTION 14 --------------------
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9072,29 +10538,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
--------------------- SECTION 10 --------------------
+-------------------- SECTION 15 --------------------
 **AGPL**, **MIT**, **2-Clause BSD** or **3-Clause BSD**.
--------------------- SECTION 11 --------------------
+-------------------- SECTION 16 --------------------
 // Parts inspired by https://github.com/ryanuber/go-license
 
-
-
-======================================================================
-
-To the extent any open source components are licensed under the GPL
-and/or LGPL, or other similar licenses that require the source code
-and/or modifications to source code to be made available (as would be
-noted above), you may obtain a copy of the source code corresponding to
-the binaries for such open source components and modifications thereto,
-if any, (the "Source Files"), by downloading the Source Files from
-VMware's website at http://www.vmware.com/download/open_source.html, or
-by sending a request, with your name and address to: VMware, Inc., 3401
-Hillview Avenue, Palo Alto, CA 94304, United States of America. All such
-requests should clearly specify: OPEN SOURCE FILES REQUEST, Attention
-General Counsel. VMware shall mail a copy of the Source Files to you on
-a CD or equivalent physical medium. This offer to obtain a copy of the
-Source Files is valid for three years from the date you acquired this
-Software product. Alternatively, the Source Files may accompany the
-VMware product.
-
-[CLOUDDIRECTORNAMEDDISKCSIDRIVER14GAHM071023]
+[CLOUDDIRECTORNAMEDDISKCSIDRIVER150GAFM122023]
