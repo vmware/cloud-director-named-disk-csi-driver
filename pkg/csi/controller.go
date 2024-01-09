@@ -557,7 +557,6 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 			CapacityBytes:         newSizeMb * MbToBytes,
 			NodeExpansionRequired: true,
 		}, nil
-		break
 
 	default:
 		return nil, status.Errorf(codes.Internal, "Unknown volume expansion mode [%s]", expansionMode.String())
