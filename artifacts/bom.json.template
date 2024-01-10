@@ -17,7 +17,7 @@
 		"binaries": [],
 		"dependencies": [
 			{
-				"name":"cloud-director-named-disk-csi-driver",
+				"name":"vmware-cloud-director/cloud-director-named-disk-csi-driver",
 				"version":"__VERSION__",
 				"imageRepository":"__REGISTRY__"
 			},{
