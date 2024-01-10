@@ -32,6 +32,10 @@
 				"name":"sig-storage/csi-provisioner",
 				"version":"v2.2.2",
 				"imageRepository":"registry.k8s.io"
+			},{
+				"name":"sig-storage/csi-resizer",
+				"version":"v1.4.0",
+				"imageRepository":"registry.k8s.io"
 			}
 		]
 	}

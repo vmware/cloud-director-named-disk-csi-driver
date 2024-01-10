@@ -13,6 +13,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdcsiclient"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"k8s.io/klog"
@@ -81,10 +82,10 @@ func (cs *controllerServer) isDiskShareable(volumeCapabilities []*csi.VolumeCapa
 
 func (cs *controllerServer) CreateVolume(ctx context.Context,
 	req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error) {
+
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "CreateVolume: req should not be nil")
 	}
-
 	klog.Infof("CreateVolume: called with req [%#v]", *req)
 
 	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
@@ -162,11 +163,12 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 }
 
 func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVolumeRequest) (*csi.DeleteVolumeResponse, error) {
+
 	if req == nil {
 		return nil, fmt.Errorf("req should not be nil")
 	}
-
 	klog.Infof("DeleteVolume: called with req [%#v]", *req)
+
 	volumeID := req.GetVolumeId()
 
 	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
@@ -228,7 +230,8 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	}
 
 	klog.Infof("Getting node details for [%s]", nodeID)
-	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
+	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName,
+		cs.DiskManager.VCDClient.ClusterOVDCName)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
 	}
@@ -289,18 +292,35 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
-	nodeID := req.GetNodeId()
-	if len(nodeID) == 0 {
-		return nil, status.Errorf(codes.InvalidArgument,
-			"ControllerUnpublishVolume: Node ID must be provided")
-	}
-
 	volumeID := req.GetVolumeId()
 	if len(volumeID) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument,
 			"ControllerUnpublishVolume: Volume ID must be provided")
 	}
 
+	disk, err := cs.DiskManager.GetDiskByName(volumeID)
+	if err != nil {
+		if err == govcd.ErrorEntityNotFound {
+			klog.Infof("Volume [%s] is not available. Hence will mark as unpublished.", volumeID)
+			return &csi.ControllerUnpublishVolumeResponse{}, nil
+		}
+		return nil, status.Errorf(codes.NotFound, "Unable to find disk [%s] by name: [%v]", volumeID, err)
+	}
+	attachedVMs, err := cs.DiskManager.GovcdAttachedVM(disk)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Unable to find VMs attached to disk named [%s]: [%v]",
+			volumeID, err)
+	}
+	if len(attachedVMs) == 0 {
+		klog.Infof("Volume [%s] is not attached to any node. Hence will not run the unpublish.", volumeID)
+		return &csi.ControllerUnpublishVolumeResponse{}, nil
+	}
+
+	nodeID := req.GetNodeId()
+	if nodeID == "" {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"ControllerUnpublishVolume: Node ID must be provided")
+	}
 	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
@@ -340,14 +360,15 @@ func (cs *controllerServer) ListVolumes(ctx context.Context,
 	return nil, status.Error(codes.Unimplemented, "ListVolumes not implemented")
 }
 
-func (cs *controllerServer) GetCapacity(ctx context.Context,
-	req *csi.GetCapacityRequest) (*csi.GetCapacityResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "GetCapacity not implemented")
-}
-
 func (cs *controllerServer) ControllerGetCapabilities(ctx context.Context,
 	req *csi.ControllerGetCapabilitiesRequest) (*csi.ControllerGetCapabilitiesResponse, error) {
+
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "ControllerGetCapabilities: req should not be nil")
+	}
 	klog.Infof("ControllerGetCapabilities: called with args [%#v]", *req)
+
+	klog.Infof("Returning controller capabilities [%#v]", cs.Driver.controllerServiceCapabilities)
 	return &csi.ControllerGetCapabilitiesResponse{
 		Capabilities: cs.Driver.controllerServiceCapabilities,
 	}, nil
@@ -368,9 +389,180 @@ func (cs *controllerServer) ListSnapshots(ctx context.Context,
 	return nil, status.Error(codes.InvalidArgument, "ListSnapshots not implemented")
 }
 
+func (cs *controllerServer) GetCapacity(ctx context.Context,
+	req *csi.GetCapacityRequest) (*csi.GetCapacityResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "GetCapacity not implemented")
+}
+
 func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 	req *csi.ControllerExpandVolumeRequest) (*csi.ControllerExpandVolumeResponse, error) {
-	return nil, status.Error(codes.InvalidArgument, "ControllerExpandVolume not implemented")
+
+	if req == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "ControllerExpandVolume: req should not be nil")
+	}
+	klog.Infof("ControllerExpandVolume: called with req [%#v]", *req)
+
+	diskName := req.VolumeId
+	if len(diskName) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Volume Id not provided")
+	}
+
+	if req.CapacityRange.LimitBytes > 0 && req.CapacityRange.RequiredBytes > req.CapacityRange.LimitBytes {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"required bytes [%d] should be lesser than limit bytes [%d]",
+			req.CapacityRange.RequiredBytes, req.CapacityRange.LimitBytes)
+	}
+
+	volumeCapability := req.GetVolumeCapability()
+	if volumeCapability == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Volume Capability is nil")
+	}
+	volumeAccessMode := volumeCapability.GetAccessMode()
+	if volumeAccessMode == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "Volume Access Mode is nil")
+	}
+
+	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
+		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
+	}
+
+	disk, err := cs.DiskManager.GetDiskByName(diskName)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Unable to get disk by ID [%s]: [%v]", diskName, err)
+	}
+
+	// The required bytes is a minimum and need something >= it. Hence use ceil.
+	newSizeMb := int64(math.Ceil(float64(req.CapacityRange.RequiredBytes / MbToBytes)))
+	if disk.SizeMb == newSizeMb {
+		klog.Infof("Volume [%s] already at requested size [%d]Mb", diskName, newSizeMb)
+		return &csi.ControllerExpandVolumeResponse{
+			CapacityBytes:         newSizeMb * MbToBytes,
+			NodeExpansionRequired: false,
+		}, nil
+	}
+	if disk.SizeMb > newSizeMb {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"Disk [%s] new size [%d]Mb cannot be less than previous value [%d]",
+			diskName, newSizeMb, disk.SizeMb)
+	}
+
+	attachedVMs, err := cs.DiskManager.GovcdAttachedVM(disk)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Unable to find VM attached to disk [%s]: [%v]", diskName, err)
+	}
+	if len(attachedVMs) > 1 {
+		// If there are multiple (>1) VMs attached to a disk, the disk cannot be expanded ONLINE. For OFFLINE expansion
+		// also there cannot be any disks attached.
+		return nil, status.Errorf(codes.FailedPrecondition,
+			"There should be at most 1 VM attached to a disk for Volume Expansion (ONLINE OR OFFLINE). Found [%d]",
+			len(attachedVMs))
+	}
+
+	expansionMode := csi.PluginCapability_VolumeExpansion_UNKNOWN
+	if volumeAccessMode.Mode != csi.VolumeCapability_AccessMode_MULTI_NODE_MULTI_WRITER &&
+		volumeCapability.GetBlock() == nil {
+		expansionMode = csi.PluginCapability_VolumeExpansion_ONLINE
+		if len(attachedVMs) == 0 {
+			// Though ONLINE is allowed, if there is no VM attached, we cannot make use of an api call using the VM.
+			// Hence, use OFFLINE mode here. Note that, in the race-condition where we choose OFFLINE mode, but the disk
+			// gets attached in the interim, the disk expansion API call will fail. Then CSI will retry and then find
+			// an attached VM. Then it will use the ONLINE route using the VM API.
+			expansionMode = csi.PluginCapability_VolumeExpansion_OFFLINE
+		}
+	} else {
+		expansionMode = csi.PluginCapability_VolumeExpansion_OFFLINE
+	}
+	klog.Infof("Using [%s] expansion mode since volume Access Mode is [%s], attached VM count is [%d], and block mode is [%v]",
+		expansionMode.String(), volumeAccessMode.Mode.String(), len(attachedVMs), volumeCapability.GetBlock() != nil)
+
+	switch expansionMode {
+	case csi.PluginCapability_VolumeExpansion_OFFLINE:
+		if len(attachedVMs) > 0 {
+			return nil, status.Errorf(codes.FailedPrecondition,
+				"Disk [%s] cannot be expanded in [%s] mode since VMs [%v] are attached", diskName,
+				expansionMode.String(), attachedVMs)
+		}
+		newDisk := &types.Disk{ // note that this is a SDK type
+			Description: disk.Description,
+			SizeMb:      newSizeMb,
+			Name:        disk.Name,
+			Owner:       disk.Owner,
+		}
+
+		klog.Infof("Expanding volume [%s] from [%d]Mb to [%d]Mb...", disk.Name, disk.SizeMb, newSizeMb)
+		task, err := cs.DiskManager.UpdateDisk(disk, newDisk)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to update disk [%s]: [%v]", disk.Name, err)
+		}
+		if err = task.WaitTaskCompletion(); err != nil {
+			return nil, status.Errorf(codes.Internal, "unable to wait for task [%v] for expansion of disk [%s]: [%v]",
+				task, disk.Name, err)
+		}
+		klog.Infof("Volume [%s] expanded to [%d]Mb successfully.", disk.Name, newSizeMb)
+
+		return &csi.ControllerExpandVolumeResponse{
+			CapacityBytes:         newSizeMb * MbToBytes,
+			NodeExpansionRequired: false,
+		}, nil
+		break
+
+	case csi.PluginCapability_VolumeExpansion_ONLINE:
+		if len(attachedVMs) != 1 {
+			return nil, status.Errorf(codes.FailedPrecondition,
+				"Disk [%s] cannot be expanded in [%s] mode since zero or more than one VMs [%v] are attached",
+				diskName, expansionMode.String(), attachedVMs)
+		}
+
+		attachedVMName := attachedVMs[0].Name
+		klog.Infof("Getting node details for attached VM [%s]", attachedVMName)
+		vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName,
+			cs.DiskManager.VCDClient.ClusterOVDCName)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+		}
+		vm, err := vdcManager.FindVMByName(cs.VAppName, attachedVMName)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s]: [%v]", attachedVMName, err)
+		}
+
+		// we need the disk from the VM since we need to send all disk settings while updating the disk
+		vmSpecSection := vm.VM.VmSpecSection
+		newDiskSettings := vmSpecSection.DiskSection.DiskSettings
+		diskFound := false
+		for idx, _ := range newDiskSettings {
+			if newDiskSettings[idx].Disk == nil {
+				continue
+			}
+			klog.Infof("Comparing [%s] and [%s]", newDiskSettings[idx].Disk.ID, disk.Id)
+			if newDiskSettings[idx].Disk.ID == disk.Id {
+				newDiskSettings[idx].SizeMb = newSizeMb
+				diskFound = true
+				break
+			}
+		}
+		if !diskFound {
+			return nil, status.Errorf(codes.Internal, "Unable to find disk [%s] from node [%s]: [%v]",
+				diskName, attachedVMName, err)
+		}
+		vmSpecSection.DiskSection.DiskSettings = newDiskSettings
+		if _, err = vm.UpdateInternalDisks(vmSpecSection); err != nil {
+			return nil, status.Errorf(codes.Internal, "Unable to increase size of disk [%s] from [%d]MB to [%d]MB: [%v]",
+				diskName, disk.SizeMb, newSizeMb, err)
+		}
+		klog.Infof("Size of disk [%s] increased from [%d]MB to [%d]MB successfully. "+
+			"File system will be increased by the node later.",
+			diskName, disk.SizeMb, newSizeMb)
+
+		return &csi.ControllerExpandVolumeResponse{
+			CapacityBytes:         newSizeMb * MbToBytes,
+			NodeExpansionRequired: true,
+		}, nil
+
+	default:
+		return nil, status.Errorf(codes.Internal, "Unknown volume expansion mode [%s]", expansionMode.String())
+	}
+
+	return nil, status.Errorf(codes.Internal, "Unexpected location reached")
 }
 
 func (cs *controllerServer) ControllerGetVolume(ctx context.Context,
