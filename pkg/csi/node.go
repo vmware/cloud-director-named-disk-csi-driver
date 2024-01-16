@@ -52,6 +52,53 @@ func NewNodeService(driver *VCDDriver, nodeID string) csi.NodeServer {
 	}
 }
 
+// NodeStageVolumeBlockMount 'stages' block mounts. There is really no need to stage block mounts since the device is
+// directly exposed to the pod. However, we need to run some scans in order to ensure that disks that are resized are
+// correctly reconfigured on the host. Hence, this function does an NOP staging and sends scan signals on scsi buses.
+func (ns *nodeService) NodeStageVolumeBlockMount(ctx context.Context, volumeCapability *csi.VolumeCapability,
+	publishContext map[string]string, req *csi.NodeStageVolumeRequest) (*csi.NodeStageVolumeResponse, error) {
+
+	volumeID := req.GetVolumeId()
+	if volumeID == "" {
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolumeBlockMount: Volume Id not provided")
+	}
+
+	vmFullName, ok := publishContext[VMFullNameAttribute]
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"NodeStageVolumeBlockMount: PublishContext did not contain full vm name in publish context")
+	}
+
+	diskUUID, ok := publishContext[DiskUUIDAttribute]
+	if !ok {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"NodeStageVolumeBlockMount: PublishContext did not contain disk UUID in publish context")
+	}
+
+	err := ns.rescanDiskInVM(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeBlockMount: unable to scan SCSI bus for vm [%s]: [%v]",
+			vmFullName, err)
+	}
+
+	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeBlockMount: unable to obtain disk for vm [%s], disk [%s]: [%v]",
+			vmFullName, volumeID, err)
+	}
+
+	// rescan block devices to get new sizes in case disks were resized
+	if err := ns.rescanScsiBlockDiskInVM(ctx, devicePath); err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeBlockMount: Unable to rescan disk [%s] in VM: [%v]",
+			devicePath, err)
+	}
+	klog.Infof("NodeStageVolumeBlockMount: Scanned size of disk [%s] on vm [%s] successfully", devicePath, vmFullName)
+
+	klog.Infof("NodeStageVolumeBlockMount: skipping stage of disk [%s] on vm [%s] since this is a block mount",
+		devicePath, vmFullName)
+	return &csi.NodeStageVolumeResponse{}, nil
+}
+
 func (ns *nodeService) NodeStageVolumeFilesystemMount(ctx context.Context, volumeCapability *csi.VolumeCapability,
 	publishContext map[string]string, req *csi.NodeStageVolumeRequest) (*csi.NodeStageVolumeResponse, error) {
 
@@ -64,27 +111,27 @@ func (ns *nodeService) NodeStageVolumeFilesystemMount(ctx context.Context, volum
 		fsType, ok = publishContext[FileSystemParameter]
 		if !ok {
 			return nil, status.Errorf(codes.InvalidArgument,
-				"NodeStageVolume: PublishContext does not have [%s] set", FileSystemParameter)
+				"NodeStageVolumeFilesystemMount: PublishContext does not have [%s] set", FileSystemParameter)
 		}
 	} else {
 		ephemeralVolume, ok := volumeContext[EphemeralVolumeContext]
 		if ok {
 			if ephemeralVolume == "true" {
 				return &csi.NodeStageVolumeResponse{}, status.Errorf(codes.Unimplemented,
-					"NodeStageVolume: [%s] not supported", EphemeralVolumeContext)
+					"NodeStageVolumeFilesystemMount: [%s] not supported", EphemeralVolumeContext)
 			}
 		}
 		fsType, ok = volumeContext[FileSystemParameter]
 		if !ok {
 			return nil, status.Errorf(codes.InvalidArgument,
-				"NodeStageVolume: PublishContext does not have [%s] set", FileSystemParameter)
+				"NodeStageVolumeFilesystemMount: PublishContext does not have [%s] set", FileSystemParameter)
 		}
 	}
 
 	vmFullName, ok := publishContext[VMFullNameAttribute]
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument,
-			"NodeStageVolume: PublishContext did not contain full vm name in publish context")
+			"NodeStageVolumeFilesystemMount: PublishContext did not contain full vm name in publish context")
 	}
 
 	mountMode := "rw"
@@ -109,36 +156,36 @@ func (ns *nodeService) NodeStageVolumeFilesystemMount(ctx context.Context, volum
 	diskUUID, ok := publishContext[DiskUUIDAttribute]
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument,
-			"NodeStageVolume: PublishContext did not contain disk UUID in publish context")
+			"NodeStageVolumeFilesystemMount: PublishContext did not contain disk UUID in publish context")
 	}
 
 	volumeID := req.GetVolumeId()
 	if volumeID == "" {
-		return nil, status.Error(codes.InvalidArgument, "NodeStageVolume: Volume Id not provided")
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolumeFilesystemMount: Volume Id not provided")
 	}
 
 	mountDir := req.GetStagingTargetPath()
 	if mountDir == "" {
-		return nil, status.Error(codes.InvalidArgument, "NodeStageVolume: Staging target not provided")
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolumeFilesystemMount: Staging target not provided")
 	}
 
 	err := ns.rescanDiskInVM(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "NodeStageVolume: unable to scan SCSI bus for vm [%s]: [%v]",
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeFilesystemMount: unable to scan SCSI bus for vm [%s]: [%v]",
 			vmFullName, err)
 	}
 	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "NodeStageVolume: unable to obtain disk for vm [%s], disk [%s]: [%v]",
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeFilesystemMount: unable to obtain disk for vm [%s], disk [%s]: [%v]",
 			vmFullName, volumeID, err)
 	}
 
 	// rescan block devices to get new sizes in case disks were resized
 	if err := ns.rescanScsiBlockDiskInVM(ctx, devicePath); err != nil {
-		return nil, status.Errorf(codes.Internal, "NodeStageVolume: Unable to rescan disk [%s] in VM: [%v]",
+		return nil, status.Errorf(codes.Internal, "NodeStageVolumeFilesystemMount: Unable to rescan disk [%s] in VM: [%v]",
 			devicePath, err)
 	}
-	klog.Infof("Scanned size of disk [%s] successfully", devicePath)
+	klog.Infof("NodeStageVolumeFilesystemMount: Scanned size of disk [%s] on vm [%s] successfully", devicePath, vmFullName)
 
 	// Check if already mounted
 	isMounted, isMountedAsExpected, err := ns.isVolumeMountedAsExpected(ctx, devicePath, mountDir, mountMode)
@@ -210,17 +257,19 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 	publishContext := req.GetPublishContext()
 	if publishContext == nil {
 		return nil, status.Errorf(codes.InvalidArgument,
-			"NodeStageVolumeFilesystemMount: Publish context not provided")
+			"NodeStageVolume: Publish context not provided")
 	}
 
 	// No staging needed for block device. Must be handled by pod itself.
 	if isBlockMount := volumeCapability.GetBlock(); isBlockMount != nil {
-		// There is no need to stage Block Mounts since the device is directly exposed to the pod.
-		klog.Infof("Skipping Staging volume since it is a Block Mount")
+		if resp, err := ns.NodeStageVolumeBlockMount(ctx, volumeCapability, publishContext, req); err != nil {
+			klog.Infof("NodeStageVolume: failed with err = [%v], resp = [%#v]", err, resp)
+			return nil, status.Errorf(codes.Internal, "unable to stage volume as block volume: [%v]", err)
+		}
 	} else {
 		klog.Infof("Staging volume as Filesystem Mount")
 		if resp, err := ns.NodeStageVolumeFilesystemMount(ctx, volumeCapability, publishContext, req); err != nil {
-			klog.Infof("NodeStageVolumeFilesystemMount: failed with err = [%v], resp = [%#v]", err, resp)
+			klog.Infof("NodeStageVolume: failed with err = [%v], resp = [%#v]", err, resp)
 			return nil, status.Errorf(codes.Internal, "unable to stage volume as filesystem volume: [%v]", err)
 		}
 	}

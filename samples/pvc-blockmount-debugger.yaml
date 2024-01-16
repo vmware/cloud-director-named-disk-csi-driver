@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
   - name: test-container
-    image: harbor-repo.vmware.com/vcloud/ubuntu:20.04
+    image: projects-stg.registry.vmware.com/vmware-cloud-director/busybox:latest
     command: ["/bin/sh", "-c", "while true ; do sleep 2 ; done"]
     securityContext:
       privileged: true
