@@ -6,8 +6,10 @@ package govcd
 
 import (
 	"fmt"
-	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"net/url"
+	"strings"
+
+	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
 
 // VdcGroup is a structure defining a VdcGroup in Organization
@@ -233,18 +235,15 @@ func (adminOrg *AdminOrg) GetAllVdcGroups(queryParameters url.Values) ([]*VdcGro
 }
 
 // GetVdcGroupByName retrieves VDC group by given name
-// When the name contains commas, semicolons or asterisks, the encoding is rejected by the API in VCD 10.2 version.
+// When the name contains commas, semicolons or asterisks, the encoding is rejected by the API in VCD.
 // For this reason, when one or more commas, semicolons or asterisks are present we run the search brute force,
-// by fetching all VDC groups and comparing the names. Yet, this not needed anymore in VCD 10.3 version.
+// by fetching all VDC groups and comparing the names.
 // Also, url.QueryEscape as well as url.Values.Encode() both encode the space as a + character. So we use
 // search brute force too. Reference to issue:
 // https://github.com/golang/go/issues/4013
 // https://github.com/czos/goamz/pull/11/files
 func (adminOrg *AdminOrg) GetVdcGroupByName(name string) (*VdcGroup, error) {
-	slowSearch, params, err := shouldDoSlowSearch("name", name, adminOrg.client)
-	if err != nil {
-		return nil, err
-	}
+	slowSearch, params := shouldDoSlowSearch("name", name)
 
 	var foundVdcGroups []*VdcGroup
 	vdcGroups, err := adminOrg.GetAllVdcGroups(params)
@@ -308,6 +307,43 @@ func (adminOrg *AdminOrg) GetVdcGroupById(id string) (*VdcGroup, error) {
 	}
 
 	err = adminOrg.client.OpenApiGetItem(minimumApiVersion, urlRef, nil, vdcGroup.VdcGroup, getTenantContextHeader(tenantContext))
+	if err != nil {
+		return nil, err
+	}
+
+	return vdcGroup, nil
+}
+
+// GetVdcGroupById Returns VDC group using provided ID
+func (org *Org) GetVdcGroupById(id string) (*VdcGroup, error) {
+	if id == "" {
+		return nil, fmt.Errorf("empty VDC group ID")
+	}
+
+	tenantContext, err := org.getTenantContext()
+	if err != nil {
+		return nil, err
+	}
+
+	endpoint := types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointVdcGroups
+	minimumApiVersion, err := org.client.checkOpenApiEndpointCompatibility(endpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	urlRef, err := org.client.OpenApiBuildEndpoint(endpoint, id)
+	if err != nil {
+		return nil, err
+	}
+
+	vdcGroup := &VdcGroup{
+		VdcGroup: &types.VdcGroup{},
+		client:   org.client,
+		Href:     urlRef.String(),
+		parent:   org,
+	}
+
+	err = org.client.OpenApiGetItem(minimumApiVersion, urlRef, nil, vdcGroup.VdcGroup, getTenantContextHeader(tenantContext))
 	if err != nil {
 		return nil, err
 	}
@@ -483,7 +519,7 @@ func (vdcGroup *VdcGroup) EnableDefaultPolicy() (*VdcGroup, error) {
 	if dfwPolicies.DefaultPolicy == nil {
 		return nil, fmt.Errorf("DFW has to be enabled before changing  Default policy")
 	}
-	dfwPolicies.DefaultPolicy.Enabled = takeBoolPointer(true)
+	dfwPolicies.DefaultPolicy.Enabled = addrOf(true)
 	return vdcGroup.UpdateDefaultDfwPolicies(*dfwPolicies.DefaultPolicy)
 }
 
@@ -497,6 +533,82 @@ func (vdcGroup *VdcGroup) DisableDefaultPolicy() (*VdcGroup, error) {
 	if dfwPolicies.DefaultPolicy == nil {
 		return nil, fmt.Errorf("DFW has to be enabled before changing Default policy")
 	}
-	dfwPolicies.DefaultPolicy.Enabled = takeBoolPointer(false)
+	dfwPolicies.DefaultPolicy.Enabled = addrOf(false)
 	return vdcGroup.UpdateDefaultDfwPolicies(*dfwPolicies.DefaultPolicy)
+}
+
+func getOwnerTypeFromUrn(urn string) (string, error) {
+	if !isUrn(urn) {
+		return "", fmt.Errorf("supplied ID is not URN: %s", urn)
+	}
+
+	ss := strings.Split(urn, ":")
+	return ss[2], nil
+}
+
+// OwnerIsVdcGroup evaluates given URN and returns true if it is a VDC Group
+func OwnerIsVdcGroup(urn string) bool {
+	ownerType, err := getOwnerTypeFromUrn(urn)
+	if err != nil {
+		return false
+	}
+
+	if strings.EqualFold(ownerType, types.UrnTypeVdcGroup) {
+		return true
+	}
+
+	return false
+}
+
+// OwnerIsVdc evaluates a given URN and returns true if it is a VDC
+func OwnerIsVdc(urn string) bool {
+	ownerType, err := getOwnerTypeFromUrn(urn)
+	if err != nil {
+		return false
+	}
+
+	if strings.EqualFold(ownerType, types.UrnTypeVdc) {
+		return true
+	}
+
+	return false
+}
+
+// GetCapabilities allows to retrieve a list of VDC capabilities. It has a list of values. Some particularly useful are:
+// * networkProvider - overlay stack responsible for providing network functionality. (NSX_V or NSX_T)
+// * crossVdc - supports cross vDC network creation
+func (vdcGroup *VdcGroup) GetCapabilities() ([]types.VdcCapability, error) {
+	if vdcGroup.VdcGroup.Id == "" {
+		return nil, fmt.Errorf("VDC ID must be set to get capabilities")
+	}
+
+	endpoint := types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointVdcCapabilities
+	minimumApiVersion, err := vdcGroup.client.checkOpenApiEndpointCompatibility(endpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	urlRef, err := vdcGroup.client.OpenApiBuildEndpoint(fmt.Sprintf(endpoint, url.QueryEscape(vdcGroup.VdcGroup.Id)))
+	if err != nil {
+		return nil, err
+	}
+
+	capabilities := make([]types.VdcCapability, 0)
+	err = vdcGroup.client.OpenApiGetAllItems(minimumApiVersion, urlRef, nil, &capabilities, nil)
+	if err != nil {
+		return nil, err
+	}
+	return capabilities, nil
+}
+
+// IsNsxt is a convenience function to check if VDC is backed by NSX-T pVdc
+// If error occurs - it returns false
+func (vdcGroup *VdcGroup) IsNsxt() bool {
+	vdcCapabilities, err := vdcGroup.GetCapabilities()
+	if err != nil {
+		return false
+	}
+
+	networkProviderCapability := getCapabilityValue(vdcCapabilities, "networkProvider")
+	return networkProviderCapability == types.VdcCapabilityNetworkProviderNsxt
 }

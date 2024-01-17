@@ -164,7 +164,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	err = diskManager.AttachVolume(vm, disk)
 	assert.NoError(t, err, "unable to attach disk [%s] to vm [%#v]", disk.Name, vm)
 
-	attachedVMs, err := diskManager.govcdAttachedVM(disk)
+	attachedVMs, err := diskManager.GovcdAttachedVM(disk)
 	assert.NoError(t, err, "unable to get VMs attached to disk [%#v]", disk)
 	assert.NotNil(t, attachedVMs, "VM [%s] should be returned", nodeID)
 	assert.EqualValues(t, len(attachedVMs), 1, "[%d] VM(s) should be returned", 1)
@@ -173,7 +173,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	err = diskManager.DetachVolume(vm, disk.Name)
 	assert.NoError(t, err, "unable to detach disk [%s] from vm [%#v]", disk.Name, vm)
 
-	attachedVMs, err = diskManager.govcdAttachedVM(disk)
+	attachedVMs, err = diskManager.GovcdAttachedVM(disk)
 	assert.NoError(t, err, "unable to get VMs attached to disk [%#v]", disk)
 	assert.Nil(t, attachedVMs, "no VM should be returned", nodeID)
 

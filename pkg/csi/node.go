@@ -9,6 +9,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
+	mountutils "k8s.io/mount-utils"
+	utilexec "k8s.io/utils/exec"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -26,12 +28,15 @@ import (
 const (
 	// The maximum number of volumes that a node can have attached.
 	// Since we're using bus 1 only, it allows up-to 16 disks of which one (#7)
-	// is pre-allocated for the HBA. Hence we have only 15 disks.
+	// is pre-allocated for the HBA. Hence, we have only 15 disks.
 	maxVolumesPerNode = 15
 
 	DevDiskPath          = "/dev/disk/by-path"
 	ScsiHostPath         = "/sys/class/scsi_host"
 	HostNameRegexPattern = "^host[0-9]+"
+
+	ScsiBlockPathPrefix = "/sys/class/block"
+	ScsiBlockPathSuffix = "device/rescan"
 )
 
 type nodeService struct {
@@ -83,27 +88,27 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		fsType, ok = publishContext[FileSystemParameter]
 		if !ok {
 			return nil, status.Errorf(codes.InvalidArgument,
-				"publish context does not have [%s] set", FileSystemParameter)
+				"NodeStageVolume: PublishContext does not have [%s] set", FileSystemParameter)
 		}
 	} else {
 		ephemeralVolume, ok := volumeContext[EphemeralVolumeContext]
 		if ok {
 			if ephemeralVolume == "true" {
 				return &csi.NodeStageVolumeResponse{}, status.Errorf(codes.Unimplemented,
-					"[%s] not supported", EphemeralVolumeContext)
+					"NodeStageVolume: [%s] not supported", EphemeralVolumeContext)
 			}
 		}
 		fsType, ok = volumeContext[FileSystemParameter]
 		if !ok {
 			return nil, status.Errorf(codes.InvalidArgument,
-				"publish context does not have [%s] set", FileSystemParameter)
+				"NodeStageVolume: PublishContext does not have [%s] set", FileSystemParameter)
 		}
 	}
 
 	vmFullName, ok := publishContext[VMFullNameAttribute]
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument,
-			"PublishContext did not contain full vm name in publish context")
+			"NodeStageVolume: PublishContext did not contain full vm name in publish context")
 	}
 
 	mountMode := "rw"
@@ -118,7 +123,7 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 	}
 	if mnt.FsType != fsType {
 		// allow fsType passed from the PV or other sources to go through
-		klog.Infof("fs type in mountpoint [%s] does not match specified fs type [%s]. Using FS [%s] from PV config.",
+		klog.Infof("fs type in mount-point [%s] does not match specified fs type [%s]. Using FS [%s] from PV config.",
 			mnt.FsType, fsType, fsType)
 		mnt.FsType = fsType
 	}
@@ -128,28 +133,36 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 	diskUUID, ok := publishContext[DiskUUIDAttribute]
 	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument,
-			"PublishContext did not contain disk UUID in publish context")
+			"NodeStageVolume: PublishContext did not contain disk UUID in publish context")
 	}
 
 	volumeID := req.GetVolumeId()
 	if volumeID == "" {
-		return nil, status.Error(codes.InvalidArgument, "Volume Id not provided")
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolume: Volume Id not provided")
 	}
 
 	mountDir := req.GetStagingTargetPath()
 	if mountDir == "" {
-		return nil, status.Error(codes.InvalidArgument, "Staging target not provided")
+		return nil, status.Error(codes.InvalidArgument, "NodeStageVolume: Staging target not provided")
 	}
 
 	err := ns.rescanDiskInVM(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "unable to scan SCSI bus for vm [%s]: [%v]", vmFullName, err)
+		return nil, status.Errorf(codes.Internal, "NodeStageVolume: unable to scan SCSI bus for vm [%s]: [%v]",
+			vmFullName, err)
 	}
 	devicePath, err := ns.getDiskPath(ctx, vmFullName, diskUUID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "unable to obtain disk for vm [%s], disk [%s]: [%v]",
+		return nil, status.Errorf(codes.Internal, "NodeStageVolume: unable to obtain disk for vm [%s], disk [%s]: [%v]",
 			vmFullName, volumeID, err)
 	}
+
+	// rescan block devices to get new sizes in case disks were resized
+	if err := ns.rescanScsiBlockDiskInVM(ctx, devicePath); err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeStageVolume: Unable to rescan disk [%s] in VM: [%v]",
+			devicePath, err)
+	}
+	klog.Infof("Scanned size of disk [%s] successfully", devicePath)
 
 	// Check if already mounted
 	isMounted, isMountedAsExpected, err := ns.isVolumeMountedAsExpected(ctx, devicePath, mountDir, mountMode)
@@ -176,7 +189,7 @@ func (ns *nodeService) NodeStageVolume(ctx context.Context,
 		return nil, status.Errorf(codes.Internal, "could not verify that [%s] is a dir: [%v]", mountDir, err)
 	}
 	if !mountDirExists {
-		// Directory doesn't exest
+		// Directory doesn't exist
 		klog.Infof("Path [%s] does not exist. Make it\n", mountDir)
 		if err := os.MkdirAll(mountDir, 0750); err != nil {
 			return nil, status.Error(codes.Internal,
@@ -332,7 +345,7 @@ func (ns *nodeService) NodePublishVolume(ctx context.Context,
 		hostMountDir, podMountDir, mountFlags)
 	if err = gofsutil.BindMount(ctx, hostMountDir, podMountDir, mountFlags...); err != nil {
 		return nil, status.Error(codes.Internal,
-			fmt.Sprintf("unable to format and mount dir [%s] at path [%s] with fs [%s] and flags [%v]: [%v]",
+			fmt.Sprintf("unable to format and mount dir [%s] at path [%s] with flags [%v]: [%v]",
 				hostMountDir, podMountDir, mountFlags, err))
 	}
 	klog.Infof("Mounted dir [%s] at path [%s] with options [%v]", hostMountDir, podMountDir, mountFlags)
@@ -383,11 +396,7 @@ func (ns *nodeService) NodeUnpublishVolume(ctx context.Context,
 	return &csi.NodeUnpublishVolumeResponse{}, nil
 }
 
-func (ns *nodeService) NodeExpandVolume(context.Context, *csi.NodeExpandVolumeRequest) (*csi.NodeExpandVolumeResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "not implemented...yet")
-}
-
-func (ns *nodeService) NodeGetCapabilities(ctx context.Context, req *csi.NodeGetCapabilitiesRequest) (*csi.NodeGetCapabilitiesResponse, error) {
+func (ns *nodeService) NodeGetCapabilities(_ context.Context, req *csi.NodeGetCapabilitiesRequest) (*csi.NodeGetCapabilitiesResponse, error) {
 	klog.Infof("NodeGetCapabilities called with req: %#v", req)
 
 	return &csi.NodeGetCapabilitiesResponse{
@@ -395,7 +404,7 @@ func (ns *nodeService) NodeGetCapabilities(ctx context.Context, req *csi.NodeGet
 	}, nil
 }
 
-func (ns *nodeService) NodeGetInfo(ctx context.Context, req *csi.NodeGetInfoRequest) (*csi.NodeGetInfoResponse, error) {
+func (ns *nodeService) NodeGetInfo(_ context.Context, _ *csi.NodeGetInfoRequest) (*csi.NodeGetInfoResponse, error) {
 	return &csi.NodeGetInfoResponse{
 		NodeId:             ns.NodeID,
 		AccessibleTopology: nil,
@@ -404,7 +413,7 @@ func (ns *nodeService) NodeGetInfo(ctx context.Context, req *csi.NodeGetInfoRequ
 
 }
 
-func (ns *nodeService) NodeGetVolumeStats(ctx context.Context,
+func (ns *nodeService) NodeGetVolumeStats(_ context.Context,
 	req *csi.NodeGetVolumeStatsRequest) (*csi.NodeGetVolumeStatsResponse, error) {
 
 	klog.Infof("NodeGetVolumeStats called with req: %#v", req)
@@ -439,9 +448,85 @@ func (ns *nodeService) NodeGetVolumeStats(ctx context.Context,
 	}, nil
 }
 
-// rescanDiskInVM re-scan the SCSI bus entirely. CSI runs "echo "- - -" > /sys/class/scsi_host/*/scan" inside VM,
+func (ns *nodeService) NodeExpandVolume(ctx context.Context,
+	req *csi.NodeExpandVolumeRequest) (*csi.NodeExpandVolumeResponse, error) {
+	klog.Infof("NodeGetVolumeStats called with req: [%#v]", req)
+
+	if req.GetVolumeCapability() != nil {
+		if req.GetVolumeCapability() != nil && req.GetVolumeCapability().GetBlock() != nil {
+			klog.Infof("ONLINE Expansion not supported for Block mount volumes")
+			return &csi.NodeExpandVolumeResponse{}, nil
+		}
+	}
+
+	volumePath := req.GetVolumePath()
+	if volumePath == "" {
+		klog.Errorf("unable to get volume path from request")
+		return nil, fmt.Errorf("unable to get volume path from request")
+	}
+
+	stagingTargetPath := req.GetStagingTargetPath()
+	if stagingTargetPath == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "NodeExpandVolume: Staging Path context not provided")
+	}
+	klog.Infof("Staging Target Path is [%s]", stagingTargetPath)
+
+	diskUUID := req.GetVolumeId()
+	if diskUUID == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "NodeExpandVolume: Disk UUID not provided")
+	}
+
+	mounter := mountutils.New("")
+	devicePath, _, err := mountutils.GetDeviceNameFromMount(mounter, stagingTargetPath)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeExpandVolume: Unable to get device path for [%s]: [%v]",
+			stagingTargetPath, err)
+	}
+	if devicePath == "" {
+		return nil, status.Errorf(codes.Internal, "NodeExpandVolume: Empty device path obtained for [%s]: [%v]",
+			stagingTargetPath, err)
+	}
+	klog.Infof("Obtained device path [%s] from mount path [%s] for disk [%s]", devicePath, stagingTargetPath, volumePath)
+
+	// rescan block devices to get new sizes
+	if err := ns.rescanScsiBlockDiskInVM(ctx, devicePath); err != nil {
+		return nil, status.Errorf(codes.Internal, "NodeExpandVolume: Unable to rescan disk [%s] in VM: [%v]",
+			devicePath, err)
+	}
+	klog.Infof("Scanned size of disk [%s] successfully", devicePath)
+
+	klog.Infof("Resizing volume [%s] host-mounted at [%s] from node", volumePath, stagingTargetPath)
+	r := mountutils.NewResizeFs(utilexec.New())
+	if _, err := r.Resize(devicePath, stagingTargetPath); err != nil {
+		klog.Errorf("Failed to resize volume [%s] mounted at [%s] from node: [%v]", volumePath, stagingTargetPath, err)
+		return nil, status.Errorf(codes.Internal,
+			"NodeExpandVolume: Failed to resize volume [%s] host-mounted at [%s] from node: [%v]",
+			volumePath, stagingTargetPath, err)
+	}
+	klog.Infof("Successfully resized volume [%s] host-mounted at [%s] from node", volumePath, stagingTargetPath)
+
+	return &csi.NodeExpandVolumeResponse{}, nil
+}
+
+// rescanScsiBlockDiskInVM runs `echo "1" > /sys/class/block/sdX/device/rescan`
+func (ns *nodeService) rescanScsiBlockDiskInVM(_ context.Context, blockDevice string) error {
+	// block device name is of format /dev/sdX. We need only sdX
+	parts := strings.Split(blockDevice, "/")
+	if len(parts) != 3 {
+		return fmt.Errorf("block device path in invalid format: [%s]", blockDevice)
+	}
+
+	filePath := fmt.Sprintf("%s/%s/%s", ScsiBlockPathPrefix, parts[2], ScsiBlockPathSuffix)
+	if err := os.WriteFile(filePath, []byte("1"), 0200); err != nil {
+		return fmt.Errorf("unable to write '1' into file [%s]: [%v]", filePath, err)
+	}
+
+	return nil
+}
+
+// rescanDiskInVM re-scans the SCSI bus entirely. CSI runs `echo "- - -" > /sys/class/scsi_host/*/scan` inside VM,
 // where "- - -" represent controller channel lun.
-func (ns *nodeService) rescanDiskInVM(ctx context.Context) error {
+func (ns *nodeService) rescanDiskInVM(_ context.Context) error {
 	// The filepath.Walk walks the file tree, calling the specified function for each file or directory in the tree, including root.
 	//  unnamed function is defined to check and perform rescan.
 	err := filepath.Walk(ScsiHostPath, func(path string, fi os.FileInfo, err error) error {
@@ -477,7 +562,7 @@ func (ns *nodeService) rescanDiskInVM(ctx context.Context) error {
 // getDiskPath looks for a device corresponding to vmName:diskName as stored in vSphere. It
 // enumerates devices in /dev/disk/by-path and returns a device with UUID matching the scsi UUID.
 // It needs disk.enableUUID to be set for the VM.
-func (ns *nodeService) getDiskPath(ctx context.Context, vmFullName string, diskUUID string) (string, error) {
+func (ns *nodeService) getDiskPath(_ context.Context, vmFullName string, diskUUID string) (string, error) {
 
 	if diskUUID == "" {
 		return "", fmt.Errorf("diskUUID should not be an empty string")
@@ -621,7 +706,7 @@ func (ns *nodeService) mkdir(path string) error {
 	fi, err := os.Stat(path)
 	if err == nil {
 		if !fi.IsDir() {
-			return fmt.Errorf("Path [%s] exists but is not a directory.", path)
+			return fmt.Errorf("Path [%s] exists but is not a directory", path)
 		}
 
 		klog.Infof("Path [%s] already exists and is a directory.", path)

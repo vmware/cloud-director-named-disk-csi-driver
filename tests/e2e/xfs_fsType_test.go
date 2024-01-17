@@ -41,7 +41,8 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		ns, err := tc.CreateNameSpace(ctx, testNameSpaceName)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
-		xfsStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassXfs, apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, xfsFsType)
+		xfsStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassXfs,
+			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, xfsFsType, false)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(xfsStorageClass).NotTo(BeNil())
 	})

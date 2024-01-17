@@ -4,6 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
@@ -73,7 +74,7 @@ var _ = Describe("CSI Storage Profile Test", func() {
 	It("Should add a storage profile with a small limit to ovdc", func() {
 		By("adding a storage profile with a small limit")
 		err = adminVdc.AddStorageProfileWait(&types.VdcStorageProfileConfiguration{
-			Enabled: true,
+			Enabled: util.AddrOf(true),
 			Units:   diskType,
 			Limit:   smallDiskSizeMB,
 			Default: false,
