@@ -8,9 +8,6 @@ package csi
 import (
 	"context"
 	"fmt"
-	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
-	mountutils "k8s.io/mount-utils"
-	utilexec "k8s.io/utils/exec"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,6 +20,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"k8s.io/klog"
+	mountutils "k8s.io/mount-utils"
+	utilexec "k8s.io/utils/exec"
+
+	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 )
 
 const (
@@ -382,14 +383,17 @@ func (ns *nodeService) NodeUnpublishVolume(ctx context.Context,
 	if err != nil {
 		return nil, fmt.Errorf("unable to check if pod mount dir [%s] is mounted: [%v]", podMountDir, err)
 	}
-	if !isDirMounted {
-		klog.Infof("Pod mount dir [%s] is not mounted. Assuming already unmounted.", podMountDir)
-		return &csi.NodeUnpublishVolumeResponse{}, nil
-	}
 
 	klog.Infof("Attempting to unmount pod mount dir [%s].", podMountDir)
-	if err = gofsutil.Unmount(ctx, podMountDir); err != nil {
-		return nil, fmt.Errorf("unable to unmount pod mount dir [%s]: [%v]", podMountDir, err)
+	if isDirMounted {
+		if err = gofsutil.Unmount(ctx, podMountDir); err != nil {
+			return nil, fmt.Errorf("unable to unmount pod mount dir [%s]: [%v]", podMountDir, err)
+		}
+	}
+
+	klog.Infof("Attempting to remove pod mount dir [%s].", podMountDir)
+	if err := ns.rmdir(podMountDir); err != nil {
+		return nil, fmt.Errorf("failed to remove pod mount dir %v", podMountDir)
 	}
 
 	klog.Infof("NodeUnpublishVolume successful for disk [%s] at mount dir [%s]", diskName, podMountDir)
@@ -726,4 +730,14 @@ func (ns *nodeService) mkdir(path string) error {
 	}
 
 	return nil
+}
+
+func (ns *nodeService) rmdir(path string) error {
+	klog.Infof("Deleting path %s", path)
+	err := os.Remove(path)
+	if os.IsNotExist(err) {
+		klog.Infof("%s does not exist", path)
+		return nil
+	}
+	return err
 }
