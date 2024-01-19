@@ -18,8 +18,6 @@ CSI_IMG := cloud-director-named-disk-csi-driver
 ARTIFACT_IMG := csi-crs-airgapped
 VERSION ?= $(shell cat $(GITROOT)/release/version)
 
-REGISTRY ?= projects-stg.registry.vmware.com/vmware-cloud-director
-
 PLATFORM ?= linux/amd64
 OS ?= linux
 ARCH ?= amd64
@@ -113,7 +111,7 @@ docker-build-csi: manifests build
 	docker build  \
 		--platform $(PLATFORM) \
 		--file Dockerfile \
-		--tag $(REGISTRY)/$(CSI_IMG):$(VERSION) \
+		--tag $(CSI_IMG):$(VERSION) \
 		--build-arg CSI_BUILD_DIR=bin \
 		.
 
@@ -122,7 +120,7 @@ docker-build-artifacts: release-prep
 	docker build  \
 		--platform $(PLATFORM) \
 		--file artifacts/Dockerfile \
-		--tag $(REGISTRY)/$(ARTIFACT_IMG):$(VERSION) \
+		--tag $(ARTIFACT_IMG):$(VERSION) \
 		.
 
 .PHONY: docker-build
@@ -141,8 +139,8 @@ release: docker-build docker-push ## Build release images and push to registry.
 release-prep:  ## Generate BOM and dependencies files.
 	sed -e "s/__VERSION__/$(VERSION)/g"  artifacts/default-csi-controller-crs-airgap.yaml.template > artifacts/csi-controller-crs-airgap.yaml.template
 	sed -e "s/__VERSION__/$(VERSION)/g"  artifacts/default-csi-node-crs-airgap.yaml.template > artifacts/csi-node-crs-airgap.yaml.template
-	sed -e "s/__VERSION__/$(VERSION)/g"  -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/bom.json.template > artifacts/bom.json
-	sed -e "s/__VERSION__/$(VERSION)/g"  -e "s~__REGISTRY__~$(REGISTRY)~g" artifacts/dependencies.txt.template > artifacts/dependencies.txt
+	sed -e "s/__VERSION__/$(VERSION)/g"  artifacts/bom.json.template > artifacts/bom.json
+	sed -e "s/__VERSION__/$(VERSION)/g"  artifacts/dependencies.txt.template > artifacts/dependencies.txt
 
 .PHONY: manifests
 manifests: ## Generate CSI manifests
@@ -156,23 +154,25 @@ gcr-csi:
 	docker pull registry.k8s.io/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
 	docker pull registry.k8s.io/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
 	docker pull registry.k8s.io/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
-	docker tag registry.k8s.io/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION) $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
-	docker tag registry.k8s.io/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION) $(REGISTRY)/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
-	docker tag registry.k8s.io/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION) $(REGISTRY)/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
+	docker tag registry.k8s.io/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION) projects-stg.registry.vmware.com/vmware-cloud-director/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
+	docker tag registry.k8s.io/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION) projects-stg.registry.vmware.com/vmware-cloud-director/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
+	docker tag registry.k8s.io/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION) projects-stg.registry.vmware.com/vmware-cloud-director/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
 
 .PHONY: docker-push-csi
 docker-push-csi: # Push CSI image to registry.
-	docker push $(REGISTRY)/$(CSI_IMG):$(VERSION)
+	docker tag $(CSI_IMG)/$(VERSION) projects-stg.registry.vmware.com/vmware-cloud-director/$(CSI_IMG):$(VERSION)
+	docker push projects-stg.registry.vmware.com/vmware-cloud-director/$(CSI_IMG):$(VERSION)
 
 .PHONY: docker-push-artifacts
 docker-push-artifacts: # Push artifacts image to registry
-	docker push $(REGISTRY)/$(ARTIFACT_IMG):$(VERSION)
+	docker tag $(ARTIFACT_IMG):$(VERSION) projects-stg.registry.vmware.com/vmware-cloud-director/$(ARTIFACT_IMG):$(VERSION)
+	docker push projects-stg.registry.vmware.com/vmware-cloud-director/$(ARTIFACT_IMG):$(VERSION)
 
 .PHONY: docker-push-gcr-csi
 docker-push-gcr-csi: gcr-csi ## Publish GCR images to container registry.
-	docker push $(REGISTRY)/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
-	docker push $(REGISTRY)/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
-	docker push $(REGISTRY)/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
+	docker push projects-stg.registry.vmware.com/vmware-cloud-director/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
+	docker push projects-stg.registry.vmware.com/vmware-cloud-director/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
+	docker push projects-stg.registry.vmware.com/vmware-cloud-director/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
 
 .PHONY: docker-push
 docker-push: docker-push-csi docker-push-artifacts docker-push-gcr-csi ## Push images to container registry.
