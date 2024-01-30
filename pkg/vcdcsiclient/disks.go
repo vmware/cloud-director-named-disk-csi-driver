@@ -13,7 +13,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/version"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
-	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient_36_0"
+	swaggerClient "github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdswaggerclient_37_2"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"k8s.io/klog"
@@ -714,7 +714,7 @@ func (diskManager *DiskManager) addPvToRDE(addPvId string, addPvName string, rde
 			return fmt.Errorf("obtained nil org when getting org by name [%s]", diskManager.VCDClient.ClusterOrgName)
 		}
 		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-			diskManager.ClusterID, clusterOrg.Org.ID)
+			diskManager.ClusterID, clusterOrg.Org.ID, nil)
 		if err != nil {
 			return fmt.Errorf("error when getting defined entity: [%v]", err)
 		}
@@ -766,7 +766,7 @@ func (diskManager *DiskManager) removePvFromRDE(removePvId string, removePvName 
 			return fmt.Errorf("obtained nil org when getting org by name [%s]", diskManager.VCDClient.ClusterOrgName)
 		}
 		defEnt, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-			diskManager.ClusterID, clusterOrg.Org.ID)
+			diskManager.ClusterID, clusterOrg.Org.ID, nil)
 		if err != nil {
 			return fmt.Errorf("error when getting defined entity: [%v]", err)
 		}
@@ -818,7 +818,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 			return fmt.Errorf("obtained nil org when getting org by name [%s]", diskManager.VCDClient.ClusterOrgName)
 		}
 		rde, _, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.TODO(),
-			diskManager.ClusterID, clusterOrg.Org.ID)
+			diskManager.ClusterID, clusterOrg.Org.ID, nil)
 		if err != nil {
 			return fmt.Errorf("error when getting defined entity from VCD: [%v]", err)
 		}
@@ -953,7 +953,7 @@ func (diskManager *DiskManager) ConvertToLatestCSIVersionFormat(dstVersion strin
 	var srcVersion string
 	for retries := 0; retries < vcdsdk.MaxRDEUpdateRetries; retries++ {
 		srcCapvcdEntity, resp, etag, err := diskManager.VCDClient.APIClient.DefinedEntityApi.GetDefinedEntity(context.Background(),
-			diskManager.ClusterID, clusterOrg.Org.ID)
+			diskManager.ClusterID, clusterOrg.Org.ID, nil)
 		if err != nil {
 			var responseMessageBytes []byte
 			if gsErr, ok := err.(swaggerClient.GenericSwaggerError); ok {
