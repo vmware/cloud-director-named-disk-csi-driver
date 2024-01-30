@@ -126,6 +126,47 @@ docker-build-artifacts: release-prep
 .PHONY: docker-build
 docker-build: docker-build-csi docker-build-artifacts ## Build CSI docker image and artifact image.
 
+
+##@ Gobuild
+
+.PHONY: gobuild
+gobuild: vendor manifests release-prep build docker-build docker-archive publish
+
+.PHONY: dev-build
+dev-build: VERSION := $(VERSION)-${BUILD_TAG}-$(GITCOMMIT)
+dev-build: gobuild
+
+.PHONY: rc-build
+rc-build: gobuild
+
+.PHONY: docker-archive
+docker-archive: build/docker
+	mkdir -p build/docker
+	docker save -o build/docker/$(CSI_IMG)_$(VERSION).tar $(CSI_IMG):$(VERSION)
+	docker save -o build/docker/$(ARTIFACT_IMG)_$(VERSION).tar $(ARTIFACT_IMG):$(VERSION)
+	gzip build/docker/$(CSI_IMG)_$(VERSION).tar
+	gzip build/docker/$(ARTIFACT_IMG)_$(VERSION).tar
+
+.PHONY: publish
+publish:
+	cp -R build/docker ${PUBLISH_DIR}
+
+.PHONY: gcr-csi-gobuild
+gcr-csi-gobuild:
+	mkdir -p build/docker
+	docker pull registry.k8s.io/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
+	docker pull registry.k8s.io/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
+	docker pull registry.k8s.io/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
+	docker tag registry.k8s.io/sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION) sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
+	docker tag registry.k8s.io/sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION) sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
+	docker tag registry.k8s.io/sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION) sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
+	docker save -o build/docker/csi-node-driver-registrar_$(CSI_NODE_DRIVER_REGISTRAR_VERSION).tar sig-storage/csi-node-driver-registrar:$(CSI_NODE_DRIVER_REGISTRAR_VERSION)
+	docker save -o build/docker/csi-attacher_$(CSI_ATTACHER_VERSION).tar sig-storage/csi-attacher:$(CSI_ATTACHER_VERSION)
+	docker save -o build/docker/csi-provisioner_$(CSI_PROVISIONER_VERSION).tar sig-storage/csi-provisioner:$(CSI_PROVISIONER_VERSION)
+	gzip build/docker/csi-node-driver-registrar_$(CSI_NODE_DRIVER_REGISTRAR_VERSION).tar
+	gzip build/docker/csi-attacher_$(CSI_ATTACHER_VERSION).tar
+	gzip build/docker/csi-provisioner_$(CSI_PROVISIONER_VERSION).tar
+
 ##@ Publish
 
 .PHONY: dev
