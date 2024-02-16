@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-debugger-block
+spec:
+  containers:
+  - name: test-container
+    image: projects-stg.registry.vmware.com/vmware-cloud-director/busybox:latest
+    command: ["/bin/sh", "-c", "while true ; do sleep 2 ; done"]
+    securityContext:
+      privileged: true
+    volumeDevices:
+    - name: data
+      devicePath: /dev/xvda-block
+  restartPolicy: Never
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: pvc-block
+      readOnly: false
+---

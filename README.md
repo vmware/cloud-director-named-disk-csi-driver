@@ -33,7 +33,7 @@ Note: This driver is not impacted by the Apache Log4j open source component vuln
 |       Provisioning       | <ul><li>Static Provisioning</li><li>Dynamic Provisioning</li></ul>                                                                                                                             |
 |       Access Modes       | <ul><li>ReadOnlyMany</li><li>ReadWriteOnce</li></ul>                                                                                                                                           |
 |          Volume          | <ul>Block</ul>                                                                                                                                                                                 |
-|        VolumeMode        | <ul><li>FileSystem</li></ul>                                                                                                                                                                   |
+|        VolumeMode        | <ul><li>FileSystem</li><li>Block</li></ul>                                                                                                                                                     |
 | Volume Expansion Support | <ul><li>OFFLINE</li><li>ONLINE</li></ul>                                                                                                                                                       |
 |         Topology         | <ul><li>Static Provisioning: reuses VCD topology capabilities</li><li>Dynamic Provisioning: places disk in the OVDC of the `ClusterAdminUser` based on the StorageProfile specified.</li></ul> |
 

@@ -560,7 +560,7 @@ func (diskManager *DiskManager) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) 
 		Disk: &types.Reference{HREF: disk.HREF},
 	}
 
-	klog.Infof("Attaching disk with params [%v]", params)
+	klog.Infof("Attaching disk with params [%v], [%v]", params, params.Disk)
 	task, err := vm.AttachDisk(params)
 	if err != nil {
 		return fmt.Errorf("failed to run AttachDisk with params [%v]: [%v]", params, err)
