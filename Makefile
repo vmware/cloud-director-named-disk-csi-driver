@@ -144,8 +144,8 @@ rc-build: gobuild
 .PHONY: docker-archive
 docker-archive:
 	mkdir -p build/docker
-	docker save -o build/docker/$(CSI_IMG)_$(VERSION).tar $(CSI_IMG):$(VERSION)
-	docker save -o build/docker/$(ARTIFACT_IMG)_$(VERSION).tar $(ARTIFACT_IMG):$(VERSION)
+	docker save -o build/docker/$(CSI_IMG)_$(VERSION).tar $(REGISTRY)/$(CSI_IMG):$(VERSION)
+	docker save -o build/docker/$(ARTIFACT_IMG)_$(VERSION).tar $(REGISTRY)/$(ARTIFACT_IMG):$(VERSION)
 	gzip build/docker/$(CSI_IMG)_$(VERSION).tar
 	gzip build/docker/$(ARTIFACT_IMG)_$(VERSION).tar
 
