@@ -133,10 +133,11 @@ func NewDriver(nodeID string, endpoint string) (*VCDDriver, error) {
 }
 
 // Setup will setup the driver and add controller, node and identity servers
-func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde bool) error {
+func (d *VCDDriver) Setup(diskManager *vcdcsiclient.DiskManager, VAppName string, nodeID string, upgradeRde bool,
+	isZoneEnabledCluster bool, zm *vcdsdk.ZoneMap) error {
 	klog.Infof("Driver setup called")
 	d.ns = NewNodeService(d, nodeID)
-	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName)
+	d.cs = NewControllerService(d, diskManager.VCDClient, diskManager.ClusterID, VAppName, isZoneEnabledCluster, zm)
 	d.ids = NewIdentityServer(d)
 	if !upgradeRde {
 		klog.Infof("Skipping RDE CSI section upgrade as upgradeRde flag is false")

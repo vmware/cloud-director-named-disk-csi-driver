@@ -8,6 +8,7 @@ package vcdcsiclient
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
@@ -23,8 +24,11 @@ import (
 )
 
 type DiskManager struct {
-	VCDClient *vcdsdk.Client
-	ClusterID string
+	VCDClient            *vcdsdk.Client
+	ClusterID            string
+	Org                  *govcd.Org
+	IsZoneEnabledCluster bool
+	ZoneMap              *vcdsdk.ZoneMap
 }
 
 const (
@@ -45,7 +49,7 @@ func prettyDisk(disk vcdtypes.Disk) string {
 // Create an independent disk in VDC
 // Reference: vCloud API Programming Guide for Service Providers vCloud API 35.0 PDF Page 107-108,
 // https://vdc-download.vmware.com/vmwb-repository/dcr-public/715b0387-34d7-4568-b2d8-d11454c52d51/944f905e-fa4e-4005-be7d-19c3cea70ffd/vmware_cloud_director_sp_api_guide_35_0.pdf
-func (diskManager *DiskManager) createDisk(diskCreateParams *vcdtypes.DiskCreateParams) (govcd.Task, error) {
+func (diskManager *DiskManager) createDisk(diskCreateParams *vcdtypes.DiskCreateParams, vdc *govcd.Vdc) (govcd.Task, error) {
 	klog.Infof("Create disk, name: %s, size: %dMB \n",
 		diskCreateParams.Disk.Name,
 		diskCreateParams.Disk.SizeMb,
@@ -63,7 +67,7 @@ func (diskManager *DiskManager) createDisk(diskCreateParams *vcdtypes.DiskCreate
 	var createDiskLink *types.Link
 
 	// Find the proper link for request
-	for _, vdcLink := range diskManager.VCDClient.VDC.Vdc.Link {
+	for _, vdcLink := range vdc.Vdc.Link {
 		if vdcLink.Rel == types.RelAdd && vdcLink.Type == types.MimeDiskCreateParams {
 			klog.Infof(
 				"Create disk - found the proper link for request, HREF: %s, name: %s, type: %s, id: %s, rel: %s \n",
@@ -103,25 +107,30 @@ func (diskManager *DiskManager) createDisk(diskCreateParams *vcdtypes.DiskCreate
 }
 
 // CreateDisk will create a new independent disk with params specified
-func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busType string, busSubType string,
-	description string, storageProfile string, shareable bool) (*vcdtypes.Disk, error) {
+func (diskManager *DiskManager) CreateDisk(diskName string, vdc *govcd.Vdc, sizeMB int64,
+	busType string, busSubType string, description string, storageProfile string, shareable bool,
+	zm *vcdsdk.ZoneMap) (*vcdtypes.Disk, error) {
 	diskManager.VCDClient.RWLock.Lock()
 	defer diskManager.VCDClient.RWLock.Unlock()
 
 	klog.Infof("Entered CreateDisk with name [%s] size [%d]MB, storageProfile [%s] shareable[%v]\n",
 		diskName, sizeMB, storageProfile, shareable)
 
-	disk, err := diskManager.GetDiskByName(diskName)
-	if err != nil && err != govcd.ErrorEntityNotFound {
-		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, "", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable to query disk [%s]: [%v]",
-			diskName, err)}); rdeErr != nil {
-			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, diskManager.ClusterID, rdeErr)
+	disk, err := diskManager.GetDiskByNameOrId(diskName, zm, vdc)
+	if err != nil && !errors.Is(err, govcd.ErrorEntityNotFound) {
+		if rdeErr := diskManager.AddToErrorSet(util.DiskQueryError, "", diskName,
+			map[string]interface{}{"Detailed Error": fmt.Errorf("unable to query disk [%s]: [%v]",
+				diskName, err)}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError,
+				diskManager.ClusterID, rdeErr)
 		}
 		return nil, fmt.Errorf("unable to check if disk [%s] already exists: [%v]",
 			diskName, err)
 	}
-	if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.DiskQueryError, "", diskName); removeErrorRdeErr != nil {
-		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", "DiskCreateError", diskManager.ClusterID)
+	if removeErrorRdeErr := diskManager.RemoveFromErrorSet(util.DiskQueryError, "",
+		diskName); removeErrorRdeErr != nil {
+		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", "DiskCreateError",
+			diskManager.ClusterID)
 	}
 
 	if disk != nil {
@@ -152,7 +161,7 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 		Disk:  d,
 	}
 	if storageProfile != "" {
-		storageReference, err := diskManager.VCDClient.VDC.FindStorageProfileReference(storageProfile)
+		storageReference, err := vdc.FindStorageProfileReference(storageProfile)
 		if err != nil {
 			return nil, fmt.Errorf("unable to find storage profile [%s] for disk [%s]",
 				storageProfile, diskName)
@@ -163,11 +172,9 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 		}
 	}
 
-	task, err := diskManager.createDisk(diskParams)
+	task, err := diskManager.createDisk(diskParams, vdc)
 	if err != nil {
-		return nil,
-			fmt.Errorf("unable to create disk with name [%s] size [%d]MB: [%v]",
-				diskName, sizeMB, err)
+		return nil, fmt.Errorf("unable to create disk with name [%s] size [%d]MB: [%v]", diskName, sizeMB, err)
 	}
 
 	klog.Infof("START: Waiting for creation of disk [%s] size [%d]MB", diskName, sizeMB)
@@ -182,7 +189,10 @@ func (diskManager *DiskManager) CreateDisk(diskName string, sizeMB int64, busTyp
 	if err != nil {
 		return nil, fmt.Errorf("unable to find disk with href [%s]: [%v]", diskHref, err)
 	}
-	if addEventRdeErr := diskManager.AddToEventSet(util.DiskCreateEvent, "", diskName, map[string]interface{}{"Detailed Info": fmt.Sprintf("Successfully created disk [%s] of size [%d]MB", diskName, sizeMB)}); addEventRdeErr != nil {
+	if addEventRdeErr := diskManager.AddToEventSet(util.DiskCreateEvent, "", diskName,
+		map[string]interface{}{
+			"Detailed Info": fmt.Sprintf("Successfully created disk [%s] of size [%d]MB", diskName, sizeMB),
+		}); addEventRdeErr != nil {
 		klog.Errorf("unable to add event [%s] into [CSI.Events] in RDE [%s]", util.DiskCreateEvent, diskManager.ClusterID)
 	}
 	klog.Infof("Disk created: [%#v]", disk)
@@ -216,15 +226,14 @@ func (diskManager *DiskManager) govcdGetDiskByHref(diskHref string) (*vcdtypes.D
 	return disk, nil
 }
 
-func (diskManager *DiskManager) govcdGetDiskById(diskId string, refresh bool) (*vcdtypes.Disk, error) {
+func (diskManager *DiskManager) govcdGetDiskById(diskId string, vdc *govcd.Vdc, refresh bool) (*vcdtypes.Disk, error) {
 	klog.Infof("Get Disk By Id: %s\n", diskId)
 	if refresh {
-		err := diskManager.VCDClient.VDC.Refresh()
-		if err != nil {
-			return nil, fmt.Errorf("error when refreshing by disk id %s, [%v]", diskId, err)
+		if err := vdc.Refresh(); err != nil {
+			return nil, fmt.Errorf("error when refreshing vdc [%s]: [%v]", vdc.Vdc.Name, err)
 		}
 	}
-	for _, resourceEntities := range diskManager.VCDClient.VDC.Vdc.ResourceEntities {
+	for _, resourceEntities := range vdc.Vdc.ResourceEntities {
 		for _, resourceEntity := range resourceEntities.ResourceEntity {
 			if resourceEntity.ID == diskId && resourceEntity.Type == "application/vnd.vmware.vcloud.disk+xml" {
 				disk, err := diskManager.govcdGetDiskByHref(resourceEntity.HREF)
@@ -241,16 +250,18 @@ func (diskManager *DiskManager) govcdGetDiskById(diskId string, refresh bool) (*
 // GetDisksByName finds one or more Disks by Name
 // On success, returns a pointer to the Disk list and a nil error
 // On failure, returns a nil pointer and an error
-func (diskManager *DiskManager) govcdGetDisksByName(diskName string, refresh bool) (*[]vcdtypes.Disk, error) {
+func (diskManager *DiskManager) govcdGetDisksByName(diskName string, vdc *govcd.Vdc,
+	refresh bool) (*[]vcdtypes.Disk, error) {
 	klog.Infof("Get Disk By Name: %s\n", diskName)
 	var diskList []vcdtypes.Disk
+
 	if refresh {
-		err := diskManager.VCDClient.VDC.Refresh()
-		if err != nil {
-			return nil, fmt.Errorf("disk name should not be empty")
+		if err := vdc.Refresh(); err != nil {
+			return nil, fmt.Errorf("unable ot refresh VDC [%s]: [%v]", vdc.Vdc.Name, err)
 		}
 	}
-	for _, resourceEntities := range diskManager.VCDClient.VDC.Vdc.ResourceEntities {
+
+	for _, resourceEntities := range vdc.Vdc.ResourceEntities {
 		for _, resourceEntity := range resourceEntities.ResourceEntity {
 			if resourceEntity.Name == diskName && resourceEntity.Type == "application/vnd.vmware.vcloud.disk+xml" {
 				disk, err := diskManager.govcdGetDiskByHref(resourceEntity.HREF)
@@ -267,27 +278,124 @@ func (diskManager *DiskManager) govcdGetDisksByName(diskName string, refresh boo
 	return &diskList, nil
 }
 
-// GetDiskByName will get disk by name
-func (diskManager *DiskManager) GetDiskByName(name string) (*vcdtypes.Disk, error) {
-	klog.Infof("Entered GetDiskByName for name [%s]", name)
+func isUrn(identifier string) bool {
+	if identifier == "" {
+		return false
+	}
+
+	ss := strings.Split(identifier, ":")
+	if len(ss) != 4 {
+		return false
+	}
+
+	if ss[0] != "urn" && !govcd.IsUuid(ss[3]) {
+		return false
+	}
+
+	return true
+}
+
+type genericGetter func(string, bool) (interface{}, error)
+
+func getEntityByNameOrIdSkipNonId(getByName, getById genericGetter, identifier string, refresh bool) (interface{}, error) {
+
+	var byNameErr, byIdErr error
+	var entity interface{}
+
+	// Only check by Id if it is an ID or an URN
+	if isUrn(identifier) || govcd.IsUuid(identifier) {
+		entity, byIdErr = getById(identifier, refresh)
+		if byIdErr == nil {
+			// Found by ID
+			return entity, nil
+		}
+	}
+
+	if govcd.IsNotFound(byIdErr) || byIdErr == nil {
+		// Not found by ID, try by name
+		entity, byNameErr = getByName(identifier, false)
+		return entity, byNameErr
+	} else {
+		// On any other error, we return it
+		return nil, byIdErr
+	}
+}
+
+func (diskManager *DiskManager) govcdGetDisksByNameOrId(identifier string, vdc *govcd.Vdc,
+	refresh bool) (*[]vcdtypes.Disk, error) {
+	getByName := func(name string, refresh bool) (interface{}, error) {
+		return diskManager.govcdGetDisksByName(identifier, vdc, refresh)
+	}
+	getById := func(id string, refresh bool) (interface{}, error) {
+		return diskManager.govcdGetDiskById(identifier, vdc, refresh)
+	}
+	entity, err := getEntityByNameOrIdSkipNonId(getByName, getById, identifier, refresh)
+	if entity == nil {
+		return nil, err
+	}
+	return entity.(*[]vcdtypes.Disk), err
+}
+
+// GetDiskByNameOrId will get disk by name
+func (diskManager *DiskManager) GetDiskByNameOrId(name string, zm *vcdsdk.ZoneMap,
+	vdc *govcd.Vdc) (*vcdtypes.Disk, error) {
+	klog.Infof("Entered GetDiskByNameOrId for name [%s]", name)
 
 	if name == "" {
-		return nil, fmt.Errorf("disk name should not be empty")
+		return nil, fmt.Errorf("disk identifier should not be empty")
+	}
+	if vdc == nil && zm == nil {
+		return nil, fmt.Errorf("unable to find disk [%s] since zone and OrgVDC are not specified", name)
 	}
 
-	disks, err := diskManager.govcdGetDisksByName(name, true)
-	if err != nil && err != govcd.ErrorEntityNotFound {
-		return nil, fmt.Errorf("unable to GetDiskByName for [%s] from vdc: [%v]", name, err)
-	}
-	if err == govcd.ErrorEntityNotFound || disks == nil || len(*disks) == 0 {
-		// disk not found is a useful error code in some scenarios
-		return nil, govcd.ErrorEntityNotFound
-	}
-	if len(*disks) > 1 {
-		return nil, fmt.Errorf("found [%d] > 1 disks with name [%s]", len(*disks), name)
+	if vdc != nil {
+		disks, err := diskManager.govcdGetDisksByNameOrId(name, vdc, true)
+		if err != nil && !errors.Is(err, govcd.ErrorEntityNotFound) {
+			klog.Infof("error looking for disk [%s] in OVDC [%s] of Org [%s]: [%v]",
+				name, vdc.Vdc.Name, diskManager.Org.Org.Name, err)
+			return nil, fmt.Errorf("error looking for disk [%s] in OVDC [%s] of Org [%s]: [%v]",
+				name, vdc.Vdc.Name, diskManager.Org.Org.Name, err)
+		}
+		if errors.Is(err, govcd.ErrorEntityNotFound) || disks == nil || len(*disks) == 0 {
+			// disk not found is a useful error code in some scenarios
+			return nil, govcd.ErrorEntityNotFound
+		}
+		if len(*disks) > 1 {
+			klog.Errorf("found [%d] > 1 disks with name [%s] in ovdc [%s] of org [%s]",
+				len(*disks), name, vdc.Vdc.Name, diskManager.Org.Org.Name)
+			return nil, fmt.Errorf("found [%d] > 1 disks with name [%s] in ovdc [%s] of org [%s]",
+				len(*disks), name, vdc.Vdc.Name, diskManager.Org.Org.Name)
+		}
+		return &(*disks)[0], nil
+	} else {
+		for ovdcName, zone := range zm.VdcToZoneMap {
+			vdc, err := diskManager.Org.GetVDCByNameOrId(ovdcName, false)
+			if err != nil {
+				klog.Errorf("unable to get VDC [%s] of zone [%s] by name in org [%s]: [%v]", ovdcName, zone,
+					diskManager.Org.Org.Name, err)
+				continue
+			}
+			disks, err := diskManager.govcdGetDisksByName(name, vdc, true)
+			if err != nil && !errors.Is(err, govcd.ErrorEntityNotFound) {
+				klog.Infof("error looking for disk [%s] in OVDC [%s] of Org [%s]: [%v]",
+					name, ovdcName, diskManager.Org.Org.Name, err)
+				continue
+			}
+			if errors.Is(err, govcd.ErrorEntityNotFound) || disks == nil || len(*disks) == 0 {
+				// disk not found is a useful error code in some scenarios
+				continue
+			}
+			if len(*disks) > 1 {
+				klog.Errorf("found [%d] > 1 disks with name [%s] in ovdc [%s] of org [%s]",
+					len(*disks), name, ovdcName, diskManager.Org.Org.Name)
+				continue
+			}
+
+			return &(*disks)[0], nil
+		}
 	}
 
-	return &(*disks)[0], nil
+	return nil, govcd.ErrorEntityNotFound
 }
 
 func (diskManager *DiskManager) GovcdAttachedVM(disk *vcdtypes.Disk) ([]*types.Reference, error) {
@@ -298,7 +406,8 @@ func (diskManager *DiskManager) GovcdAttachedVM(disk *vcdtypes.Disk) ([]*types.R
 	// Find the proper link for request
 	for _, diskLink := range disk.Link {
 		if diskLink.Type == types.MimeVMs {
-			klog.Infof("[TRACE] Disk attached VM - found the proper link for request, HREF: %s, name: %s, type: %s,id: %s, rel: %s \n",
+			klog.Infof("[TRACE] Disk attached VM - found the proper link for request, "+
+				"HREF: %s, name: %s, type: %s,id: %s, rel: %s \n",
 				diskLink.HREF,
 				diskLink.Name,
 				diskLink.Type,
@@ -450,15 +559,15 @@ func (diskManager *DiskManager) UpdateDisk(disk *vcdtypes.Disk, newDiskInfo *typ
 }
 
 // DeleteDisk will delete independent disk by its name
-func (diskManager *DiskManager) DeleteDisk(name string) error {
+func (diskManager *DiskManager) DeleteDisk(name string, zm *vcdsdk.ZoneMap) error {
 	diskManager.VCDClient.RWLock.Lock()
 	defer diskManager.VCDClient.RWLock.Unlock()
 
 	klog.Infof("Entered DeleteDisk for disk [%s]\n", name)
 
-	disk, err := diskManager.GetDiskByName(name)
+	disk, err := diskManager.GetDiskByNameOrId(name, zm, nil)
 	if err != nil {
-		if err == govcd.ErrorEntityNotFound {
+		if errors.Is(err, govcd.ErrorEntityNotFound) {
 			// ignore deletes for non-existent entities
 			klog.Infof("Unable to find disk with name [%s]: [%v]", name, err)
 			return nil
@@ -584,14 +693,14 @@ func (diskManager *DiskManager) AttachVolume(vm *govcd.VM, disk *vcdtypes.Disk) 
 }
 
 // DetachVolume will detach diskName from vm
-func (diskManager *DiskManager) DetachVolume(vm *govcd.VM, diskName string) error {
+func (diskManager *DiskManager) DetachVolume(vm *govcd.VM, diskName string, zm *vcdsdk.ZoneMap) error {
 	diskManager.VCDClient.RWLock.Lock()
 	defer diskManager.VCDClient.RWLock.Unlock()
 
 	klog.Infof("Entered DetachVolume for vm [%v], disk [%s]\n", vm, diskName)
 
-	disk, err := diskManager.GetDiskByName(diskName)
-	if err == govcd.ErrorEntityNotFound {
+	disk, err := diskManager.GetDiskByNameOrId(diskName, zm, nil)
+	if errors.Is(err, govcd.ErrorEntityNotFound) {
 		klog.Warningf("Unable to find disk [%s]. It is probably already deleted.", diskName)
 		return nil
 	} else if err != nil {
@@ -868,7 +977,7 @@ func (diskManager *DiskManager) UpgradeRDEPersistentVolumes() error {
 			PVDetailList := make([]vcdsdk.VCDResource, len(oldPvs))
 			for idx, oldPVId := range oldPvs {
 				diskName, diskId := "", oldPVId
-				disk, err := diskManager.govcdGetDiskById(oldPVId, true)
+				disk, err := diskManager.GetDiskByNameOrId(oldPVId, diskManager.ZoneMap, nil)
 				if err != nil {
 					// We hold the diskQuery and choose not to update RDE here. Because we don't want etag outdated
 					diskQueryErrorList = append(diskQueryErrorList, vcdsdk.BackendError{

@@ -190,7 +190,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:__VERSION__
+          image: projects-stg.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:__VERSION__
           imagePullPolicy: IfNotPresent
           command:
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
@@ -222,6 +222,8 @@ spec:
               mountPath: /etc/kubernetes/vcloud
             - name: vcloud-basic-auth-volume
               mountPath: /etc/kubernetes/vcloud/basic-auth
+            - name: vcloud-capvcd-zones
+              mountPath: /opt/vmware-cloud-director/csi
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
@@ -254,3 +256,6 @@ spec:
         - name: vcloud-basic-auth-volume
           secret:
             secretName: vcloud-basic-auth
+        - name: vcloud-capvcd-zones
+          configMap:
+            name: vcloud-capvcd-zones
