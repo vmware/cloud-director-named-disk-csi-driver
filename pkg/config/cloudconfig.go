@@ -17,11 +17,12 @@ import (
 
 // VCDConfig :
 type VCDConfig struct {
-	Host     string `yaml:"host"`
-	VDC      string `yaml:"vdc"`
-	Org      string `yaml:"org"`
-	UserOrg  string // this defaults to Org or a prefix of User
-	VAppName string `yaml:"vAppName"`
+	Host                 string `yaml:"host"`
+	VDC                  string `yaml:"vdc"`
+	Org                  string `yaml:"org"`
+	UserOrg              string // this defaults to Org or a prefix of User
+	VAppName             string `yaml:"vAppName"`
+	IsZoneEnabledCluster bool   `yaml:"isZoneEnabledCluster"`
 
 	// The User, Secret and RefreshToken are obtained from a secret mounted to /etc/kubernetes/vcloud/basic-auth
 	// with files at username, password and refreshToken respectively.

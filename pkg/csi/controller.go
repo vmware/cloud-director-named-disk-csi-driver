@@ -31,6 +31,7 @@ const (
 	BusTypeParameter        = "busType"
 	BusSubTypeParameter     = "busSubType"
 	StorageProfileParameter = "storageProfile"
+	ZoneNameParameter       = "zoneName"
 	FileSystemParameter     = "filesystem"
 	EphemeralVolumeContext  = "csi.storage.k8s.io/ephemeral"
 
@@ -56,12 +57,22 @@ type controllerServer struct {
 }
 
 // NewControllerService creates a controllerService
-func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, clusterID string, vAppName string) csi.ControllerServer {
+func NewControllerService(driver *VCDDriver, vcdClient *vcdsdk.Client, clusterID string, vAppName string,
+	isZoneEnabledCluster bool, zm *vcdsdk.ZoneMap) csi.ControllerServer {
+
+	org, err := vcdClient.VCDClient.GetOrgByName(vcdClient.ClusterOrgName)
+	if err != nil {
+		panic(fmt.Errorf("unable to find org [%s]: [%v]", vcdClient.ClusterOrgName, err))
+	}
+
 	return &controllerServer{
 		Driver: driver,
 		DiskManager: &vcdcsiclient.DiskManager{
-			VCDClient: vcdClient,
-			ClusterID: clusterID,
+			VCDClient:            vcdClient,
+			ClusterID:            clusterID,
+			Org:                  org,
+			IsZoneEnabledCluster: isZoneEnabledCluster,
+			ZoneMap:              zm,
 		},
 		VAppName: vAppName,
 	}
@@ -138,8 +149,39 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 
 	storageProfile, _ := req.Parameters[StorageProfileParameter]
 
-	disk, err := cs.DiskManager.CreateDisk(diskName, sizeMB, busType,
-		busSubType, cs.DiskManager.ClusterID, storageProfile, shareable)
+	vdcIdentifierSpecified := ""
+	if cs.DiskManager.IsZoneEnabledCluster {
+		zoneNameSpecified, ok := req.Parameters[ZoneNameParameter]
+		if !ok || zoneNameSpecified == "" {
+			return nil, status.Errorf(codes.InvalidArgument,
+				"zone enabled clusters should specify a zone where the storage is to be created")
+		}
+		if zoneNameSpecified != "" && cs.DiskManager.ZoneMap != nil {
+			for ovdcName, zoneName := range cs.DiskManager.ZoneMap.VdcToZoneMap {
+				if zoneName == zoneNameSpecified {
+					vdcIdentifierSpecified = ovdcName
+				}
+			}
+		}
+		if vdcIdentifierSpecified == "" {
+			return nil, status.Errorf(codes.InvalidArgument,
+				"zone specified [%s] does not have an ovdc in the zonemap [%v]", zoneNameSpecified,
+				cs.DiskManager.ZoneMap)
+		}
+	} else {
+		vdcIdentifierSpecified = cs.DiskManager.VCDClient.ClusterOVDCName
+	}
+	klog.Infof("OVDC where disk will be created is [%s] when zone-enabled is [%s]",
+		vdcIdentifierSpecified, cs.DiskManager.IsZoneEnabledCluster)
+
+	vdc, err := cs.DiskManager.Org.GetVDCByNameOrId(vdcIdentifierSpecified, false)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get ovdc by identifier [%s] in org [%s]: [%v]", vdcIdentifierSpecified,
+			cs.DiskManager.Org.Org.Name, err)
+	}
+
+	disk, err := cs.DiskManager.CreateDisk(diskName, vdc, sizeMB, busType, busSubType, cs.DiskManager.ClusterID,
+		storageProfile, shareable, cs.DiskManager.ZoneMap)
 	if err != nil {
 		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskCreateError, "", diskName, map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
 			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskCreateError, cs.DiskManager.ClusterID, rdeErr)
@@ -187,20 +229,27 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	}
 	klog.Infof("DeleteVolume: called with req [%#v]", *req)
 
-	volumeID := req.GetVolumeId()
-
 	if err := cs.DiskManager.VCDClient.RefreshBearerToken(); err != nil {
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
+
+	volumeID := req.GetVolumeId()
+	if len(volumeID) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument,
+			"DeleteVolume: Volume ID must be provided")
+	}
+
 	//volumeID is a diskName
-	err := cs.DiskManager.DeleteDisk(volumeID)
+	err := cs.DiskManager.DeleteDisk(volumeID, cs.DiskManager.ZoneMap)
 	if err != nil {
 		if errors.Is(err, govcd.ErrorEntityNotFound) {
 			klog.Infof("Volume [%s] is already deleted.", volumeID)
 			return &csi.DeleteVolumeResponse{}, nil
 		}
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskDeleteError, "", volumeID, map[string]interface{}{"Detailed Error": err.Error()}); rdeErr != nil {
-			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskDeleteError, cs.DiskManager.ClusterID, rdeErr)
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskDeleteError, "", volumeID,
+			map[string]interface{}{"Detailed Error": err}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskDeleteError,
+				cs.DiskManager.ClusterID, rdeErr)
 		}
 		return nil, status.Errorf(codes.Internal, "DeleteVolume failed: [%v]", err)
 	}
@@ -224,13 +273,13 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
-	nodeID := req.GetNodeId()
-	if len(nodeID) == 0 {
+	vmName := req.GetNodeId()
+	if len(vmName) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "ControllerPublishVolume: NodeId must be provided")
 	}
 
-	diskName := req.GetVolumeId()
-	if len(diskName) == 0 {
+	volumeID := req.GetVolumeId()
+	if len(volumeID) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "ControllerPublishVolume: VolumeId must be provided")
 	}
 
@@ -254,51 +303,65 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		fsType = mountDetails.FsType
 	}
 
-	klog.Infof("Getting node details for [%s]", nodeID)
-	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName,
-		cs.DiskManager.VCDClient.ClusterOVDCName)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
-	}
-	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
-	if err != nil {
-		return nil, fmt.Errorf("unable to find VM for node [%s]: [%v]", nodeID, err)
+	klog.Infof("Getting node details for [%s]", vmName)
+	orgManager := &vcdsdk.OrgManager{
+		Client:  cs.DiskManager.VCDClient,
+		OrgName: cs.DiskManager.VCDClient.ClusterOrgName,
 	}
 
-	klog.Infof("Getting disk details for [%s]", diskName)
-	disk, err := cs.DiskManager.GetDiskByName(diskName)
-	if err != nil {
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskQueryError, "", diskName, map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]",
-			diskName, err)}); rdeErr != nil {
-			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskQueryError, cs.DiskManager.ClusterID, rdeErr)
+	ovdcNameList := make([]string, 0)
+	if cs.DiskManager.ZoneMap != nil {
+		for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
+			ovdcNameList = append(ovdcNameList, ovdcName)
 		}
-		return nil, fmt.Errorf("unable to find disk [%s]: [%v]", diskName, err)
+	} else {
+		ovdcNameList = append(ovdcNameList, cs.DiskManager.VCDClient.ClusterOVDCName)
 	}
-	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskQueryError, "", diskName); removeErrorRdeErr != nil {
+
+	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcNameList)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
+			vmName, ovdcNameList, err)
+	}
+
+	klog.Infof("Getting disk details for [%s]", volumeID)
+	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, nil)
+	if err != nil {
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskQueryError, "", volumeID,
+			map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]", volumeID, err)}); rdeErr != nil {
+			klog.Errorf("unable to unable to add error [%s] into [CSI.Errors] in RDE [%s], %v",
+				util.DiskQueryError, cs.DiskManager.ClusterID, rdeErr)
+		}
+
+		return nil, fmt.Errorf("unable to find disk [%s]: [%v]", volumeID, err)
+	}
+	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskQueryError, "", volumeID); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskQueryError, cs.DiskManager.ClusterID)
 	}
 	klog.Infof("Obtained disk: [%#v]\n", disk)
 
-	klog.Infof("Attaching volume [%s] to node [%s]", diskName, nodeID)
+	klog.Infof("Attaching volume [%s] to node [%s]", volumeID, vmName)
 	err = cs.DiskManager.AttachVolume(vm, disk)
 	if err != nil {
-		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskAttachError, "", diskName, map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
-			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v", util.DiskAttachError, cs.DiskManager.ClusterID, rdeErr)
+		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskAttachError, "", volumeID,
+			map[string]interface{}{"Detailed Error": err.Error(), "VM Info": vmName}); rdeErr != nil {
+			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v",
+				util.DiskAttachError, cs.DiskManager.ClusterID, rdeErr)
 		}
 		if errors.Is(err, govcd.ErrorEntityNotFound) {
-			return nil, status.Errorf(codes.NotFound, "could not provision disk [%s] in vcd", diskName)
+			return nil, status.Errorf(codes.NotFound, "could not provision disk [%s] in vcd", volumeID)
 		}
 		return nil, err
 	}
-	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskAttachError, "", diskName); removeErrorRdeErr != nil {
+	if removeErrorRdeErr := cs.DiskManager.RemoveFromErrorSet(util.DiskAttachError, "", volumeID); removeErrorRdeErr != nil {
 		klog.Errorf("unable to remove error [%s] from [CSI.Errors] in RDE [%s]", util.DiskAttachError, cs.DiskManager.ClusterID)
 	}
-	klog.Infof("Successfully attached volume %s to node %s ", diskName, nodeID)
+	klog.Infof("Successfully attached volume %s to node %s ", volumeID, vmName)
 
 	return &csi.ControllerPublishVolumeResponse{
 		PublishContext: map[string]string{
 			VMFullNameAttribute: vm.VM.Name,
-			DiskIDAttribute:     diskName,
+			DiskIDAttribute:     volumeID,
 			DiskUUIDAttribute:   disk.UUID,
 			FileSystemAttribute: fsType,
 		},
@@ -323,9 +386,9 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 			"ControllerUnpublishVolume: Volume ID must be provided")
 	}
 
-	disk, err := cs.DiskManager.GetDiskByName(volumeID)
+	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, nil)
 	if err != nil {
-		if err == govcd.ErrorEntityNotFound {
+		if errors.Is(err, govcd.ErrorEntityNotFound) {
 			klog.Infof("Volume [%s] is not available. Hence will mark as unpublished.", volumeID)
 			return &csi.ControllerUnpublishVolumeResponse{}, nil
 		}
@@ -341,25 +404,31 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 		return &csi.ControllerUnpublishVolumeResponse{}, nil
 	}
 
-	nodeID := req.GetNodeId()
-	if nodeID == "" {
-		return nil, status.Errorf(codes.InvalidArgument,
-			"ControllerUnpublishVolume: Node ID must be provided")
+	vmName := req.GetNodeId()
+	if vmName == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "ControllerUnpublishVolume: Node ID must be provided")
 	}
-	vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName, cs.DiskManager.VCDClient.ClusterOVDCName)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
-	}
-	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
-	if err != nil {
-		return nil, status.Errorf(codes.NotFound,
-			"Could not find VM with nodeID [%s] from which to detach [%s]", nodeID, volumeID)
+	orgManager := &vcdsdk.OrgManager{
+		Client:  cs.DiskManager.VCDClient,
+		OrgName: cs.DiskManager.VCDClient.ClusterOrgName,
 	}
 
-	err = cs.DiskManager.DetachVolume(vm, volumeID)
+	ovdcNameList := make([]string, 0)
+	if cs.DiskManager.ZoneMap != nil {
+		for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
+			ovdcNameList = append(ovdcNameList, ovdcName)
+		}
+	}
+	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcNameList)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
+			vmName, ovdcNameList, err)
+	}
+
+	err = cs.DiskManager.DetachVolume(vm, volumeID, cs.DiskManager.ZoneMap)
 	if err != nil {
 		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskDetachError, "",
-			volumeID, map[string]interface{}{"Detailed Error": err.Error(), "VM Info": nodeID}); rdeErr != nil {
+			volumeID, map[string]interface{}{"Detailed Error": err.Error(), "VM Info": vmName}); rdeErr != nil {
 			klog.Errorf("unable to add error [%s] into [CSI.Errors] in RDE [%s], %v",
 				util.DiskDetachError, cs.DiskManager.ClusterID, rdeErr)
 		}
@@ -429,8 +498,8 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 	}
 	klog.Infof("ControllerExpandVolume: called with req [%#v]", *req)
 
-	diskName := req.VolumeId
-	if len(diskName) == 0 {
+	volumeID := req.VolumeId
+	if len(volumeID) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Volume Id not provided")
 	}
 
@@ -453,15 +522,15 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
-	disk, err := cs.DiskManager.GetDiskByName(diskName)
+	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, nil)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Unable to get disk by ID [%s]: [%v]", diskName, err)
+		return nil, status.Errorf(codes.Internal, "Unable to get disk by ID [%s]: [%v]", volumeID, err)
 	}
 
-	// The required bytes is a minimum and need something >= it. Hence use ceil.
+	// The required bytes is a minimum and need something >= it. Hence, use ceil.
 	newSizeMb := int64(math.Ceil(float64(req.CapacityRange.RequiredBytes / MbToBytes)))
 	if disk.SizeMb == newSizeMb {
-		klog.Infof("Volume [%s] already at requested size [%d]Mb", diskName, newSizeMb)
+		klog.Infof("Volume [%s] already at requested size [%d]Mb", volumeID, newSizeMb)
 		return &csi.ControllerExpandVolumeResponse{
 			CapacityBytes:         newSizeMb * MbToBytes,
 			NodeExpansionRequired: false,
@@ -470,12 +539,12 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 	if disk.SizeMb > newSizeMb {
 		return nil, status.Errorf(codes.InvalidArgument,
 			"Disk [%s] new size [%d]Mb cannot be less than previous value [%d]",
-			diskName, newSizeMb, disk.SizeMb)
+			volumeID, newSizeMb, disk.SizeMb)
 	}
 
 	attachedVMs, err := cs.DiskManager.GovcdAttachedVM(disk)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Unable to find VM attached to disk [%s]: [%v]", diskName, err)
+		return nil, status.Errorf(codes.Internal, "Unable to find VM attached to disk [%s]: [%v]", volumeID, err)
 	}
 	if len(attachedVMs) > 1 {
 		// If there are multiple (>1) VMs attached to a disk, the disk cannot be expanded ONLINE. For OFFLINE expansion
@@ -506,10 +575,10 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 	case csi.PluginCapability_VolumeExpansion_OFFLINE:
 		if len(attachedVMs) > 0 {
 			return nil, status.Errorf(codes.FailedPrecondition,
-				"Disk [%s] cannot be expanded in [%s] mode since VMs [%v] are attached", diskName,
+				"Disk [%s] cannot be expanded in [%s] mode since VMs [%v] are attached", volumeID,
 				expansionMode.String(), attachedVMs)
 		}
-		newDisk := &types.Disk{ // note that this is a SDK type
+		newDisk := &types.Disk{ // note that this is an SDK type
 			Description: disk.Description,
 			SizeMb:      newSizeMb,
 			Name:        disk.Name,
@@ -537,19 +606,27 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 		if len(attachedVMs) != 1 {
 			return nil, status.Errorf(codes.FailedPrecondition,
 				"Disk [%s] cannot be expanded in [%s] mode since zero or more than one VMs [%v] are attached",
-				diskName, expansionMode.String(), attachedVMs)
+				volumeID, expansionMode.String(), attachedVMs)
 		}
 
 		attachedVMName := attachedVMs[0].Name
 		klog.Infof("Getting node details for attached VM [%s]", attachedVMName)
-		vdcManager, err := vcdsdk.NewVDCManager(cs.DiskManager.VCDClient, cs.DiskManager.VCDClient.ClusterOrgName,
-			cs.DiskManager.VCDClient.ClusterOVDCName)
-		if err != nil {
-			return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
+
+		orgManager := &vcdsdk.OrgManager{
+			Client:  cs.DiskManager.VCDClient,
+			OrgName: cs.DiskManager.VCDClient.ClusterOrgName,
 		}
-		vm, err := vdcManager.FindVMByName(cs.VAppName, attachedVMName)
+
+		ovdcNameList := make([]string, 0)
+		if cs.DiskManager.ZoneMap != nil {
+			for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
+				ovdcNameList = append(ovdcNameList, ovdcName)
+			}
+		}
+		vm, _, err := orgManager.SearchVMAcrossVDCs(attachedVMName, cs.VAppName, "", ovdcNameList)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s]: [%v]", attachedVMName, err)
+			return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
+				attachedVMName, ovdcNameList, err)
 		}
 
 		// we need the disk from the VM since we need to send all disk settings while updating the disk
@@ -569,16 +646,16 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 		}
 		if !diskFound {
 			return nil, status.Errorf(codes.Internal, "Unable to find disk [%s] from node [%s]: [%v]",
-				diskName, attachedVMName, err)
+				volumeID, attachedVMName, err)
 		}
 		vmSpecSection.DiskSection.DiskSettings = newDiskSettings
 		if _, err = vm.UpdateInternalDisks(vmSpecSection); err != nil {
 			return nil, status.Errorf(codes.Internal, "Unable to increase size of disk [%s] from [%d]MB to [%d]MB: [%v]",
-				diskName, disk.SizeMb, newSizeMb, err)
+				volumeID, disk.SizeMb, newSizeMb, err)
 		}
 		klog.Infof("Size of disk [%s] increased from [%d]MB to [%d]MB successfully. "+
 			"File system will be increased by the node later.",
-			diskName, disk.SizeMb, newSizeMb)
+			volumeID, disk.SizeMb, newSizeMb)
 
 		return &csi.ControllerExpandVolumeResponse{
 			CapacityBytes:         newSizeMb * MbToBytes,

@@ -91,7 +91,7 @@ spec:
             capabilities:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
-          image: projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.6.0
+          image: projects.registry.vmware.com/vmware-cloud-director/cloud-director-named-disk-csi-driver:1.7.0
           imagePullPolicy: IfNotPresent
           command :
             - /opt/vcloud/bin/cloud-director-named-disk-csi-driver
@@ -160,3 +160,6 @@ spec:
         - name: vcloud-basic-auth-volume
           secret:
             secretName: vcloud-basic-auth
+        - name: vcloud-capvcd-zones
+          configMap:
+            name: vcloud-capvcd-zones

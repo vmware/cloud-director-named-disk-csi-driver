@@ -22,6 +22,10 @@ import (
 	"k8s.io/klog"
 )
 
+const (
+	ZoneMapConfigFilePath = "/opt/vmware-cloud-director/csi/vcloud-cse-zones.yaml"
+)
+
 var (
 	endpointFlag    string
 	nodeIDFlag      string
@@ -126,6 +130,8 @@ func runCommand() {
 		time.Sleep(waitTime)
 	}
 
+	getVdcClient := cloudConfig.VCD.VDC != "" // get VDC client only if it is passed
+
 	vcdClient, err := vcdsdk.NewVCDClientFromSecrets(
 		cloudConfig.VCD.Host,
 		cloudConfig.VCD.Org,
@@ -135,7 +141,7 @@ func runCommand() {
 		cloudConfig.VCD.Secret,
 		cloudConfig.VCD.RefreshToken,
 		true,
-		true,
+		getVdcClient,
 	)
 	if err != nil {
 		panic(fmt.Errorf("unable to initiate vcd client: [%v]", err))
@@ -146,10 +152,24 @@ func runCommand() {
 		klog.Infof("Using ClusterID [%s] from env since config has an empty string", cloudConfig.ClusterID)
 	}
 
-	if err = d.Setup(&vcdcsiclient.DiskManager{
-		VCDClient: vcdClient,
-		ClusterID: cloudConfig.ClusterID,
-	}, cloudConfig.VCD.VAppName, nodeID, upgradeRDEFlag); err != nil {
+	var zm *vcdsdk.ZoneMap = nil
+	if zm, err = vcdsdk.NewZoneMap(ZoneMapConfigFilePath); err != nil {
+		panic(fmt.Errorf("unable to create new zone map from configmap file [%s]: [%v]",
+			ZoneMapConfigFilePath, err))
+	}
+	klog.Infof("Setting up CSI with zones [%v] and zone enablement [%v]", zm, cloudConfig.VCD.IsZoneEnabledCluster)
+
+	if err = d.Setup(
+		&vcdcsiclient.DiskManager{
+			VCDClient: vcdClient,
+			ClusterID: cloudConfig.ClusterID,
+		},
+		cloudConfig.VCD.VAppName,
+		nodeID,
+		upgradeRDEFlag,
+		cloudConfig.VCD.IsZoneEnabledCluster,
+		zm,
+	); err != nil {
 		panic(fmt.Errorf("error while setting up driver: [%v]", err))
 	}
 
