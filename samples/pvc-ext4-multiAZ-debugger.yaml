@@ -1,0 +1,26 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: volume-debugger-ext4
+spec:
+  volumes:
+    - name: volume-to-debug
+      persistentVolumeClaim:
+       claimName: pvc-ext4
+  containers:
+    - name: debugger
+      image: projects-stg.registry.vmware.com/vmware-cloud-director/busybox:latest
+      command: ['sleep', '3600']
+      volumeMounts:
+        - mountPath: "/data"
+          name: volume-to-debug
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - zone2

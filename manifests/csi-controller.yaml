@@ -217,6 +217,8 @@ spec:
               mountPath: /etc/kubernetes/vcloud
             - name: vcloud-basic-auth-volume
               mountPath: /etc/kubernetes/vcloud/basic-auth
+            - name: vcloud-capvcd-zones
+              mountPath: /opt/vmware-cloud-director/csi
       tolerations:
         - key: "CriticalAddonsOnly"
           operator: "Exists"
