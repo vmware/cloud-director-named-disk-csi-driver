@@ -161,8 +161,6 @@ github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ
 github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/thecodeteam/gofsutil v0.1.2 h1:FL87mBzZeeuDMZm8hpYLFcYylQdq6bbm8UQ1oc6VRMM=
 github.com/thecodeteam/gofsutil v0.1.2/go.mod h1:7bDOpr2aMnmdm9RTdxBEeqdOr+8RpnQhsB/VUEI3DgM=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240314171125-0d4c2b6264b0 h1:mCFJSD1KXSY+wbuxODbBxIhSgQxL3ZdYK2fO232x6U8=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240314171125-0d4c2b6264b0/go.mod h1:2n0taJ0Fzvd5sYiLIbPNA5LdJjmpNvy9DgdcFs0HbZU=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240314212702-2e7e77e434c6 h1:M1Rjc3imDrmFzsf3hgUPhtb3eJs62A5CqbGd9poYHrQ=
 github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240314212702-2e7e77e434c6/go.mod h1:7V/gaVSTqENxOW/9GXUrY27OF7UbTSZXEqGiq75GnK4=
 github.com/vmware/go-vcloud-director/v2 v2.21.0 h1:zIONrJpM+Fj+rDyXmsRfMAn1sP5WAP87USL0T9GS4DY=
