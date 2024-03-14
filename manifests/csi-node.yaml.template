@@ -125,6 +125,8 @@ spec:
               mountPath: /etc/kubernetes/vcloud
             - name: vcloud-basic-auth-volume
               mountPath: /etc/kubernetes/vcloud/basic-auth
+            - name: vcloud-capvcd-zones
+              mountPath: /opt/vmware-cloud-director/csi
       volumes:
         - name: socket-dir
           hostPath:
@@ -156,3 +158,6 @@ spec:
         - name: vcloud-basic-auth-volume
           secret:
             secretName: vcloud-basic-auth
+        - name: vcloud-capvcd-zones
+          configMap:
+            name: vcloud-capvcd-zones
