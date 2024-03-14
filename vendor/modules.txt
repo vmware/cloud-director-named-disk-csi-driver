@@ -55,8 +55,8 @@ github.com/go-openapi/swag
 ## explicit; go 1.15
 github.com/gogo/protobuf/proto
 github.com/gogo/protobuf/sortkeys
-# github.com/golang/protobuf v1.5.3
-## explicit; go 1.9
+# github.com/golang/protobuf v1.5.4
+## explicit; go 1.17
 github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/protoc-gen-go/descriptor
@@ -218,8 +218,8 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240130001211-a5411b6b7721
-## explicit; go 1.20
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240314171125-0d4c2b6264b0
+## explicit; go 1.21
 github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk
 github.com/vmware/cloud-provider-for-cloud-director/pkg/util
 github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk

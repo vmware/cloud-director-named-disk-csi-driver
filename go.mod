@@ -12,7 +12,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.2
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240130001211-a5411b6b7721
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240314171125-0d4c2b6264b0
 	github.com/vmware/go-vcloud-director/v2 v2.21.0
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.15.0
@@ -49,7 +49,7 @@ require (
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
