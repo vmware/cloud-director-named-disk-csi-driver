@@ -260,7 +260,11 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	if err != nil {
 		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
 	}
-	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
+	VAppName := cs.VAppName
+	if cs.VAppName == "NODE_PER_VAPP" {
+		VAppName = nodeID
+	}
+	vm, err := vdcManager.FindVMByName(VAppName, nodeID)
 	if err != nil {
 		return nil, fmt.Errorf("unable to find VM for node [%s]: [%v]", nodeID, err)
 	}
@@ -350,7 +354,11 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 	if err != nil {
 		return nil, fmt.Errorf("unable to get vdcManager: [%v]", err)
 	}
-	vm, err := vdcManager.FindVMByName(cs.VAppName, nodeID)
+	VAppName := cs.VAppName
+	if cs.VAppName == "NODE_PER_VAPP" {
+		VAppName = nodeID
+	}
+	vm, err := vdcManager.FindVMByName(VAppName, nodeID)
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound,
 			"Could not find VM with nodeID [%s] from which to detach [%s]", nodeID, volumeID)
