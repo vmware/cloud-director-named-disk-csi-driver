@@ -9,7 +9,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"github.com/sethvargo/go-password/password"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/util"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 	"io/ioutil"
@@ -229,6 +229,16 @@ func (vdc *VdcManager) DeleteVApp(VAppName string) error {
 		return fmt.Errorf("error performing delete vApp task: %s", err)
 	}
 	return nil
+}
+
+func CreateVAppNamePrefix(clusterName string, ovdcID string) (string, error) {
+	parts := strings.Split(ovdcID, ":")
+	if len(parts) != 4 {
+		// urn:vcloud:org:<uuid>
+		return "", fmt.Errorf("invalid URN format for OVDC: [%s]", ovdcID)
+	}
+
+	return fmt.Sprintf("%s_%s", clusterName, parts[3]), nil
 }
 
 // no need to make reentrant since VCD will take care of it and Kubernetes will retry
@@ -676,7 +686,8 @@ func (vdc *VdcManager) AddNewVM(vmName string, VAppName string, catalogName stri
 			vdc.VdcName, err)
 	}
 
-	passwd, err := password.Generate(15, 5, 3, false, false)
+	// these are the settings used in VMware Cloud Director
+	passwd, err := util.GeneratePassword(15, 5, 3, false, false)
 	if err != nil {
 		return govcd.Task{}, fmt.Errorf("failed to generate a password to create a VM in the VApp [%s]", vApp.VApp.Name)
 	}
