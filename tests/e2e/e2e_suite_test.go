@@ -17,7 +17,7 @@ var (
 	userOrg      string
 	refreshToken string
 	// defaultStorageProfile is parameterized due to possible VCD issue from different VM (cluster) / Named Disk storage profile names
-	defaultStorageProfile string
+	defaultStorageProfile string // Could be "*" or "Development2"
 
 	ContainerImage string
 )
