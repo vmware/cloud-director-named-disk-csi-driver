@@ -15,17 +15,16 @@ import (
 )
 
 const (
-	testNameSpaceName     = "provisioning-test-ns"
-	testRetainPVCName     = "test-retain-pvc"
-	testDeletePVCName     = "test-delete-pvc"
-	testDeploymentName    = "test-deployment"
-	storageClassDelete    = "delete-storage-class"
-	storageClassRetain    = "retain-storage-class"
-	storageClassXfs       = "xfs-storage-class"
-	storageClassExt4      = "ext4"
-	storageSize           = "2Gi"
-	defaultStorageProfile = "*"
-	volumeName            = "deployment-pv"
+	testNameSpaceName  = "provisioning-test-ns"
+	testRetainPVCName  = "test-retain-pvc"
+	testDeletePVCName  = "test-delete-pvc"
+	testDeploymentName = "test-deployment"
+	storageClassDelete = "delete-storage-class"
+	storageClassRetain = "retain-storage-class"
+	storageClassXfs    = "xfs-storage-class"
+	storageClassExt4   = "ext4"
+	storageSize        = "2Gi"
+	volumeName         = "deployment-pv"
 
 	ONEGIG = 1 << 30
 )
@@ -142,6 +141,7 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		fmt.Printf("PVC [%s/%s] updated size is [%v]\n", testNameSpaceName, testRetainPVCName, pvc.Spec.Resources.Requests.Storage())
 
 		By("PVC size should be updated")
+		// If the StorageClass storage profile name created is different from the cluster VM's storage profile name, csi-resizer may complain of VCD error.
 		err = utils.WaitForPvcSizeUpdated(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName,
 			resource.MustParse("4Gi"))
 		Expect(err).NotTo(HaveOccurred())

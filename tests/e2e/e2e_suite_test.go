@@ -16,6 +16,8 @@ var (
 	userName     string
 	userOrg      string
 	refreshToken string
+	// defaultStorageProfile is parameterized due to possible VCD issue from different VM (cluster) / Named Disk storage profile names
+	defaultStorageProfile string
 
 	ContainerImage string
 )
@@ -34,6 +36,7 @@ func init() {
 	flag.StringVar(&userName, "userName", "", "Username for login to generate client")
 	flag.StringVar(&refreshToken, "refreshToken", "", "Refresh token of user to generate client")
 	flag.StringVar(&rdeId, "rdeId", "", "Cluster ID to fetch cluster RDE")
+	flag.StringVar(&defaultStorageProfile, "defaultStorageProfile", "*", "Default storage profile to create PVC and StorageClass")
 }
 
 var _ = BeforeSuite(func() {
