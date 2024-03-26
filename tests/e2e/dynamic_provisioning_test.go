@@ -132,6 +132,8 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	})
 
 	//scenario 1: use 'Retain' retention policy. step4: expand volume (ONLINE Expansion).
+	// ONLINE expansion is expected to fail when name disk storage profile name does not match up with VM storage profile names.
+	// Bugzilla ID: 3366176
 	It("should ONLINE EXPAND above PVC since volumeExpansion is enabled", func() {
 		By("should expand a PVC successfully")
 		pvc, err := utils.IncreasePVCSize(ctx, tc.Cs.(*kubernetes.Clientset), testNameSpaceName, testRetainPVCName,
