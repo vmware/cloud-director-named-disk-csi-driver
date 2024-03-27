@@ -117,8 +117,8 @@ func WaitForPvcSizeUpdated(ctx context.Context, k8sClient *kubernetes.Clientset,
 			return false, nil
 		}
 
-		fmt.Printf("PVC [%s/%s] size is [%v]\n", nameSpace, pvcName, pvc.Spec.Resources.Requests.Storage())
-		if pvc.Spec.Resources.Requests.Storage().Cmp(newSize) == 0 {
+		fmt.Printf("Current PVC [%s/%s] size is [%v], expected: [%v]\n", nameSpace, pvcName, pvc.Status.Capacity.Storage(), newSize.String())
+		if pvc.Status.Capacity.Storage().Cmp(newSize) == 0 {
 			return true, nil
 		}
 
