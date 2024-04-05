@@ -40,13 +40,13 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 	)
 
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
-		Host:         host,
-		OvdcName:     ovdc,
-		OrgName:      org,
-		Username:     userName,
-		RefreshToken: refreshToken,
-		UserOrg:      userOrg,
-		GetVdcClient: true,
+		Host:           host,
+		OvdcIdentifier: ovdc,
+		OrgName:        org,
+		Username:       userName,
+		RefreshToken:   refreshToken,
+		UserOrg:        userOrg,
+		GetVdcClient:   true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
 	Expect(tc).NotTo(BeNil())

@@ -169,7 +169,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 				cs.DiskManager.ZoneMap)
 		}
 	} else {
-		vdcIdentifierSpecified = cs.DiskManager.VCDClient.ClusterOVDCName
+		vdcIdentifierSpecified = cs.DiskManager.VCDClient.ClusterOVDCIdentifier
 	}
 	klog.Infof("OVDC where disk will be created is [%s] when zone-enabled is [%s]",
 		vdcIdentifierSpecified, cs.DiskManager.IsZoneEnabledCluster)
@@ -309,19 +309,20 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		OrgName: cs.DiskManager.VCDClient.ClusterOrgName,
 	}
 
-	ovdcNameList := make([]string, 0)
+	ovdcIdentifierList := make([]string, 0)
 	if cs.DiskManager.ZoneMap != nil {
 		for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
-			ovdcNameList = append(ovdcNameList, ovdcName)
+			ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 		}
 	} else {
-		ovdcNameList = append(ovdcNameList, cs.DiskManager.VCDClient.ClusterOVDCName)
+		ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	}
 
-	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcNameList)
+	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcIdentifierList,
+		cs.DiskManager.IsZoneEnabledCluster)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
-			vmName, ovdcNameList, err)
+			vmName, ovdcIdentifierList, err)
 	}
 
 	klog.Infof("Getting disk details for [%s]", volumeID)
@@ -413,16 +414,16 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 		OrgName: cs.DiskManager.VCDClient.ClusterOrgName,
 	}
 
-	ovdcNameList := make([]string, 0)
+	ovdcIdentifierList := make([]string, 0)
 	if cs.DiskManager.ZoneMap != nil {
 		for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
-			ovdcNameList = append(ovdcNameList, ovdcName)
+			ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 		}
 	}
-	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcNameList)
+	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcIdentifierList, cs.DiskManager.IsZoneEnabledCluster)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
-			vmName, ovdcNameList, err)
+			vmName, ovdcIdentifierList, err)
 	}
 
 	err = cs.DiskManager.DetachVolume(vm, volumeID, cs.DiskManager.ZoneMap)
@@ -617,16 +618,17 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 			OrgName: cs.DiskManager.VCDClient.ClusterOrgName,
 		}
 
-		ovdcNameList := make([]string, 0)
+		ovdcIdentifierList := make([]string, 0)
 		if cs.DiskManager.ZoneMap != nil {
 			for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
-				ovdcNameList = append(ovdcNameList, ovdcName)
+				ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 			}
 		}
-		vm, _, err := orgManager.SearchVMAcrossVDCs(attachedVMName, cs.VAppName, "", ovdcNameList)
+		vm, _, err := orgManager.SearchVMAcrossVDCs(attachedVMName, cs.VAppName, "", ovdcIdentifierList,
+			cs.DiskManager.IsZoneEnabledCluster)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
-				attachedVMName, ovdcNameList, err)
+				attachedVMName, ovdcIdentifierList, err)
 		}
 
 		// we need the disk from the VM since we need to send all disk settings while updating the disk

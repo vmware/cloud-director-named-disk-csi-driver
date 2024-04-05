@@ -153,7 +153,7 @@ func TestDiskCreateAttach(t *testing.T) {
 	// get VM nodeID should be the existing VM name
 	nodeID := "capi-cluster-2-md0-85c8585c96-8bqj2"
 
-	vdcManager, err := vcdsdk.NewVDCManager(diskManager.VCDClient, diskManager.VCDClient.ClusterOrgName, diskManager.VCDClient.ClusterOVDCName)
+	vdcManager, err := vcdsdk.NewVDCManager(diskManager.VCDClient, diskManager.VCDClient.ClusterOrgName, diskManager.VCDClient.ClusterOVDCIdentifier)
 	assert.NoError(t, err, "unable to get vdcManager")
 	// Todo find a suitable way to handle cluster
 	vm, err := vdcManager.FindVMByName(vAppName, nodeID)
