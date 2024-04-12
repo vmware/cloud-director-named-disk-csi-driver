@@ -419,6 +419,8 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 		for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
 			ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 		}
+	} else {
+		ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	}
 	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcIdentifierList, cs.DiskManager.IsZoneEnabledCluster)
 	if err != nil {
@@ -623,6 +625,8 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 			for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
 				ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 			}
+		} else {
+			ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 		}
 		vm, _, err := orgManager.SearchVMAcrossVDCs(attachedVMName, cs.VAppName, "", ovdcIdentifierList,
 			cs.DiskManager.IsZoneEnabledCluster)
