@@ -156,7 +156,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context,
 			return nil, status.Errorf(codes.InvalidArgument,
 				"zone enabled clusters should specify a zone where the storage is to be created")
 		}
-		if zoneNameSpecified != "" && cs.DiskManager.ZoneMap != nil {
+		if zoneNameSpecified != "" && cs.DiskManager.ZoneMap != nil && len(cs.DiskManager.ZoneMap.VdcToZoneMap) != 0 {
 			for ovdcName, zoneName := range cs.DiskManager.ZoneMap.VdcToZoneMap {
 				if zoneName == zoneNameSpecified {
 					vdcIdentifierSpecified = ovdcName
@@ -310,7 +310,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	}
 
 	ovdcIdentifierList := make([]string, 0)
-	if cs.DiskManager.ZoneMap != nil {
+	if cs.DiskManager.ZoneMap != nil && len(cs.DiskManager.ZoneMap.VdcToZoneMap) != 0 {
 		for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
 			ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 		}
@@ -326,7 +326,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 	}
 
 	klog.Infof("Getting disk details for [%s]", volumeID)
-	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, nil)
+	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	if err != nil {
 		if rdeErr := cs.DiskManager.AddToErrorSet(util.DiskQueryError, "", volumeID,
 			map[string]interface{}{"Detailed Error": fmt.Errorf("unable query disk [%s]: [%v]", volumeID, err)}); rdeErr != nil {
@@ -387,7 +387,7 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 			"ControllerUnpublishVolume: Volume ID must be provided")
 	}
 
-	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, nil)
+	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	if err != nil {
 		if errors.Is(err, govcd.ErrorEntityNotFound) {
 			klog.Infof("Volume [%s] is not available. Hence will mark as unpublished.", volumeID)
@@ -415,10 +415,12 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 	}
 
 	ovdcIdentifierList := make([]string, 0)
-	if cs.DiskManager.ZoneMap != nil {
+	if cs.DiskManager.ZoneMap != nil && len(cs.DiskManager.ZoneMap.VdcToZoneMap) != 0 {
 		for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
 			ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 		}
+	} else {
+		ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	}
 	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcIdentifierList, cs.DiskManager.IsZoneEnabledCluster)
 	if err != nil {
@@ -523,7 +525,7 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 		return nil, fmt.Errorf("error while obtaining access token: [%v]", err)
 	}
 
-	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, nil)
+	disk, err := cs.DiskManager.GetDiskByNameOrId(volumeID, cs.DiskManager.ZoneMap, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Unable to get disk by ID [%s]: [%v]", volumeID, err)
 	}
@@ -619,10 +621,12 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 		}
 
 		ovdcIdentifierList := make([]string, 0)
-		if cs.DiskManager.ZoneMap != nil {
+		if cs.DiskManager.ZoneMap != nil && len(cs.DiskManager.ZoneMap.VdcToZoneMap) != 0 {
 			for ovdcName, _ := range cs.DiskManager.ZoneMap.VdcToZoneMap {
 				ovdcIdentifierList = append(ovdcIdentifierList, ovdcName)
 			}
+		} else {
+			ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 		}
 		vm, _, err := orgManager.SearchVMAcrossVDCs(attachedVMName, cs.VAppName, "", ovdcIdentifierList,
 			cs.DiskManager.IsZoneEnabledCluster)
