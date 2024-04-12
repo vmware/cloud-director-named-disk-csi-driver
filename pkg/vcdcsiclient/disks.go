@@ -348,7 +348,7 @@ func (diskManager *DiskManager) GetDiskByNameOrId(name string, zm *vcdsdk.ZoneMa
 		return nil, fmt.Errorf("unable to find disk [%s] since zone and OrgVDC are not specified", name)
 	}
 
-	if zm == nil && len(zm.VdcToZoneMap) == 0 {
+	if zm != nil && len(zm.VdcToZoneMap) != 0 {
 		for ovdcName, zone := range zm.VdcToZoneMap {
 			vdc, err := diskManager.Org.GetVDCByNameOrId(ovdcName, false)
 			if err != nil {
