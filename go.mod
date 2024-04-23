@@ -12,7 +12,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.2
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240403204926-7a46afa77f52
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240422223843-6dd634aca882
 	github.com/vmware/go-vcloud-director/v2 v2.21.0
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.15.0
