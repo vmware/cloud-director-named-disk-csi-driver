@@ -218,7 +218,7 @@ github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/thecodeteam/gofsutil v0.1.2
 ## explicit
-# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240403204926-7a46afa77f52
+# github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240422223843-6dd634aca882
 ## explicit; go 1.21
 github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk
 github.com/vmware/cloud-provider-for-cloud-director/pkg/util
