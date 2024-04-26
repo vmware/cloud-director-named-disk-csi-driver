@@ -161,10 +161,10 @@ github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ
 github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/thecodeteam/gofsutil v0.1.2 h1:FL87mBzZeeuDMZm8hpYLFcYylQdq6bbm8UQ1oc6VRMM=
 github.com/thecodeteam/gofsutil v0.1.2/go.mod h1:7bDOpr2aMnmdm9RTdxBEeqdOr+8RpnQhsB/VUEI3DgM=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240422223843-6dd634aca882 h1:zYn4DGeDFaE6DmoT7QEiuzfYSj0pP8eXnN1YXwtRWKU=
-github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240422223843-6dd634aca882/go.mod h1:7V/gaVSTqENxOW/9GXUrY27OF7UbTSZXEqGiq75GnK4=
-github.com/vmware/go-vcloud-director/v2 v2.21.0 h1:zIONrJpM+Fj+rDyXmsRfMAn1sP5WAP87USL0T9GS4DY=
-github.com/vmware/go-vcloud-director/v2 v2.21.0/go.mod h1:QPxGFgrUcSyzy9IlpwDE4UNT3tsOy2047tJOPEJ4nlw=
+github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240426203125-2d6e9efaf23d h1:AJJcphXNhOLXdGAnJmNHnZ5ZRiss7xwnEOqIn725HFc=
+github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240426203125-2d6e9efaf23d/go.mod h1:qhYamkHftqoYQf2dGOKafFkRD9KMbvtoJYFql76C1SU=
+github.com/vmware/go-vcloud-director/v2 v2.24.0 h1:IjHISp/1Nk4bxtcA5Hx34w6J2haN/Hq66amw9XvTL54=
+github.com/vmware/go-vcloud-director/v2 v2.24.0/go.mod h1:NyNcb2ymhrzwv4GyYXyYOm1NbqRwGNxDWn90AtWniXc=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.uber.org/atomic v1.10.0 h1:9qC72Qh0+3MqyJbAn8YU5xVq1frD8bn3JtD2oXtafVQ=
@@ -283,5 +283,5 @@ sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd h1:EDPBXCAspyGV4jQlpZSudPeMm
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd/go.mod h1:B8JuhiUyNFVKdsE8h686QcCxMaH6HrOAZj4vswFpcB0=
 sigs.k8s.io/structured-merge-diff/v4 v4.2.3 h1:PRbqxJClWWYMNV1dhaG4NsibJbArud9kFxnAMREiWFE=
 sigs.k8s.io/structured-merge-diff/v4 v4.2.3/go.mod h1:qjx8mGObPmV2aSZepjQjbmb2ihdVs8cGKBraizNC69E=
-sigs.k8s.io/yaml v1.3.0 h1:a2VclLzOGrwOHDiV8EfBGhvjHvP46CtW5j6POvhYGGo=
-sigs.k8s.io/yaml v1.3.0/go.mod h1:GeOyir5tyXNByN85N/dRIT9es5UQNerPYEKK56eTBm8=
+sigs.k8s.io/yaml v1.4.0 h1:Mk1wCc2gy/F0THH0TAp1QYyJNzRm2KCLy3o5ASXVI5E=
+sigs.k8s.io/yaml v1.4.0/go.mod h1:Ejl7/uTz7PSA4eKMyQCUTnhZYNmLIl+5c2lQPGR2BPY=
