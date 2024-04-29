@@ -318,8 +318,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context,
 		ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	}
 
-	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcIdentifierList,
-		cs.DiskManager.IsZoneEnabledCluster)
+	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", cs.DiskManager.IsZoneEnabledCluster)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
 			vmName, ovdcIdentifierList, err)
@@ -422,7 +421,7 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context,
 	} else {
 		ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 	}
-	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", ovdcIdentifierList, cs.DiskManager.IsZoneEnabledCluster)
+	vm, _, err := orgManager.SearchVMAcrossVDCs(vmName, cs.VAppName, "", cs.DiskManager.IsZoneEnabledCluster)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
 			vmName, ovdcIdentifierList, err)
@@ -628,8 +627,8 @@ func (cs *controllerServer) ControllerExpandVolume(ctx context.Context,
 		} else {
 			ovdcIdentifierList = append(ovdcIdentifierList, cs.DiskManager.VCDClient.ClusterOVDCIdentifier)
 		}
-		vm, _, err := orgManager.SearchVMAcrossVDCs(attachedVMName, cs.VAppName, "", ovdcIdentifierList,
-			cs.DiskManager.IsZoneEnabledCluster)
+
+		vm, _, err := orgManager.SearchVMAcrossVDCs(attachedVMName, cs.VAppName, "", cs.DiskManager.IsZoneEnabledCluster)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "Unable to find VM for node [%s] in vdc list [%v]: [%v]",
 				attachedVMName, ovdcIdentifierList, err)

@@ -12,8 +12,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.2
 	github.com/thecodeteam/gofsutil v0.1.2 // indirect
-	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240422223843-6dd634aca882
-	github.com/vmware/go-vcloud-director/v2 v2.21.0
+	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240426203125-2d6e9efaf23d
+	github.com/vmware/go-vcloud-director/v2 v2.24.0
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.18.0
 	google.golang.org/grpc v1.56.3
@@ -89,5 +89,5 @@ require (
 	k8s.io/kube-openapi v0.0.0-20230717233707-2695361300d9 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
