@@ -7,6 +7,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/util"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	"github.com/vmware/go-vcloud-director/v2/types/v56"
 )
@@ -28,17 +29,29 @@ var _ = Describe("CSI Storage Profile Test", func() {
 	)
 
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
-		Host:         host,
-		OvdcName:     ovdc,
-		OrgName:      org,
-		Username:     userName,
-		RefreshToken: refreshToken,
-		UserOrg:      userOrg,
-		GetVdcClient: true,
+		Host:           host,
+		OvdcIdentifier: ovdc,
+		OrgName:        org,
+		Username:       userName,
+		RefreshToken:   refreshToken,
+		UserOrg:        userOrg,
+		GetVdcClient:   true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
 	Expect(tc).NotTo(BeNil())
 	Expect(&tc.Cs).NotTo(BeNil())
+
+	if isMultiAz == "true" {
+		// override VDC in the client
+		vdcNameForDisk, err := GetVDCForZone(tc, storageClassZone)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+
+		vdcManager, err := vcdsdk.NewVDCManager(tc.VcdClient, tc.VcdClient.ClusterOrgName, vdcNameForDisk)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+		tc.VcdClient.VDC = vdcManager.Vdc
+	}
 
 	BeforeEach(func() {
 		if !tc.VcdClient.VCDAuthConfig.IsSysAdmin {

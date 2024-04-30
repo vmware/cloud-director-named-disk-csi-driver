@@ -331,7 +331,7 @@ func CreatePVC(ctx context.Context, k8sClient *kubernetes.Clientset, nameSpace s
 
 func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, scName string,
 	reclaimPolicy apiv1.PersistentVolumeReclaimPolicy, storageProfile string,
-	fsType string, allowVolumeExpansion bool) (*stov1.StorageClass, error) {
+	fsType string, allowVolumeExpansion bool, isMultiAZ string, storageClassZone string) (*stov1.StorageClass, error) {
 	if scName == "" {
 		return nil, testingsdk.ResourceNameNull
 	}
@@ -349,6 +349,10 @@ func CreateStorageClass(ctx context.Context, k8sClient *kubernetes.Clientset, sc
 			"storageProfile": storageProfile,
 			"filesystem":     fsType,
 		},
+	}
+	if strings.ToLower(isMultiAZ) == "true" {
+		sc.Parameters["isZoneEnabledCluster"] = "true"
+		sc.Parameters["zoneName"] = storageClassZone
 	}
 	newSC, err := k8sClient.StorageV1().StorageClasses().Create(ctx, sc, metav1.CreateOptions{})
 	if err != nil {

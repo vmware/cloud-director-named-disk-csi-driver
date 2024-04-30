@@ -7,6 +7,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -39,6 +40,18 @@ var _ = Describe("CSI static provisioning Test", func() {
 	Expect(tc).NotTo(BeNil())
 	Expect(&tc.Cs).NotTo(BeNil())
 
+	if isMultiAz == "true" {
+		// override VDC in the client
+		vdcNameForDisk, err := GetVDCForZone(tc, storageClassZone)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+
+		vdcManager, err := vcdsdk.NewVDCManager(tc.VcdClient, tc.VcdClient.ClusterOrgName, vdcNameForDisk)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+		tc.VcdClient.VDC = vdcManager.Vdc
+	}
+
 	ctx := context.TODO()
 
 	It("Should create the name space AND different storage classes", func() {
@@ -46,11 +59,13 @@ var _ = Describe("CSI static provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
 		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain,
-			apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4, false)
+			apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4, false,
+			isMultiAz, storageClassZone)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
 		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete,
-			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4, false)
+			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4, false,
+			isMultiAz, storageClassZone)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})

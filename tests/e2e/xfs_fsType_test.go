@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -22,17 +23,29 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		dynamicPVName string
 	)
 	tc, err = testingsdk.NewTestClient(&testingsdk.VCDAuthParams{
-		Host:         host,
-		OvdcName:     ovdc,
-		OrgName:      org,
-		Username:     userName,
-		RefreshToken: refreshToken,
-		UserOrg:      userOrg,
-		GetVdcClient: true,
+		Host:           host,
+		OvdcIdentifier: ovdc,
+		OrgName:        org,
+		Username:       userName,
+		RefreshToken:   refreshToken,
+		UserOrg:        userOrg,
+		GetVdcClient:   true,
 	}, rdeId)
 	Expect(err).NotTo(HaveOccurred())
 	Expect(tc).NotTo(BeNil())
 	Expect(&tc.Cs).NotTo(BeNil())
+
+	if isMultiAz == "true" {
+		// override VDC in the client
+		vdcNameForDisk, err := GetVDCForZone(tc, storageClassZone)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+
+		vdcManager, err := vcdsdk.NewVDCManager(tc.VcdClient, tc.VcdClient.ClusterOrgName, vdcNameForDisk)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+		tc.VcdClient.VDC = vdcManager.Vdc
+	}
 
 	ctx := context.TODO()
 
@@ -42,7 +55,8 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
 		xfsStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassXfs,
-			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, xfsFsType, false)
+			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, xfsFsType, false,
+			isMultiAz, storageClassZone)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(xfsStorageClass).NotTo(BeNil())
 	})
