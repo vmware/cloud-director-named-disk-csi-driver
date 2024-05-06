@@ -8,6 +8,7 @@ import (
 	"github.com/vmware/cloud-director-named-disk-csi-driver/pkg/vcdtypes"
 	"github.com/vmware/cloud-director-named-disk-csi-driver/tests/utils"
 	"github.com/vmware/cloud-provider-for-cloud-director/pkg/testingsdk"
+	"github.com/vmware/cloud-provider-for-cloud-director/pkg/vcdsdk"
 	"github.com/vmware/go-vcloud-director/v2/govcd"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -29,6 +30,31 @@ const (
 	ONEGIG = 1 << 30
 )
 
+const (
+	VCloudZoneConfigMapName      = "vcloud-capvcd-zones"
+	VCloudZoneConfigMapNamespace = "kube-system"
+)
+
+func GetVDCForZone(tc *testingsdk.TestClient, zoneName string) (string, error) {
+	zoneConfigMap, err := tc.GetConfigMap(VCloudZoneConfigMapNamespace, VCloudZoneConfigMapName)
+	if err != nil {
+		return "", fmt.Errorf("failed to get the zone config map: [%v]", err)
+	}
+	if zoneConfigMap == nil {
+		return "", fmt.Errorf("zone config map is nil")
+	}
+	zoneToOVDC, err := tc.GetZoneMapFromZoneConfigMap(zoneConfigMap)
+	if err != nil {
+		return "", fmt.Errorf("failed to get zone name to ovdc name mapping: [%v]", err)
+	}
+
+	ovdcName, ok := zoneToOVDC[zoneName]
+	if !ok {
+		return "", fmt.Errorf("zone config map doesn't have an entry for the zone name")
+	}
+	return ovdcName, nil
+}
+
 var _ = Describe("CSI dynamic provisioning Test", func() {
 	var (
 		tc            *testingsdk.TestClient
@@ -48,9 +74,22 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		UserOrg:        userOrg,
 		GetVdcClient:   true,
 	}, rdeId)
+
 	Expect(err).NotTo(HaveOccurred())
 	Expect(tc).NotTo(BeNil())
 	Expect(&tc.Cs).NotTo(BeNil())
+
+	if isMultiAz == "true" {
+		// override VDC in the client
+		vdcNameForDisk, err := GetVDCForZone(tc, storageClassZone)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+
+		vdcManager, err := vcdsdk.NewVDCManager(tc.VcdClient, tc.VcdClient.ClusterOrgName, vdcNameForDisk)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(vdcNameForDisk).NotTo(BeEmpty())
+		tc.VcdClient.VDC = vdcManager.Vdc
+	}
 
 	ctx := context.TODO()
 
@@ -59,11 +98,13 @@ var _ = Describe("CSI dynamic provisioning Test", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(ns).NotTo(BeNil())
 		retainStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassRetain,
-			apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4, true)
+			apiv1.PersistentVolumeReclaimRetain, defaultStorageProfile, storageClassExt4, true,
+			isMultiAz, storageClassZone)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(retainStorageClass).NotTo(BeNil())
 		deleteStorageClass, err := utils.CreateStorageClass(ctx, tc.Cs.(*kubernetes.Clientset), storageClassDelete,
-			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4, false)
+			apiv1.PersistentVolumeReclaimDelete, defaultStorageProfile, storageClassExt4, false,
+			isMultiAz, storageClassZone)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(deleteStorageClass).NotTo(BeNil())
 	})

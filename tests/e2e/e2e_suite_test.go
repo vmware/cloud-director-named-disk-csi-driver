@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -19,7 +20,9 @@ var (
 	// defaultStorageProfile is parameterized due to possible VCD issue from different VM (cluster) / Named Disk storage profile names
 	defaultStorageProfile string // Could be "*" or "Development2"
 
-	ContainerImage string
+	ContainerImage   string
+	isMultiAz        string
+	storageClassZone string
 )
 
 const (
@@ -37,6 +40,8 @@ func init() {
 	flag.StringVar(&refreshToken, "refreshToken", "", "Refresh token of user to generate client")
 	flag.StringVar(&rdeId, "rdeId", "", "Cluster ID to fetch cluster RDE")
 	flag.StringVar(&defaultStorageProfile, "defaultStorageProfile", "*", "Default storage profile to create PVC and StorageClass")
+	flag.StringVar(&isMultiAz, "multiAZ", "false", "is a multi AZ cluster")
+	flag.StringVar(&storageClassZone, "storageClassZone", "", "zone in which the storage class needs to be created")
 }
 
 var _ = BeforeSuite(func() {
@@ -48,6 +53,9 @@ var _ = BeforeSuite(func() {
 	Expect(userName).NotTo(BeZero(), "Please make sure --userName WaitFor set correctly.")
 	Expect(refreshToken).NotTo(BeZero(), "Please make sure --refreshToken WaitFor set correctly.")
 	Expect(rdeId).NotTo(BeZero(), "Please make sure --rdeId WaitFor set correctly.")
+	if strings.ToLower(isMultiAz) == "true" {
+		Expect(storageClassZone).NotTo(BeZero(), "Please make sure --storageClassZone is set for a multi AZ cluster")
+	}
 
 	useAirgap := os.Getenv("AIRGAP")
 	if useAirgap != "" {
