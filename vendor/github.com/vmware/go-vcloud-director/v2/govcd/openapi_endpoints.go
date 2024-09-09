@@ -71,9 +71,12 @@ var endpointMinApiVersions = map[string]string{
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointRdeTypeBehaviors:                   "35.0", // VCD 10.2+
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointRdeTypeBehaviorAccessControls:      "35.0", // VCD 10.2+
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointRdeEntities:                        "35.0", // VCD 10.2+
+	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointRdeEntityAccessControls:            "35.0", // VCD 10.2+
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointRdeEntitiesTypes:                   "35.0", // VCD 10.2+
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointRdeEntitiesResolve:                 "35.0", // VCD 10.2+
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointRdeEntitiesBehaviorsInvocations:    "35.0", // VCD 10.2+
+	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointExternalEndpoints:                  "37.3", // VCD 10.4.3+
+	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointApiFilters:                         "37.3", // VCD 10.4.3+
 
 	// IP Spaces
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointIpSpaces:                     "37.1", // VCD 10.4.1+
@@ -142,6 +145,8 @@ var endpointMinApiVersions = map[string]string{
 
 	// Endpoint for managing vGPU profiles
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointVgpuProfile: "36.2",
+
+	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointOrgs: "37.0",
 }
 
 // endpointElevatedApiVersions endpoint elevated API versions
@@ -156,6 +161,7 @@ var endpointElevatedApiVersions = map[string][]string{
 		"35.0", // Deprecates field BackingType in favor of BackingTypeValue
 		"36.0", // Adds support new type of BackingTypeValue - IMPORTED_T_LOGICAL_SWITCH (backed by NSX-T segment)
 		"37.1", // Adds support for IP Spaces with new fields - UsingIpSpace, DedicatedOrg
+		"38.1", // Adds support for NAT, Firewall and Route Advertisement intention configuration
 	},
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointVdcGroupsDfwRules: {
 		//"35.0", // Basic minimum required version
@@ -209,6 +215,7 @@ var endpointElevatedApiVersions = map[string][]string{
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointEdgeGateways: {
 		//"35.0", // Introduced support
 		"37.1", // Exposes computed field `UsingIpSpace` in `types.EdgeGatewayUplinks`
+		"39.0", // Adds support for DISTRIBUTED_ONLY `deploymentMode`
 	},
 	types.OpenApiPathVersion1_0_0 + types.OpenApiEndpointEdgeGatewayDns: {
 		"37.0", // Introduced support
@@ -297,13 +304,19 @@ func (client *Client) getOpenApiHighestElevatedVersion(endpoint string) (string,
 		util.Logger.Printf("[DEBUG] Checking if elevated version '%s' is supported by VCD instance for endpoint '%s'",
 			elevatedVersion.Original(), endpoint)
 		// Check if maximum VCD API version supported is greater or equal to elevated version
-		if client.APIVCDMaxVersionIs(fmt.Sprintf(">= %s", elevatedVersion.Original())) {
+
+		if client.APIVCDMaxVersionIs(fmt.Sprintf(">= %s", elevatedVersion.Original())) &&
+			!client.APIClientVersionIs(fmt.Sprintf("> %s", elevatedVersion.Original())) {
 			util.Logger.Printf("[DEBUG] Elevated version '%s' is supported by VCD instance for endpoint '%s'",
 				elevatedVersion.Original(), endpoint)
 			// highest version found - store it and abort the loop
 			supportedElevatedVersion = elevatedVersion.Original()
 			break
+		} else {
+			util.Logger.Printf("[DEBUG] Skipped Elevated version '%s' for endpoint '%s', Default minimum version '%s'",
+				elevatedVersion.Original(), endpoint, client.APIVersion)
 		}
+
 		util.Logger.Printf("[DEBUG] API version '%s' is not supported by VCD instance for endpoint '%s'",
 			elevatedVersion.Original(), endpoint)
 	}

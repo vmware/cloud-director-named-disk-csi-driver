@@ -88,7 +88,7 @@ func (client *Client) setAccessControlWithHttpMethod(httpMethod string, accessCo
 				return fmt.Errorf("[client.SetAccessControl] subject %s (%s) used more than once", setting.Subject.Name, setting.Subject.HREF)
 			}
 			used[setting.Subject.HREF] = true
-			if setting.Subject.Type == "" {
+			if setting.Subject.Type == "" && !strings.Contains(strings.ToLower(href), "vdctemplate") { // VDC Templates must not send subject type, otherwise calls fail
 				return fmt.Errorf("[client.SetAccessControl] subject %s (%s) has no type defined", setting.Subject.Name, setting.Subject.HREF)
 			}
 		}
@@ -478,14 +478,7 @@ func publishCatalog(client *Client, catalogUrl string, tenantContext *TenantCont
 
 // IsSharedReadOnly returns the state of the catalog read-only sharing to all organizations
 func (cat *Catalog) IsSharedReadOnly() (bool, error) {
-	accessControl, err := cat.GetAccessControl(true)
-	if err != nil {
-		return false, err
-	}
-	if accessControl.AccessSettings != nil || accessControl.IsSharedToEveryone {
-		return false, nil
-	}
-	err = cat.Refresh()
+	err := cat.Refresh()
 	if err != nil {
 		return false, err
 	}
@@ -494,14 +487,7 @@ func (cat *Catalog) IsSharedReadOnly() (bool, error) {
 
 // IsSharedReadOnly returns the state of the catalog read-only sharing to all organizations
 func (cat *AdminCatalog) IsSharedReadOnly() (bool, error) {
-	accessControl, err := cat.GetAccessControl(true)
-	if err != nil {
-		return false, err
-	}
-	if accessControl.AccessSettings != nil || accessControl.IsSharedToEveryone {
-		return false, nil
-	}
-	err = cat.Refresh()
+	err := cat.Refresh()
 	if err != nil {
 		return false, err
 	}
