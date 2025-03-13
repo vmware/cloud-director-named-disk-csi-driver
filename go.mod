@@ -1,8 +1,7 @@
 module github.com/vmware/cloud-director-named-disk-csi-driver
 
 go 1.22
-
-toolchain go1.22.6
+toolchain go1.23.7
 
 require (
 	github.com/akutz/gofsutil v0.1.2
@@ -17,7 +16,7 @@ require (
 	github.com/vmware/cloud-provider-for-cloud-director v0.0.0-20240426203125-2d6e9efaf23d
 	github.com/vmware/go-vcloud-director/v2 v2.26.0-alpha.6
 	golang.org/x/oauth2 v0.8.0 // indirect
-	golang.org/x/sys v0.18.0
+	golang.org/x/sys v0.30.0
 	google.golang.org/grpc v1.56.3
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -80,9 +79,9 @@ require (
 	github.com/sethvargo/go-password v0.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/term v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
+	golang.org/x/term v0.29.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230525234030-28d5490b6b19 // indirect
