@@ -203,7 +203,7 @@ github.com/rogpeppe/go-internal/fmtsort
 # github.com/sethvargo/go-password v0.2.0
 ## explicit; go 1.14
 github.com/sethvargo/go-password/password
-# github.com/sirupsen/logrus v1.8.1
+# github.com/sirupsen/logrus v1.8.3
 ## explicit; go 1.13
 github.com/sirupsen/logrus
 # github.com/spf13/cobra v1.7.0
